@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Bullpen Arepas</title>
+    {% load staticfiles %}
+    <link href="{% static 'website/css/fullcalendar.css' %}" rel="stylesheet" />
+    <link href="{% static 'website/css/fullcalendar.print.css' %}" rel='stylesheet' media='print' />
+    <link href="{% static 'website/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'website/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'website/css/animate.min.css' %}" rel="stylesheet"> 
+    <link href="{% static 'website/css/lightbox.css' %}" rel="stylesheet"> 
+    <link href="{% static 'website/css/main.css' %}" rel="stylesheet">
+    <link href="{% static 'website/css/responsive.css' %}" rel="stylesheet">
+    <link href="{% static 'website/css/calendar.css' %}" rel="stylesheet">    
+    <script type="text/javascript" src="{% static 'website/js/jquery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'website/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'website/js/lightbox.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'website/js/wow.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'website/js/main.js' %}"></script>
+    <script type="text/javascript" src="{% static 'website/js/audio.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'website/js/modal.js' %}"></script>
+    <script src="{% static 'website/js/moment.min.js' %}"></script>
+    <script src="{% static 'website/js/jquery.min.js' %}"></script>
+    <script src="{% static 'website/js/fullcalendar.min.js' %}"></script>
+    <script src="{% static 'website/js/gcal.js' %}"></script> 
+    <script type="text/javascript" src="{% static 'website/js/infocalendar.js' %}"></script>    
+    <script type="text/javascript">
+	
+  audiojs.events.ready(function() {
+    var as = audiojs.createAll();
+  });
+</script> 
+    <!--[if lt IE 9]>
+	    <script src="js/html5shiv.js"></script>
+	    <script src="js/respond.min.js"></script>
+    <![endif]-->       
+    <link rel="shortcut icon" href="{% static 'img/bullpen.ico' %}">
+</head><!--/head-->
+
+<body>
+	<header id="header" class="navbar-inverse navbar-fixed-top" role="navigation">      
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12 overflow">
+                   <div class="social-icons pull-right">
+                    </div> 
+                </div>
+             </div>
+        </div>
+        <div class="navbar navbar-inverse" role="banner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+				</div>
+                <div class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+                    	<li>
+                        	<a href="#home-slider" data-toggle="collapse" data-target=".navbar-collapse">Home</a>
+                        </li>
+                    	<li>
+                        	<a href="#home-slider2" data-toggle="collapse" data-target=".navbar-collapse">On The Game</a>
+                        </li>
+                    	<li>
+                        	<a href="#info" aria-expanded="false" data-toggle="collapse" data-target=".navbar-collapse">Info</a>
+                        </li> 
+                    	<li>
+                        <a href="#info2" data-toggle="collapse" data-target=".navbar-collapse">Calendar</a></li>
+                      <li>
+                        <a href="{% url 'website:menu' %}" data-toggle="collapse" data-target=".navbar-collapse">Order Now</a>
+                      </li>
+                	</ul>
+                	<p class="navbar-text pull-right">
+                    	<a class="pull-right socialia" href="https://instagram.com/bullpenarepas/" target="_blank"><img src="{% static 'website/img/i2.png' %}" hclass="img-responsive" alt=""></a>   
+                        <a class="pull-right socialia" href="https://twitter.com/bullpenarepas" target="_blank"><img src="{% static 'website/img/t2.png' %}" class="img-responsive" alt=""></a>
+                        <a class="pull-right socialia" href="https://www.facebook.com/BullpenArepas/" target="_blank"><img src="{% static 'website/img/f2.png' %}" hclass="img-responsive" alt=""></a>					
+                    </p>
+                </div>
+            </div>
+		</div>
+    </header>
+    <!--/#header-->
+    <section id="home-slider">
+        <div class="container">
+            <div class="row">
+                <div class="main-slider">
+                	<div class="container">
+            			<div class="row">
+                			<div class="single-features">
+                    			<div class="col-sm-5 wow fadeInLeft" data-wow-duration="500ms" data-wow-delay="300ms">
+                     				<h1><img src="{% static 'website/img/Logo_mini.png' %}" class="img-responsive" alt=""></h1>
+                    			</div>
+                    			<div class="col-sm-6 wow fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
+                   					<div class="bgm_div">
+                                    	<h1>BULLPEN AREPAS</h1>
+                        				<P>Enjoy the best tasting Venezuelan food aboard our Food Truck Bullpen Arepas. As we travel all of Georgia with our Baseball inspired Food Truck we offer fans of Professional Baseball the possibility of tasting the most delicious Arepas with the best ingredients around. </br></br></br></P>
+                                 			<audio src="{% static 'website/audio/Bulpen_Jingle_mediana.m4a' %}" preload="auto" />
+                                    </div>
+                                </div>
+                			</div>
+                		</div>
+            		</div>
+        		</div>
+			</div>
+		</div>
+        <div class="preloader"><i class="fa fa-sun-o fa-spin"></i></div>
+	</section>
+	<section id="features">
+        <div class="container">
+            <div class="row">
+                <div class="single-features">
+                    <div class="col-sm-6 col-sm-offset-1 align-right wow fadeInLeft" data-wow-duration="500ms" data-wow-delay="300ms">
+                        <h1>The Arepa</h1>
+                        <P>Many may ask, “What is an Arepa”? It’s simple. An Arepa is a circular shaped bread made of white corn flour. Arepas can either be served baked or fried depending on the liking of the person. The Arepa is native to Venezuelan culture although you can find arepas in Colombia, Panama, Puerto Rico, Dominican Republic and the Canary Islands. At Bullpen Arepa we prepare authentic Venezuelan Arepas that are gluten free, and that filled with the best fresh ingredients and best taste.</P>
+					</div>
+                    <div class="col-sm-5 wow fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms"><h1><img src="{% static 'website/img/the_arepa.jpg' %}" class="img-responsive" alt=""></h1></div>
+				</div>
+            </div>
+        </div>
+    </section>
+	<section id="home-slider2">
+		<div class="container">
+            <div class="row">
+                <div class="main-slider2 animate-in">
+                	<div class="container">
+                    	<div class="row">
+                        	<div class="single-features">
+                            	<div class="col-sm-12 wow fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
+                                	<h1>On The Game</h1>
+                                    <P></br>Choose between baked or fried to start with, then fill in the Arepas with your favorite players of choice, you can also add any player that is on the bench to go with your Arepa. To go along with your Arepa you can choose from a variety of delicious sauces. Make your own combinations and enjoy the taste of a Home Run. </P>
+                                    <h2 class="circle"  data-toggle="modal"  data-target="#myModal7">Suggested Plays</h2>
+                           	  </div>
+							</div>
+							<div class="clients-logo wow fadeIn" data-wow-duration="1000ms" data-wow-delay="600ms">
+								<div class="col-xs-3 col-sm-2" align="center" >
+                            		<a ><img src="{% static 'website/img/1.jpg' %}"  align="center" class="img-responsive img-circle circle" alt=""  data-toggle="modal"  data-target="#myModal1"></a>
+                            		<h3>Baked or Fried Arepas</h3>
+                        		</div>
+                        		<div class="col-xs-3 col-sm-2" align="center" >
+                            		<a ><img src="{% static 'website/img/2.jpg' %}" align="center"  class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal2"></a>
+                            		<h3>Little League</h3>
+                        		</div>
+                         		<div class="col-xs-3 col-sm-2" align="center" >
+                            		<a ><img src="{% static 'website/img/3.jpg' %}"  align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal3"></a>
+                            		<h3>Line Up Players</h3>
+                        		</div>
+								<div class="col-xs-3 col-sm-2" align="center" >
+                            		<a ><img src="{% static 'website/img/6.jpg' %}" align="center"  class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal4"></a>
+									<h3>On The Bench</h3>
+                        		</div>
+                         		<div class="col-xs-3 col-sm-2" align="center" >
+                            		<a ><img src="{% static 'website/img/4.jpg' %}" align="center"  class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal5"></a>
+                            		<h3>Sauces</h3>
+                        		</div>
+                         		<div class="col-xs-3 col-sm-2" align="center" >
+                            		<a ><img src="{% static 'website/img/5.jpg' %}"  align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal6"></a>
+                            		<h3>Soft Drinks</h3>
+                        		</div>
+                    		</div>
+                		</div>
+            		</div>
+        		</div> 
+    		</div>
+		</div>
+	</section>
+     <!--/#features-->
+	<div id="info" class="container">
+		<div class="row">
+    		<div class="single-features">
+        		<div style="visibility: visible; animation-duration: 500ms; animation-delay: 300ms; animation-name: fadeInRight;" class="col-md-offset-1 col-sm-5 wow fadeInRight animated" data-wow-duration="500ms" data-wow-delay="300ms">
+            		<h1></br>Info</h1>
+                	<p>You can contact us  through our new webpage or follow us on   a number of social media pages for the latest updates from us.</p>
+              		<div class="clients-logo" align="center">
+                   		<div class="col-xs-2 col-sm-2 socialib" align="center" >
+                        	<a href="https://www.facebook.com/BullpenArepas/" target="_blank"><img src="{% static 'website/img/f.png' %}"  alt=""></a>
+                    	</div>
+                        <div class="col-xs-2 col-sm-2 socialib" align="center" >
+                        	<a href="https://twitter.com/bullpenarepas" target="_blank"><img src="{% static 'website/img/t.png' %}"  alt=""></a>
+					  	</div>
+                        <div class="col-xs-2 col-sm-2 socialib" align="center" >
+                        	<a href="https://instagram.com/bullpenarepas/" target="_blank"><img src="{% static 'website/img/i.png' %}"  alt=""></a>
+                      	</div>   
+					</div>
+				</div> 
+				<div class="col-md-5 col-sm-12">
+                    <div class="contact-form bottom">
+                    <h1></br>Send a message</h1>
+                       	<form id="main-contact-form" name="contact-form" method="post" action="sendemail.php">
+                           	<div class="form-group">
+                               	<input type="text" name="name" class="form-control" required="required" placeholder="Name">
+                           	</div>
+                           	<div class="form-group">
+                               	<input type="email" name="email" class="form-control" required="required" placeholder="Email Id">
+                           	</div>
+                           	<div class="form-group">
+                               	<textarea name="message" id="message" required="required" class="form-control" rows="8" placeholder="Your text here"></textarea>
+                           	</div>                        
+                           	<div class="form-group">
+                               	<input type="submit" name="submit" class="btn btn-submit" value="Submit">
+                           	</div>
+                       	</form>
+                    </div>
+                </div>
+			</div>
+            <div class="col-md-12 col-md-offset-1" id="info2">
+        		<h1></br>Calendar/Events</h1>
+            	<P>Make sure to catch up with us on our calendar and follow us from place to place on our routes with Bullpen Arepa.</br></br></P>
+			</div>                                  
+			<div class="col-md-offset-1" id='loading'>loading...</div>
+			<div id='calendar'></div>
+		</div>		
+	</div> 
+    <div class="col-sm-12">
+    	<div class="copyright-text text-center">
+    		<p>© Bullpenarepas.com 2015. All Rights Reserved.</p>
+        <div>
+	</div>
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">BAKED OR FRIED AREPAS</h4>
+      </div>
+      <div class="modal-body">
+        Hit: $ 4.90 with 1 player of your choice</br>
+        Double: $ 5.90 with 2 players of your choice</br>
+        Triple: $ 6.90 with 3 players of your choice</br>
+        Home Run: $ 7.50 with 4 players of your choice</br>
+        Home Run Pabellón: $ 8.70 with 4 venezuelan players</br>
+        Grand Slam: $ 8.50 with 5 venezuelan players
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">LITTLE LEAGUE (Kids meal $ 3.99 each)</h4>
+      </div>
+      <div class="modal-body">
+        Mini Ball (corn cheese balls)</br>
+        Mini Bat (cheese sticks)</br>
+        Swing Spread (ham spread arepas)
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">LINE UP PLAYERS</h4>
+      </div>
+      <div class="modal-body">
+        1B Shredded meat - carne mechada</br>
+        2B Shredded chicken - pollo mechado</br>
+        SS Pulled pork - pernil</br>
+        3B Fish - pescado</br>
+        LF Chicken salad - reina pepiada</br>
+        CF Ham - jamón</br>
+        RF Black beans - caraotas negras</br>
+        DH American cheese - queso americano</br>
+        C  Fresh cheese - queso fresco
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="myModal4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">ON THE BENCH</h4>
+      </div>
+      <div class="modal-body">
+        Add as much players as you want for just  $ 0.99 each</br>
+        Avocado</br>
+        Eggs</br>
+        Sweet fried plantains</br></br>
+        Addicional player from line up
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="myModal5" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">SAUCES</h4>
+      </div>
+      <div class="modal-body">
+        Strike (guasacaca)</br>
+        Rolling (tartar)</br>
+        Swing (pink)</br>
+        Wild Pitch (hot & spice)</br>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="myModal6" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">SOFT DRINKS ($ 1.00 each)</h4>
+      </div>
+      <div class="modal-body">
+        Soda</br>
+        Juice</br>
+        Water</br>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="myModal7" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">SUGGESTED PLAYS</h4>
+      </div>
+      <div class="modal-body">
+		Double meat and ham: $ 7.40</br>
+        Double chicken and ham: $ 7.40</br>
+		Double pork and ham: $ 7.40</br>
+		Triple meat, ham and cheese: $ 7.90</br>
+		Triple chicken, ham and cheese: $ 7.90</br>
+		Triple pork, ham and cheese: $ 7.90</br>
+		Home run meat, ham, cheese and avocado: $ 8.50</br>
+		Home run chicken, ham, cheese and avocado: $ 8.50</br>
+		Home run pork, ham, cheese and avocado: $ 8.50</br>
+		Grand Slam meat, ham, cheese, egg and avocado: $ 9.00</br>
+		Grand Slam chicken, ham, cheese, egg and avocado: $ 9.00</br>
+		Grand Slam pork, ham, cheese, egg and avocado: $ 9.00</br>
+		Double meat and cheese: $ 7.40</br>
+		Double chicken and cheese: $ 7.40</br>
+		Double pork and cheese: $ 7.40</br>
+		Double ham and cheese: $ 7.40</br>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>   
+
+ 
+</body>
+</html>
