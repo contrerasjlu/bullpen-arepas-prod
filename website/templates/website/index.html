@@ -38,7 +38,7 @@
 	    <script src="js/html5shiv.js"></script>
 	    <script src="js/respond.min.js"></script>
     <![endif]-->       
-    <link rel="shortcut icon" href="{% static 'img/bullpen.ico' %}">
+    <link rel="shortcut icon" href="{% static 'website/img/bullpen.ico' %}">
 </head><!--/head-->
 
 <body>
@@ -74,9 +74,11 @@
                         </li> 
                     	<li>
                         <a href="#info2" data-toggle="collapse" data-target=".navbar-collapse">Calendar</a></li>
+                        {% if status %}
                       <li>
                         <a href="{% url 'website:menu' %}" data-toggle="collapse" data-target=".navbar-collapse">Order Now</a>
                       </li>
+                      {% endif %}
                 	</ul>
                 	<p class="navbar-text pull-right">
                     	<a class="pull-right socialia" href="https://instagram.com/bullpenarepas/" target="_blank"><img src="{% static 'website/img/i2.png' %}" hclass="img-responsive" alt=""></a>   

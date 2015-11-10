@@ -1,0 +1,46 @@
+{% extends 'website/base.html' %}
+{% block content %}
+{% load widget_tweaks %}
+{% load staticfiles %}
+    <section>
+		<div class="container">
+        	<div class="row">
+            	<div class="col-sm-12">
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-6">
+
+                    {% for field in form %}
+                        <h2 class="iner col-sm-12">{{ field.label }}</h2>
+                        <div class="iner col-sm-6">
+                            <p class="help-block">{{ field.help_text }}</p>
+                            {{ field }} 
+                        </div>
+                    {% endfor %}
+                            <div class="form-group col-sm-12 iner">
+                               	<button type="button" class="btn btn-default" id="btn-go-back"> 
+                                    Go Back
+                                </button>
+                                <button type="button" class="btn btn-default">
+                                    <span class="glyphicon glyphicon-shopping-cart circle" aria-hidden="true"></span> 
+                                    Add to car
+                                </button>
+                            </div>
+					</div>
+                </div>
+            </div>
+        </div>
+    </section>
+<script type="text/javascript" src="{% static 'website/js/jquery.js' %}"></script>
+<script type="text/javascript" src="{% static 'website/js/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'website/js/wow.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'website/js/main.js' %}"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<script>
+        $("#btn-go-back").click(function(){
+            window.location.href = "{% url 'website:menu' %}";
+        })
+</script>
+</body>
+</html>
+{% endblock %}

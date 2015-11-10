@@ -13,3 +13,9 @@ class productAdmin(admin.ModelAdmin):
     search_fields = ['category','code','name','description','price','order_in_menu']
 
 admin.site.register(product, productAdmin)
+
+class PaymentBatchAdmin(admin.ModelAdmin):
+	list_display = ['date','location','x_coord','y_coord','max_miles','batch_code','status']
+	search_fields = ['date','location','x_coord','y_coord','max_miles','batch_code','status']
+
+admin.site.register(PaymentBatch, PaymentBatchAdmin)

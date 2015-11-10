@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Bullpen Arepas</title>
+    {% load staticfiles %}
+    <link href="{% static 'website/css/fullcalendar.css' %}" rel="stylesheet" />
+    <link href="{% static 'website/css/fullcalendar.print.css' %}" rel='stylesheet' media='print' />
+    <link href="{% static 'website/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'website/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'website/css/animate.min.css' %}" rel="stylesheet"> 
+    <link href="{% static 'website/css/lightbox.css' %}" rel="stylesheet"> 
+    <link href="{% static 'website/css/main.css' %}" rel="stylesheet">
+    <link href="{% static 'website/css/responsive.css' %}" rel="stylesheet">
+    <link href="{% static 'website/css/calendar.css' %}" rel="stylesheet">  
+    <!--[if lt IE 9]>
+        <script src="js/html5shiv.js"></script>
+        <script src="js/respond.min.js"></script>
+    <![endif]-->       
+    <link rel="shortcut icon" href="{% static 'website/img/bullpen.ico' %}">
+</head><!--/head-->
+
+{% block header %}
+<body>
+	<header id="header" class="navbar-inverse navbar-fixed-top" role="navigation">      
+        <div class="navbar navbar-inverse" role="banner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+				</div>
+                <div class="collapse navbar-collapse">
+                    {% if status %}
+					<ul class="nav navbar-nav">
+                    	<li>
+                        	<a href="{% url 'website:index' %}" data-toggle="collapse" data-target=".navbar-collapse">Back to Home</a>
+                        </li>
+                    	<li>
+                        	<a href="#" data-toggle="collapse" data-target=".navbar-collapse">On The Game</a>
+                        </li>
+                    	<li>
+                        	<a href="#" aria-expanded="false" data-toggle="collapse" data-target=".navbar-collapse">Info</a>
+                        </li> 
+                    	<li>
+                        <a href="#" data-toggle="collapse" data-target=".navbar-collapse">Calendar</a></li>
+                        <li>
+                        <a href="#" data-toggle="collapse" data-target=".navbar-collapse"><span class="glyphicon glyphicon-shopping-cart circle" aria-hidden="true"></span> 0 Arepas - Checkout</a></li>
+                	</ul>
+                    {% endif %}
+                	<p class="navbar-text pull-right">
+                        <a class="pull-right socialia" href="https://instagram.com/bullpenarepas/" target="_blank"><img src="{% static 'website/img/i2.png' %}" hclass="img-responsive" alt=""></a>   
+                        <a class="pull-right socialia" href="https://twitter.com/bullpenarepas" target="_blank"><img src="{% static 'website/img/t2.png' %}" class="img-responsive" alt=""></a>
+                        <a class="pull-right socialia" href="https://www.facebook.com/BullpenArepas/" target="_blank"><img src="{% static 'website/img/f2.png' %}" hclass="img-responsive" alt=""></a>                 
+                    </p>
+                    </div>
+            </div>
+		</div>
+    </header>
+    {% endblock %}
+    {% block content %}
+    {% endblock %}

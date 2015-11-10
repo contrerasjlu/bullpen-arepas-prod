@@ -1,0 +1,94 @@
+{% extends 'website/template.html' %}
+{% block WindowTittle %}Menu{% endblock %}
+{% block Content %}
+{% load staticfiles %}
+<div class="right_col" role="main">
+    <div class="clearfix"></div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Baked or Fried Arepas?</h2>
+                    <div class="clearfix"></div>
+                </div>
+                <!-- Content -->
+                <div class="row">
+                {% for arepa in arepas %}
+                    <div class="col-md-3 col-xs-12 widget widget_tally_box">
+                        <div class="x_panel ui-ribbon-container fixed_height_390">
+                            
+                            <div class="ui-ribbon-wrapper">
+                                <div class="ui-ribbon">$ {{ arepa.price }}</div>
+                            </div>
+                            
+                            <div class="x_title">
+                                <h2>Arepa</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            
+                            <div class="x_content">
+                                <div style="text-align: center; margin-bottom: 17px">
+                                    <span class="chart" data-percent="86">
+                                        <img src="{% static 'website/img/1.jpg' %}" class="img-responsive" alt="">
+                                    </span>
+                                </div>
+                                <h3 class="name_title">{{ arepa.name }}</h3>
+                                <p>{{ arepa.description }}</p>
+                                <div class="divider"></div>
+                                <p>
+                                    <a href="{% url 'website:product_detail' arepa.id %}">
+                                        <button type="button" class="btn btn-warning">Add to Cart</button>
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}                                        
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>For your Kids...</h2>                                    
+                    <div class="clearfix"></div>
+                </div>
+                                
+                <div class="row">
+                {% for kid in kids %}
+                    <div class="col-md-3 col-xs-12 widget widget_tally_box">
+                        <div class="x_panel ui-ribbon-container fixed_height_390">
+                            <div class="ui-ribbon-wrapper">
+                                <div class="ui-ribbon">$ {{ kid.price }}</div>
+                            </div>
+                            <div class="x_title">
+                                <h2>Kid's Meal</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <div style="text-align: center; margin-bottom: 17px">
+                                    <span class="chart" data-percent="86">
+                                        <img src="{% static 'website/img/2.jpg' %}" class="img-responsive" alt="">
+                                    </span>
+                                </div>
+                                <h3 class="name_title">{{ kid.name }}</h3>
+                                <p>{{ kid.description }}</p>
+                                <div class="divider"></div>
+                                <p>
+                                    <a href="{% url 'website:product_detail' kid.id %}">
+                                        <button type="button" class="btn btn-warning">Add to Cart</button>
+                                    </a>
+                                </p>
+
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}                                        
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

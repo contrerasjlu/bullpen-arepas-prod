@@ -1,0 +1,130 @@
+{% extends 'website/template.html' %}
+{% block WindowTittle %}Menu{% endblock %}
+{% block Content %}
+{% load staticfiles %}
+<div class="right_col" role="main">
+    <div class="">
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>{{product.name}} <small>{{product.description}}</small></h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <!-- Tabs -->
+                        <div id="wizard" class="form_wizard wizard_horizontal">
+                            <ul class="list-unstyled wizard_steps">
+                                <li>
+                                    <a href="#step-11">
+                                        <span class="step_no">1</span>
+                                        <span class="step_descr">Step 1<br /> 
+                                        <small>Baked or Fried?</small></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#step-22">
+                                        <span class="step_no">2</span>
+                                        <span class="step_descr">Step 2<br /> 
+                                        <small>Choose the Players for your Arepa</small></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#step-33">
+                                        <span class="step_no">3</span>
+                                        <span class="step_descr">Step 3<br /> 
+                                        <small>We have some players on the Bench</small></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#step-44">
+                                        <span class="step_no">4</span>
+                                        <span class="step_descr">Step 4<br /> 
+                                        <small>Do you want sauce on your Arepa?</small></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#step-55">
+                                        <span class="step_no">5</span>
+                                        <span class="step_descr">Step 5<br /> 
+                                        <small>Do you want some drinks with your Arepa?</small></span>
+                                    </a>
+                                </li>
+                            </ul>
+                            <div id="step-11">
+                                <span class="section">We can Fry your Arepa or we can make it in the oven</span>
+                                <form method="post" id="form-arepa">
+                                    {% for field in form.id_for_product %}
+                                    {{ field }}
+                                    {% endfor %}
+                                    <div class="form-inline">
+                                    {% for field in form.arepa_type %}
+                                        <div class="col-md-3 col-sm-3">
+                                            {{ field }}
+                                        </div>
+                                    {% endfor %}
+                                    </div>
+                            </div>
+                            <div id="step-22">
+                                <span class="section">You shuld choose {{ product.extras }} players for your Arepas</span>
+                                    <div class="form-inline">
+                                    {% for field in form.extras %}
+                                        <div class="col-md-3 col-sm-3">
+                                            {{ field }}
+                                        </div>
+                                    {% endfor %}
+                                    </div>
+                            </div>
+                            <div id="step-33">
+                                <span class="section">Choose as much players as you want for $0.99 each</span>
+                                    <div class="form-inline">
+                                    {% for field in form.paid_extras %}
+                                        <div class="col-md-3 col-sm-3">
+                                            {{ field }}
+                                        </div>
+                                    {% endfor %}
+                                    </div>
+                            </div>
+                            <div id="step-44">
+                                <span class="section">Choose as much as you want NO CHARGE!</span>
+                                    <div class="form-inline">
+                                    {% for field in form.sauces %}
+                                        <div class="col-md-3 col-sm-3">
+                                            {{ field }}
+                                        </div>
+                                    {% endfor %}
+                                    </div>
+                            </div>
+                            <div id="step-55">
+                                <span class="section">Just $1.00</span>
+                                    <div class="form-group">
+                                    {% for field in form.soft_drinks %}
+                                    <label>{{ field.label }}</label>
+                                        <div class="col-md-3 col-sm-3">
+                                            {{ field }}
+                                        </div>
+                                    {% endfor %}
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- End SmartWizard Content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}      
+{% block FooterDeclarations %}
+    <script type="text/javascript" src="{% static 'website/v2/js/wizard/jquery.smartWizard.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Smart Wizard	
+            $('#wizard').smartWizard({
+                transitionEffect: 'fade',
+                labelFinish: 'Add to Cart'
+            });
+        });
+    </script>
+{% endblock %}
