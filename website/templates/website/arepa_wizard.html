@@ -13,7 +13,14 @@
                         <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
+                        <a href="{% url 'website:menu' %}">
+                            <button type="button" class="btn btn-warning">Back to Menu</button>
+                        </a>
+                        <div class="clearfix"></div>
                         <!-- Tabs -->
+                        <form method="post" id="arepa_form" action="">
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
                         <div id="wizard" class="form_wizard wizard_horizontal">
                             <ul class="list-unstyled wizard_steps">
                                 <li>
@@ -54,62 +61,89 @@
                             </ul>
                             <div id="step-11">
                                 <span class="section">We can Fry your Arepa or we can make it in the oven</span>
-                                <form method="post" id="form-arepa">
-                                    {% for field in form.id_for_product %}
-                                    {{ field }}
-                                    {% endfor %}
-                                    <div class="form-inline">
-                                    {% for field in form.arepa_type %}
-                                        <div class="col-md-3 col-sm-3">
-                                            {{ field }}
-                                        </div>
-                                    {% endfor %}
+                                {{ form.id_for_product }}
+                                <div class="form-inline">
+                                    <div class="col-md-3 col-sm-3">
+                                        {{ form.arepa_type }}
                                     </div>
+                                    {% if form.arepa_type.errors %}
+                                    <div class="form-group has-error">
+                                        <p class="control-label">{{ form.arepa_type.errors }}</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
                             </div>
                             <div id="step-22">
+                            {% if product.extras == 0 %}
+                                <span class="section">Your Arepa doesn't have Extras</span>
+                            {% else %}
                                 <span class="section">You shuld choose {{ product.extras }} players for your Arepas</span>
-                                    <div class="form-inline">
-                                    {% for field in form.extras %}
-                                        <div class="col-md-3 col-sm-3">
-                                            {{ field }}
-                                        </div>
-                                    {% endfor %}
+                                <div class="form-inline">
+                                {% for field in form.extras %}
+                                    <div class="col-md-3 col-sm-3">
+                                        {{ field }}
                                     </div>
+                                {% endfor %}
+                                    {% if form.extras.errors %}
+                                    <div class="form-group has-error">
+                                        <p class="control-label">{{ form.extras.errors }}</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                             </div>
                             <div id="step-33">
                                 <span class="section">Choose as much players as you want for $0.99 each</span>
-                                    <div class="form-inline">
-                                    {% for field in form.paid_extras %}
-                                        <div class="col-md-3 col-sm-3">
-                                            {{ field }}
-                                        </div>
-                                    {% endfor %}
+                                <div class="form-inline">
+                                {% for field in form.paid_extras %}
+                                    <div class="col-md-3 col-sm-3">
+                                        {{ field }}
                                     </div>
+                                {% endfor %}
+                                    {% if form.paid_extras.errors %}
+                                    <div class="form-group has-error">
+                                        <p class="control-label">{{ form.paid_extras.errors }}</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
                             </div>
                             <div id="step-44">
                                 <span class="section">Choose as much as you want NO CHARGE!</span>
-                                    <div class="form-inline">
-                                    {% for field in form.sauces %}
-                                        <div class="col-md-3 col-sm-3">
-                                            {{ field }}
-                                        </div>
+                                <div class="form-inline">
+                                {% for field in form.sauces %}
+                                    <div class="col-md-3 col-sm-3">
+                                        {{ field }}
+                                    </div>
+                                {% endfor %}
+                                    {% if form.sauces.errors %}
+                                    <div class="form-group has-error">
+                                    {% for error in form.sauces.errors %}
+                                        <p class="control-label">{{ error }}</p>
                                     {% endfor %}
                                     </div>
+                                    {% endif %}
+                                </div>
                             </div>
                             <div id="step-55">
                                 <span class="section">Just $1.00</span>
-                                    <div class="form-group">
-                                    {% for field in form.soft_drinks %}
+                                <div class="form-group">
+                                {% for field in form.soft_drinks %}
                                     <label>{{ field.label }}</label>
                                         <div class="col-md-3 col-sm-3">
                                             {{ field }}
                                         </div>
-                                    {% endfor %}
+                                        {% if form.soft_drinks.errors %}
+                                        <div class="form-group has-error">
+                                        {% for error in form.soft_drinks.errors %}
+                                            <p class="control-label">{{ error }}</p>
+                                        {% endfor %}
                                     </div>
-                                </form>
+                                    {% endif %}
+                                {% endfor %}
+                                </div>
                             </div>
                         </div>
-                        <!-- End SmartWizard Content -->
+                        </form>
                     </div>
                 </div>
             </div>
@@ -123,8 +157,53 @@
             // Smart Wizard	
             $('#wizard').smartWizard({
                 transitionEffect: 'fade',
-                labelFinish: 'Add to Cart'
+                labelFinish: 'Add to Cart',
+                onLeaveStep: leaveAStepCallback,
+                onFinish: onFinishCallback
             });
+
+            function leaveAStepCallback(obj, context){
+                //alert("Leaving step " + context.fromStep + " to go to step " + context.toStep);
+                return validateSteps(context.fromStep); // return false to stay on step and true to continue navigation 
+            }
+
+            function onFinishCallback(objs, context){
+                if(validateAllSteps()){
+                    $('#arepa_form').submit();
+                }
+            }
+
+            // Your Step validation logic
+            function validateSteps(stepnumber){
+                var isStepValid = true;
+                var extras_count = 0;
+                //var max_extras = {{ product.extras }};
+                // validate step 1
+                if(stepnumber == 2){
+                    //recorremos todos los checkbox seleccionados con .each
+                    $('input[name="extras"]:checked').each(function() {
+                        extras_count ++;
+                    });
+
+                    if (extras_count == {{product.extras}}) {
+                        isStepValid = true
+                    
+                    }else {
+                        isStepValid = false
+                        // Mensaje de Error
+                    }
+
+                }else {
+                    isStepValid = true
+                }
+                return isStepValid
+            }
+            
+            function validateAllSteps(){
+                var isStepValid = true;
+                // all step validation logic     
+                return isStepValid;
+            }          
         });
     </script>
 {% endblock %}

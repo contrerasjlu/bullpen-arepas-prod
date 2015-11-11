@@ -48,12 +48,22 @@ def closed(request):
 
 	return render(request, 'website/closed.html', context)
 
-def menu(request):
+def cart(request):
 	context = {}
 	context['status'] = is_open()
 	if context['status']==False:
 		return HttpResponseRedirect(reverse('website:closed'))
+	
+	if 'cart' in request.session:
+		context['item_count'] = len(request.session['cart'])
+	else:
+		context['item_count'] = 0
 
+	return context
+
+
+def menu(request):
+	context = cart(request)
 	#Pido todas las categorias y productos
 	arepas = product.objects.filter(Active=True,category=category.objects.get(code='arepas')).order_by('order_in_menu')
 
@@ -68,10 +78,7 @@ def menu(request):
 	return render(request, 'website/plain_page.html', context)
 
 def ProductDetail(request,id_for_prod):
-	context = {}
-	context['status'] = is_open()
-	if context['status']==False:
-		return HttpResponseRedirect(reverse('website:closed'))
+	context = cart(request);
 
 	try:
 		Product = product.objects.get(pk=id_for_prod)
@@ -82,11 +89,53 @@ def ProductDetail(request,id_for_prod):
 	else:
 		context['product'] = Product
 
-	if Product.category.code == 'arepas':
-		html = 'website/arepa_wizard.html'
-	else:
-		context['product_type'] = 'kids'
+	if request.POST:
+		if Product.category.code == 'arepas':
+			
+			arepa = ArepaForm(request.POST)
 
-	context['form'] = ArepaForm(initial={ 'id_for_product': id_for_prod })
+			if arepa.is_valid():
+				if not 'cart' in request.session:
+					request.session['cart'] = []
+
+				i = len(request.session['cart'])
+				request.session['cart'].append({
+					'item':i+1,
+					'product_id':request.POST['id_for_product'],
+					'arepa_type':request.POST['arepa_type'],
+					'extras':request.POST['extras'],
+					'paid_extras':request.POST['paid_extras'],
+					'sauces':request.POST['sauces'],
+					'soft_drinks':request.POST['soft_drinks']
+					},)
+				return HttpResponseRedirect(reverse('website:menu'))
+			else:
+				html = 'website/arepa_wizard.html'
+				context['form'] = ArepaForm(request.POST)
+		else:
+			my_prod = KidForm(request.POST)
+
+			if my_prod.is_valid():
+				if not 'cart' in request.session:
+					request.session['cart'] = []
+
+				i = len(request.session['cart'])
+				request.session['cart'].append({
+					'item':i+1,
+					'product_id':request.POST['id_for_product'],
+					'soft_drinks':request.POST['soft_drinks']
+					})
+				return HttpResponseRedirect(reverse('website:menu'))
+
+			else:
+				html = 'website/kid_wizard.html'
+				context['form'] = KidForm(request.POST)
+	else:
+		if Product.category.code == 'arepas':
+			html = 'website/arepa_wizard.html'
+			context['form'] = ArepaForm(initial={ 'id_for_product': id_for_prod })
+		else:
+			html = 'website/kid_wizard.html'
+			context['form'] = KidForm(initial={'id_for_product': id_for_prod})
 
 	return render(request, html, context)

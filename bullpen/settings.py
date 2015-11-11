@@ -39,8 +39,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'ordertogo',
     'rest_framework',
-    'debug_toolbar',
     'website',
+    #'debug_toolbar',
+    'widget_tweaks',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -95,7 +96,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'es-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Caracas'
 
 USE_I18N = True
 

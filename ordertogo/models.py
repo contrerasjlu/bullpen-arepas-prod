@@ -43,6 +43,12 @@ class product(models.Model):
 	#Cada extra debe estar en la capacidad de seleccionarse y no mas
 	extras = models.IntegerField(default=1)
 
+	#Puede tener extras pagos? True or False
+	allow_paid_extras = models.BooleanField(default=True)
+
+	#Puede Tener Salsas? True or False
+	allow_sauces = models.BooleanField(default=True)
+
 	#Precio
 	price = models.DecimalField(max_digits=19, decimal_places=2)
 
