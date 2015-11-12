@@ -64,6 +64,8 @@ def cart(request):
 
 def menu(request):
 	context = cart(request)
+	#del request.session['cart']
+	#print str(request.session['cart'])
 	#Pido todas las categorias y productos
 	arepas = product.objects.filter(Active=True,category=category.objects.get(code='arepas')).order_by('order_in_menu')
 
@@ -95,19 +97,37 @@ def ProductDetail(request,id_for_prod):
 			arepa = ArepaForm(request.POST)
 
 			if arepa.is_valid():
-				if not 'cart' in request.session:
-					request.session['cart'] = []
+				
+				if 'paid_extras' in request.POST:
+					paid_extras = request.POST['paid_extras']
+				else:
+					paid_extras = None
 
-				i = len(request.session['cart'])
-				request.session['cart'].append({
-					'item':i+1,
+				if 'sauces' in request.POST:
+					sauces = request.POST['sauces']
+				else:
+					sauces = None
+				a = {
 					'product_id':request.POST['id_for_product'],
 					'arepa_type':request.POST['arepa_type'],
 					'extras':request.POST['extras'],
-					'paid_extras':request.POST['paid_extras'],
-					'sauces':request.POST['sauces'],
+					'paid_extras': paid_extras,
+					'sauces':sauces,
 					'soft_drinks':request.POST['soft_drinks']
-					},)
+					}
+				if 'cart' in request.session:
+					local_cart = request.session['cart']
+					local_cart.append(a)
+					request.session['cart'] = local_cart
+					print local_cart
+
+				else:
+					local_cart = []
+					local_cart.append(a)
+					request.session['cart'] = local_cart
+					print local_cart
+
+
 				return HttpResponseRedirect(reverse('website:menu'))
 			else:
 				html = 'website/arepa_wizard.html'
@@ -116,15 +136,20 @@ def ProductDetail(request,id_for_prod):
 			my_prod = KidForm(request.POST)
 
 			if my_prod.is_valid():
-				if not 'cart' in request.session:
-					request.session['cart'] = []
-
-				i = len(request.session['cart'])
-				request.session['cart'].append({
-					'item':i+1,
+				a = {
 					'product_id':request.POST['id_for_product'],
 					'soft_drinks':request.POST['soft_drinks']
-					})
+					}
+				if 'cart' in request.session:
+					local_cart = request.session['cart']
+					local_cart.append(a)
+					request.session['cart'] = local_cart
+
+				else:
+					local_cart = []
+					local_cart.append(a)
+					request.session['cart'] = local_cart
+
 				return HttpResponseRedirect(reverse('website:menu'))
 
 			else:
