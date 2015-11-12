@@ -43,7 +43,7 @@
                 <div class="nav_menu">
                     <nav class="" role="navigation">
                         <div class="navbar nav_title" style="border: 0;">
-                            <a href="index.html" class="site_title"><i class="fa fa-paw"></i> <span>Gentellela Alela!</span></a>
+                            <a href="{% url 'website:index' %}" class="site_title"><i class="fa fa-paw"></i> <span>Bullpen Arepas</span></a>
                         </div>
                         <ul class="nav navbar-nav navbar-right">
                             
@@ -53,54 +53,56 @@
                                     <span class="badge bg-orange">{{ item_count }}</span>
                                 </a>
                                 <ul id="menu1" class="dropdown-menu list-unstyled msg_list animated fadeInDown" role="menu">
+                                    {% if cart %}
+                                    {% for item in cart %}
                                     <li>
                                         <a href="#">
                                             <span class="image">
-                                                <img src="{% static 'website/v2/images/img.jpg' %}" alt="Profile Image" />
+                                                <img src="{% static item.image %}" alt="Profile Image" />
                                             </span>
                                             <span>
-                                                <span>John Smith</span>
-                                                <span class="time">3 mins ago</span>
+                                                <span>{{ item.product }}</span>
+                                                <span class="time">{{ item.type }}</span>
                                             </span>
-                                            <span class="message">Film festivals used to be do-or-die moments for movie makers. They were where...</span>
+                                            {% if item.extras %}
+                                            <span class="message">
+                                            {% for extras in item.extras %}
+                                                {% if forloop.first %}Line Up Players: {% endif %}
+                                                {{ extras }}{% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
+                                            </span>
+                                            {% endif %}
+
+                                            {% if item.paid_extras %}
+                                            <span class="message">
+                                            {% for paid_extras in item.paid_extras %}
+                                                {% if forloop.first %}Bench Players: {% endif %}
+                                                {{ paid_extras }}{% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
+                                            </span>
+                                            {% endif %}
+
+                                            {% if item.sauces %}
+                                            <span class="message">
+                                            {% for sauces in item.sauces %}
+                                                {% if forloop.first %}Sauces: {% endif %}
+                                                {{ sauces }}{% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
+                                            </span>
+                                            {% endif %}
+
+                                            <span class="message">Drink: {{ item.soft_drinks }}</span>
                                         </a>
                                     </li>
+                                    {% endfor %}
                                     <li>
-                                        <a href="#">
-                                            <span class="image">
-                                                <img src="{% static 'website/v2/images/img.jpg' %}" alt="Profile Image" />
-                                            </span>
-                                            <span>
-                                                <span>John Smith</span>
-                                                <span class="time">3 mins ago</span>
-                                            </span>
-                                            <span class="message">Film festivals used to be do-or-die moments for movie makers. They were where... </span>
+                                        <a href="{% url 'website:checkout' %}">
+                                        <i class="fa fa-shopping-cart"> Checkout</i>
                                         </a>
                                     </li>
-                                    <li>
-                                        <a href="#">
-                                            <span class="image">
-                                                <img src="{% static 'website/v2/images/img.jpg' %}" alt="Profile Image" />
-                                            </span>
-                                            <span>
-                                                <span>John Smith</span>
-                                                <span class="time">3 mins ago</span>
-                                            </span>
-                                            <span class="message">Film festivals used to be do-or-die moments for movie makers. They were where... </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#">
-                                            <span class="image">
-                                                <img src="{% static 'website/v2/images/img.jpg' %}" alt="Profile Image" />
-                                            </span>
-                                            <span>
-                                                <span>John Smith</span>
-                                                <span class="time">3 mins ago</span>
-                                            </span>
-                                            <span class="message">Film festivals used to be do-or-die moments for movie makers. They were where...</span>
-                                        </a>
-                                    </li>
+                                    {% else %}
+                                    <li>No items in the Cart</li>
+                                    {% endif %}
                                 </ul>
                             </li>
                         </ul>

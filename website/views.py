@@ -56,6 +56,75 @@ def cart(request):
 	
 	if 'cart' in request.session:
 		context['item_count'] = len(request.session['cart'])
+		the_cart = []
+		subtotal = 0
+		for item in request.session['cart']:
+			a = product.objects.get(pk=item['product_id'])
+			price = a.price
+			
+			if item['type'] == 'Arepa':
+				the_item_type = item['arepa_type'] + ' ' + item['type']
+				if not a.extras == 0:
+					the_extras = []
+					for extra in item['extras']:
+						b = product.objects.get(pk=extra)
+						the_extras.append(b.name)
+				else:
+					the_extras = 'No Line Up Players'
+
+				if not item['paid_extras'] == None:
+					the_paid_extras = []
+					for paid_extra in item['paid_extras']:
+						c = product.objects.get(pk=paid_extra)
+						the_paid_extras.append(c.name)
+						price += c.price
+
+				else:
+					the_paid_extras = 'No Bench Players'
+
+				if not item['sauces'] == None:
+					the_sauces = []
+					for sauce in item['sauces']:
+						d = product.objects.get(pk=sauce)
+						the_sauces.append(d.name)
+
+				else:
+					the_sauces = 'No Sauce'
+
+			else:
+				the_item_type = item['type']
+
+			if not item['soft_drinks'] == '':
+				e = product.objects.get(pk=item['soft_drinks'])
+				the_drink = e.name
+				price += e.price
+
+			else:
+				the_drink = 'No Drink'
+
+			this_item = {
+						'product': a.name,
+						'product_code': a.code,
+						'image' : a.image,
+						'type': the_item_type,
+						'extras' : the_extras,
+						'paid_extras' : the_paid_extras,
+						'sauces':the_sauces,
+						'soft_drinks':the_drink,
+						'price' : price
+						}
+
+			subtotal += price
+			the_cart.append(this_item)
+
+		amounts = {
+			'subtotal': subtotal,
+			'tax': subtotal,
+			'total': subtotal+(subtotal)
+		}
+		the_cart.append(amounts)
+		context['cart'] = the_cart
+
 	else:
 		context['item_count'] = 0
 
@@ -99,18 +168,31 @@ def ProductDetail(request,id_for_prod):
 			if arepa.is_valid():
 				
 				if 'paid_extras' in request.POST:
-					paid_extras = request.POST['paid_extras']
+					paid_extras = []
+					for i in request.POST.getlist('paid_extras'):
+						paid_extras.append(i)
 				else:
 					paid_extras = None
 
 				if 'sauces' in request.POST:
-					sauces = request.POST['sauces']
+					sauces = []
+					for i in request.POST.getlist('sauces'):
+						sauces.append(i)
 				else:
 					sauces = None
+
+				if Product.extras == 0:
+					extras = None
+				else:
+					extras = []
+					for i in request.POST.getlist('extras'):
+						extras.append(i)
+				
 				a = {
+					'type' : 'Arepa',
 					'product_id':request.POST['id_for_product'],
 					'arepa_type':request.POST['arepa_type'],
-					'extras':request.POST['extras'],
+					'extras':extras,
 					'paid_extras': paid_extras,
 					'sauces':sauces,
 					'soft_drinks':request.POST['soft_drinks']
@@ -133,10 +215,11 @@ def ProductDetail(request,id_for_prod):
 				html = 'website/arepa_wizard.html'
 				context['form'] = ArepaForm(request.POST)
 		else:
-			my_prod = KidForm(request.POST)
+			kid_meal = KidForm(request.POST)
 
-			if my_prod.is_valid():
+			if kid_meal.is_valid():
 				a = {
+					'type': "Kid's Meal",
 					'product_id':request.POST['id_for_product'],
 					'soft_drinks':request.POST['soft_drinks']
 					}
@@ -164,3 +247,7 @@ def ProductDetail(request,id_for_prod):
 			context['form'] = KidForm(initial={'id_for_product': id_for_prod})
 
 	return render(request, html, context)
+
+def checkout(request):
+	context = cart(request)
+	return render(request, 'website/invoice.html', context)
