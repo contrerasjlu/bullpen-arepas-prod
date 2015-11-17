@@ -2,6 +2,7 @@
 {% block WindowTittle %}Menu{% endblock %}
 {% block Content %}
 {% load staticfiles %}
+{% load widget_tweaks %}
 <div class="right_col" role="main">
     <div class="">
         <div class="clearfix"></div>
@@ -30,6 +31,7 @@
                                         <small>Baked or Fried?</small></span>
                                     </a>
                                 </li>
+                                {% if not product.extras == 0 %}
                                 <li>
                                     <a href="#step-22">
                                         <span class="step_no">2</span>
@@ -37,24 +39,25 @@
                                         <small>Choose the Players for your Arepa</small></span>
                                     </a>
                                 </li>
+                                {% endif %}
                                 <li>
                                     <a href="#step-33">
-                                        <span class="step_no">3</span>
-                                        <span class="step_descr">Step 3<br /> 
+                                        <span class="step_no">{% if product.extras == 0 %}2{% else %}3{% endif %}</span>
+                                        <span class="step_descr">Step {% if product.extras == 0 %}2{% else %}3{% endif %}<br /> 
                                         <small>We have some players on the Bench</small></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="#step-44">
-                                        <span class="step_no">4</span>
-                                        <span class="step_descr">Step 4<br /> 
+                                        <span class="step_no">{% if product.extras == 0 %}3{% else %}4{% endif %}</span>
+                                        <span class="step_descr">Step {% if product.extras == 0 %}3{% else %}4{% endif %}<br /> 
                                         <small>Do you want sauce on your Arepa?</small></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="#step-55">
-                                        <span class="step_no">5</span>
-                                        <span class="step_descr">Step 5<br /> 
+                                        <span class="step_no">{% if product.extras == 0 %}4{% else %}5{% endif %}</span>
+                                        <span class="step_descr">Step {% if product.extras == 0 %}3{% else %}4{% endif %}<br /> 
                                         <small>Do you want some drinks with your Arepa?</small></span>
                                     </a>
                                 </li>
@@ -73,15 +76,13 @@
                                     {% endif %}
                                 </div>
                             </div>
+                            {% if not product.extras == 0 %}
                             <div id="step-22">
-                            {% if product.extras == 0 %}
-                                <span class="section">Your Arepa doesn't have Extras</span>
-                            {% else %}
                                 <span class="section">You shuld choose {{ product.extras }} players for your Arepas</span>
                                 <div class="form-inline">
                                 {% for field in form.extras %}
                                     <div class="col-md-3 col-sm-3">
-                                        {{ field }}
+                                            {{ field }}
                                     </div>
                                 {% endfor %}
                                     {% if form.extras.errors %}
@@ -90,8 +91,10 @@
                                     </div>
                                     {% endif %}
                                 </div>
-                            {% endif %}
                             </div>
+                            {% else %}
+                                <input type="hidden" value="{{ pabellon.id }}" name="extras" />
+                            {% endif %}
                             <div id="step-33">
                                 <span class="section">Choose as much players as you want for $0.99 each</span>
                                 <div class="form-inline">
@@ -179,6 +182,7 @@
                 var extras_count = 0;
                 //var max_extras = {{ product.extras }};
                 // validate step 1
+                {% if not product.extras == 0 %}
                 if(stepnumber == 2){
                     //recorremos todos los checkbox seleccionados con .each
                     $('input[name="extras"]:checked').each(function() {
@@ -192,10 +196,10 @@
                         isStepValid = false
                         // Mensaje de Error
                     }
-
                 }else {
                     isStepValid = true
                 }
+                {% endif %}
                 return isStepValid
             }
             

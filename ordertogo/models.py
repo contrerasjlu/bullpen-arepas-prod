@@ -64,23 +64,17 @@ class product(models.Model):
 	def __unicode__(self):
 		return self.name
 
-#Modelo para el Lote de Pago a crear
-class PaymentBatch(models.Model):
-	#Matriz de status del lote de pago
-	batch_status = (("O", "Abierto"),("C", "Cerrado"),)
-
-	#Fecha de la apertura del lote de pago
-	date = models.DateField(
-		verbose_name="Fecha de Lote",
-		auto_now_add=True, 
-		help_text="Fecha en la que se Aperturó el Truck"
-		)
-
-	#Direccion del Truck
+class LocationsAvailable(models.Model):
+	#Descripcion Huminizada
+	description = models.CharField(
+		verbose_name="Descripcion",
+		max_length = 100
+	)
+	#Direccion del local o truck
 	location = models.CharField(
 		verbose_name="Dirección de la Locación", 
 		max_length=1000,
-		help_text="Ingrese la Dirección donde se ubica el Truck")
+		help_text="Ingrese la Dirección donde se ubica la locacion")
 
 	#Código zip de la ubicación del truck
 	zip_code = models.CharField(
@@ -95,11 +89,43 @@ class PaymentBatch(models.Model):
 	#Coordenadas generadas por Google de Longitud
 	y_coord = models.CharField(verbose_name="Longitud", max_length=50)
 
+	def __unicode__(self):
+		return self.description
+
+#Modelo para el Lote de Pago a crear
+class PaymentBatch(models.Model):
+	#Matriz de status del lote de pago
+	batch_status = (("O", "Abierto"),("C", "Cerrado"),)
+
+	#Fecha de la apertura del lote de pago
+	date = models.DateField(
+		verbose_name="Fecha de Lote",
+		auto_now_add=True, 
+		help_text="Fecha en la que se Aperturó el Truck"
+		)
+
+	#Relacionado con una locacion
+	location = models.ForeignKey(LocationsAvailable)
+
+	#Direccion del truck
+	adress_for_truck = models.CharField(
+		verbose_name="Dirección de la Locación movil", 
+		max_length=1000,
+		help_text="Ingrese la Dirección donde se ubica la locacion movil",
+		blank=True
+	)
+
+	zip_code_for_truck = models.CharField(
+		verbose_name="Código Zip",
+		max_length=4,
+		help_text="Ingrese el código postal de la ubicacion del truck"
+	)
+
 	#Maximo de millas a recorres por el delivery
 	max_miles = models.IntegerField(
 		verbose_name="Millas Máximas", 
 		help_text="Ingrese la Cantidad de millas máximas para el Delivery"
-		)
+	)
 
 	#Codigo de Lote para el dia
 	batch_code = models.CharField(
@@ -124,11 +150,17 @@ class PaymentBatch(models.Model):
 	#Estado del Lote de Pago
 	status = models.CharField(
 		verbose_name="Estado",
-		help_text="Indica el Estado Actual del Lote, No pueden existir mas de un Lote Abierto", 
+		help_text="Indica el Estado Actual del Lote, Debe estar Abierto para Aceptar Pedidos", 
 		max_length=1,
 		default="O",
 		choices=batch_status
 		)
+
+	def __unicode__(self):
+		if self.adress_for_truck == None:
+			return self.location.description + ' @ ' + self.location.location + ', ' + self.location.zip_code
+		else:
+			return self.location.description + ' @ ' + self.adress_for_truck + ', ' + self.zip_code_for_truck
 
 #Modelo de Ordenes Recibidas
 class Order(models.Model):
@@ -153,12 +185,13 @@ class Order(models.Model):
 		)
 
 	#Correo Electronico del Cliente
+	#TODO: Cambiar por Usuario
 	email = models.EmailField(
 		verbose_name="Email",
 		help_text="Please enter your email address"
 		)
 
-	
+	#TODO: Debe estar relacionado con el payment batch
 	#Direccion del Delivery, puede estar vacio si es tipo "P" la orden
 	address = models.CharField(
 		verbose_name="Adress",
@@ -240,3 +273,9 @@ class OrderPaymentDetail(models.Model):
 	validation_status = models.CharField(max_length=50)
 	method = models.CharField(max_length=50)
 	transaction_id = models.CharField(max_length=100)
+
+# Modelo Clasico de Variables Genericas
+class GenericVariable(models.Model):
+	code = models.CharField(verbose_name='Code', max_length=45, unique=True)
+	value = models.CharField(verbose_name='Value', max_length=45)
+	description = models.TextField(verbose_name='Descripcion', max_length=45)

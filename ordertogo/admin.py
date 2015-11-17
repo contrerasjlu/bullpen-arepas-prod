@@ -15,7 +15,19 @@ class productAdmin(admin.ModelAdmin):
 admin.site.register(product, productAdmin)
 
 class PaymentBatchAdmin(admin.ModelAdmin):
-	list_display = ['date','location','x_coord','y_coord','max_miles','batch_code','status']
-	search_fields = ['date','location','x_coord','y_coord','max_miles','batch_code','status']
+	list_display = ['date', 'location','max_miles','batch_code','status']
+	search_fields = ['date', 'location', 'max_miles','batch_code','status']
 
 admin.site.register(PaymentBatch, PaymentBatchAdmin)
+
+class GenericVariableAdmin(admin.ModelAdmin):
+	list_display = ['code', 'value', 'description']
+	search_fields = ['code', 'value', 'description']
+
+admin.site.register(GenericVariable, GenericVariableAdmin)
+
+class locationsAdmin(admin.ModelAdmin):
+	list_display = ['description','location','zip_code','x_coord','y_coord']
+	search_fields = ['description','location','zip_code','x_coord','y_coord']
+
+admin.site.register(LocationsAvailable, locationsAdmin)
