@@ -32,7 +32,7 @@ def get_order_number():
 	sure = False
 	while sure == False:
 		order = randint(5000, t)
-		order = str(datetime.now().year)+str(t)
+		order = str(datetime.now().year)+str(order)
 		try:
 			Order.objects.get(order_number=order)
 		except Order.DoesNotExist:
@@ -131,8 +131,9 @@ def cart(request):
 			'subtotal': subtotal,
 			'delivery' : load_vars('delivery.cost'),
 			'tax': subtotal * Decimal(load_vars('tax.percent')),
-			'total': subtotal+(subtotal* Decimal(load_vars('tax.percent')))+int(load_vars('delivery.cost'))
+			'total': subtotal+(subtotal* Decimal(load_vars('tax.percent')))
 		}
+
 		context['amounts'] = amounts
 		context['cart'] = the_cart
 		context['cart_is_empty'] = False
@@ -307,20 +308,46 @@ def pre_checkout(request):
 		return HttpResponseRedirect(reverse('website:menu'))
 
 	if request.POST:
-		data_client = PreCheckoutForm(request.POST)
-		if data_client.is_valid():
-			request.session['data_client'] = {
-				'type_of_sale': request.POST['type_of_sale'],
-				'delivery': request.POST['address'],
-				'location': request.POST['location'],
-				'time': request.POST['time']
-			}
-			return HttpResponseRedirect(reverse('website:checkout'))
+		if request.POST['type_of_sale'] == 'D':
+			data_client = PreCheckoutForm_Delivery(request.POST)
+			if data_client.is_valid():
+				request.session['data_client'] = {
+					'type_of_sale': request.POST['type_of_sale'],
+					'label_for_type_of_sale': 'Delivery',
+					'address': RewriteAddress(request.POST['address'], load_vars('google.API.KEY'))
+				}
+				return HttpResponseRedirect(reverse('website:checkout'))
+			else:
+				context['form_delivery'] = PreCheckoutForm_Delivery(request.POST)
+				context['form_pickitup'] = PreCheckoutForm_PickItUp(initial={ 'type_of_sale': 'P' })
+				context['default_type_of_sale'] = 'D'
+				return render(request, 'website/pre_checkout.html', context)
+
+		elif request.POST['type_of_sale'] == 'P':
+			data_client = PreCheckoutForm_PickItUp(request.POST)
+			if data_client.is_valid():
+
+				location_desc =  PaymentBatch.objects.get(location=request.POST['location'])
+
+				request.session['data_client'] = {
+					'type_of_sale': request.POST['type_of_sale'],
+					'label_for_type_of_sale': 'Pick it Up',
+					'location': request.POST['location'],
+					'location_desc' : location_desc.address_for_truck,
+					'time': request.POST['time']
+				}
+				return HttpResponseRedirect(reverse('website:checkout'))
+			else:
+				context['form_pickitup'] = PreCheckoutForm_PickItUp(request.POST)
+				context['form_delivery'] = PreCheckoutForm_Delivery(initial={ 'type_of_sale': 'D' })
+				context['default_type_of_sale'] = 'P'
+				return render(request, 'website/pre_checkout.html', context)
 		else:
-			context['form'] = PreCheckoutForm(request.POST)
-			return render(request, 'website/pre_checkout.html', context)
+			return Http404("Wrong Way, Bad Request")
 	else:
-		context['form'] = PreCheckoutForm()
+		context['form_delivery'] = PreCheckoutForm_Delivery(initial={ 'type_of_sale': 'D' })
+		context['form_pickitup'] = PreCheckoutForm_PickItUp(initial={ 'type_of_sale': 'P' })
+		context['default_type_of_sale'] = 'D'
 		return render(request, 'website/pre_checkout.html', context)
 
 
@@ -331,10 +358,107 @@ def checkout(request):
 	if context['cart_is_empty'] == True:
 		return HttpResponseRedirect(reverse('website:menu'))
 
+	if 'data_client' in request.session:
+		context['data_client'] = request.session['data_client']
+		if context['data_client']['type_of_sale'] == 'D':
+			context['amounts']['total'] += int(load_vars('delivery.cost'))
+	else:
+		return HttpResponseRedirect(reverse('website:pre_checkout'))
+
 	context['tax'] = float(load_vars('tax.percent'))*100
+
+	if not 'order_number' in request.session:
+		request.session['order_number'] = get_order_number()
+	
+	context['order_number'] = request.session['order_number']
 	context['pay_form'] = PaymentForm()
-	context['data_client'] = request.session['data_client']
+
+	if request.POST:
+		payment = PaymentForm(request.POST)
+
+		if payment.is_valid():
+			exp = request.POST['expiry'].replace('/', '')
+			value = str(float("{0:.2f}".format(context['amounts']['total'])))
+			value = value.replace('.','')
+			desc = "Bullpen Arepas Order-"+str(context['order_number'])
+
+			pay = payment_try(
+				request.POST['name_on_card'],
+				request.POST['card_number'], 
+				exp, 
+				desc, 
+				value, 
+				request.POST['cvv']
+			)
+			if pay['status'] == False:
+				context['pay_form'] = PaymentForm(request.POST)
+				context['FailTrx'] = "Transaction Fail:"
+				context['FailMsj'] = pay['object']
+				return render(request, 'website/invoice.html', context)
+			else:
+				PayEgg = {
+					'cardholder_name' : pay['object'].json()['card']['cardholder_name'],
+					'card_type' : pay['object'].json()['card']['type'],
+					'card_number' : pay['object'].json()['card']['card_number'],
+					'exp_date' : pay['object'].json()['card']['exp_date'],
+					'gateway_message' : pay['object'].json()['gateway_message'],
+					'bank_message' : pay['object'].json()['bank_message'],
+					'bank_resp_code' : pay['object'].json()['bank_resp_code'],
+					'gateway_resp_code' : pay['object'].json()['gateway_resp_code'],
+					'cvv2' : pay['object'].json()['cvv2'],
+					'amount' : pay['object'].json()['amount'],
+					'transaction_tag' : pay['object'].json()['transaction_tag'],
+					'transaction_type' : pay['object'].json()['transaction_type'],
+					'currency' : pay['object'].json()['currency'],
+					'correlation_id' : pay['object'].json()['correlation_id'],
+					'token_type' : pay['object'].json()['token']['token_type'],
+					'token_value' : pay['object'].json()['token']['token_data']['value'],
+					'transaction_status' : pay['object'].json()['transaction_status'],
+					'validation_status' : pay['object'].json()['validation_status'],
+					'method' : pay['object'].json()['method'],
+					'transaction_id' : pay['object'].json()['transaction_id']
+				}
+				for key, value in PayEgg.iteritems():
+					print key, value
+
+				if context['data_client']['type_of_sale'] == 'P':
+					this_order = Order(
+						order_number=context['order_number'],
+						order_type=context['data_client']['type_of_sale'],
+						user=request.user,
+						batch=context['data_client']['location'],
+						address=context['data_client'][''],
+						time=context['data_client']['time'],
+						sub_amt=context['amounts']['subtotal'],
+						tax_amt=context['amounts']['tax'],
+						total_amt=context['amounts']['total']
+					)
+				elif context['data_client']['type_of_sale'] == 'D':
+					this_order = Order(
+						order_number=context['order_number'],
+						order_type=context['data_client']['type_of_sale'],
+						user=request.user,
+						batch=context['data_client']['location'],
+						address=context['data_client'][''],
+						time=context['data_client']['time'],
+						sub_amt=context['amounts']['subtotal'],
+						tax_amt=context['amounts']['tax'],
+						total_amt=context['amounts']['total']
+					)
+				else:
+					return HttpResponseRedirect(reverse('website:pre_checkout'))
+
+				this_order.save()
+				
+
 	return render(request, 'website/invoice.html', context)
+
+def RewriteAddress(address, key):
+	import googlemaps
+	gmaps = googlemaps.Client(key=key)
+	dest = gmaps.geocode(address)
+	return dest[0]['formatted_address']
+
 
 def ValidateAddress(key,origin,destination,max_miles):
     import googlemaps
@@ -353,7 +477,6 @@ def ValidateAddress(key,origin,destination,max_miles):
     else:
         return True
 
-
 #Master: 5424180279791732
 def payment_try(name,card,exp,desc, amt, cvv):
     import payeezy
@@ -366,13 +489,13 @@ def payment_try(name,card,exp,desc, amt, cvv):
     elif card.startswith('5'):
         cardT = 'Mastercard'
 
-    payeezy.apikey = str(loadVars('pay.apikey'))
+    payeezy.apikey = str(load_vars('pay.apikey'))
 
-    payeezy.apisecret = str(loadVars('pay.secret'))
+    payeezy.apisecret = str(load_vars('pay.secret'))
 
-    payeezy.token = str(loadVars('pay.token'))
+    payeezy.token = str(load_vars('pay.token'))
 
-    payeezy.url = loadVars('pay.url')
+    payeezy.url = load_vars('pay.url')
 
     responseAuthorize =  payeezy.transactions.authorize(amount=amt,
                                                         currency_code='usd',

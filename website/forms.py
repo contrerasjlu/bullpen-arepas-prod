@@ -211,23 +211,34 @@ class PaymentForm(forms.Form):
 
         return expiry
 
-class PreCheckoutForm(forms.Form):
-    type_of_sale = forms.ChoiceField(
-        label="How do you Want the Order?",
-        choices=(('D','Delivery to my Location'),('P','I will Pick it Up')),
-        widget=forms.Select(attrs={'class': 'form-control flat'})
-    )
+class PreCheckoutForm_Delivery(forms.Form):
+    type_of_sale = forms.CharField(widget=forms.HiddenInput())
 
     address = forms.CharField(
         label="Address to deliver the order",
-        required=False,
         help_text="We can only makes delivery in a certain range",
         widget=forms.TextInput(attrs={'class': 'form-control has-feedback-left','placeholder':'Address'})
     )
 
+    def clean_address(self):
+        address = self.cleaned_data.get('address')
+        
+        key = GenericVariable.objects.get(code='google.API.KEY')
+        origins = PaymentBatch.objects.filter(status='O', open_for_delivery=True)
+        valid = True
+        for location in origins:
+            valid = ValidateAddress(key.value,location.address_for_truck,address,location.max_miles)
+
+        if valid==False:
+            raise forms.ValidationError("You must enter an address in the range")
+        
+        return address
+
+class PreCheckoutForm_PickItUp(forms.Form):
+    type_of_sale = forms.CharField(widget=forms.HiddenInput())
+
     location = forms.ModelChoiceField(
         label="Location",
-        required=False,
         widget=forms.Select(attrs={'class': 'form-control'}),
         queryset=PaymentBatch.objects.filter(status='O'),
         to_field_name="location",
@@ -236,41 +247,10 @@ class PreCheckoutForm(forms.Form):
 
     time = forms.ChoiceField(
         label="Time to Pick it Up",
-        required=False,
         widget=forms.Select(attrs={'class': 'form-control'}),
         choices=(('15','15 Minutes'),('20','20 Minutes'),('25','25 Minutes'),),
         initial='15',
     )
-
-    def clean_type_of_sale(self):
-        type_of_sale = self.cleaned_data.get('type_of_sale')
-        address = self.cleaned_data.get('address')
-        location = self.cleaned_data.get('location')
-
-        if type_of_sale == 'D' and address=='':
-            raise forms.ValidationError("You must enter an address in the range")
-
-        if type_of_sale == 'P' and location==None:
-            raise forms.ValidationError("You must enter a location to pick it up")
-        
-        return type_of_sale
-            
-
-    def clean_address(self):
-        address = self.cleaned_data.get('address')
-        key = GenericVariable.objects.get(code='google.API.KEY')
-        origin = PaymentBatch.objects.filter(status='O', open_for_delivery=True)
-        valid = True
-        if not address=='':
-            for location in origin:
-                valid = ValidateAddress(key.value,location.adress_for_truck,address,location.max_miles)
-        else:
-            raise forms.ValidationError("You must enter an address in the range")
-
-        if valid==False:
-            raise forms.ValidationError("You must enter an address in the range")
-
-        return address
 
 def ValidateAddress(key,origin,destination,max_miles):
     import googlemaps

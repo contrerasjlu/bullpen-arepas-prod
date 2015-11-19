@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 from django.db import models
+from django.contrib.auth.models import User, Group
 from django.core.validators import MinValueValidator, MaxValueValidator, MinLengthValidator, MaxLengthValidator
 
 #Modelo para almacenar las categorias de las comidas ofrecidas
@@ -108,7 +109,7 @@ class PaymentBatch(models.Model):
 	location = models.ForeignKey(LocationsAvailable)
 
 	#Direccion del truck
-	adress_for_truck = models.CharField(
+	address_for_truck = models.CharField(
 		verbose_name="Dirección de la Locación movil", 
 		max_length=1000,
 		help_text="Ingrese la Dirección donde se ubica la locacion movil",
@@ -157,10 +158,10 @@ class PaymentBatch(models.Model):
 		)
 
 	def __unicode__(self):
-		if self.adress_for_truck == None:
+		if self.address_for_truck == None:
 			return self.location.description + ' @ ' + self.location.location + ', ' + self.location.zip_code
 		else:
-			return self.location.description + ' @ ' + self.adress_for_truck + ', ' + self.zip_code_for_truck
+			return self.location.description + ' @ ' + self.address_for_truck + ', ' + self.zip_code_for_truck
 
 #Modelo de Ordenes Recibidas
 class Order(models.Model):
@@ -184,18 +185,16 @@ class Order(models.Model):
 		help_text="Please Choose if you're going to pick it up o we're going to deliver the order"
 		)
 
-	#Correo Electronico del Cliente
-	#TODO: Cambiar por Usuario
-	email = models.EmailField(
-		verbose_name="Email",
-		help_text="Please enter your email address"
-		)
+	#Relacionado con el Usuario
+	user = models.ForeignKey(User)
 
-	#TODO: Debe estar relacionado con el payment batch
+	#Relacionado con el PaymentBatch
+	batch = models.ForeignKey(PaymentBatch)
+	
 	#Direccion del Delivery, puede estar vacio si es tipo "P" la orden
 	address = models.CharField(
 		verbose_name="Adress",
-		max_length=100,
+		max_length=1000,
 		help_text="Please enter the delivery adress",
 		blank=True
 		)
@@ -277,5 +276,5 @@ class OrderPaymentDetail(models.Model):
 # Modelo Clasico de Variables Genericas
 class GenericVariable(models.Model):
 	code = models.CharField(verbose_name='Code', max_length=45, unique=True)
-	value = models.CharField(verbose_name='Value', max_length=45)
+	value = models.CharField(verbose_name='Value', max_length=500)
 	description = models.TextField(verbose_name='Descripcion', max_length=45)

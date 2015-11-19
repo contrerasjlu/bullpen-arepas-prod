@@ -31,10 +31,20 @@
                             <!-- info row -->
                             <div class="row invoice-info">
                                 <div class="col-sm-4 invoice-col">
-                                    <b>Invoice #007612</b>
+                                    <b>Type of Sale:</b> {{ data_client.label_for_type_of_sale }}
                                     <br>
-                                    <b>Order ID:</b> 4F3S8J
+                                    <b>Order:</b> {{ order_number }}
                                     <br>
+                                    {% if data_client.type_of_sale == 'D' %}
+                                        <b>Address:</b> {{ data_client.address }}
+                                        <br>
+                                    {% endif %}
+                                    {% if data_client.type_of_sale == 'P' %}
+                                        <b>Location:</b> {{ data_client.location_desc }}
+                                        <br>
+                                        <b>Time:</b> {{ data_client.time }} min
+                                        <br>
+                                    {% endif %}
                                 </div>
                                 <!-- /.col -->
                             </div>
@@ -65,11 +75,13 @@
                                                         <div class="clearfix"></div>
                                                     {% if not item.extras == 0 %}
                                                         <li>Extras:</li>
+                                                        <ul>
                                                     {% for extras in item.extras %}
                                                         <li>{{ extras }}</li>
                                                     {% empty %}
                                                         <li>No Extras</li>
                                                     {% endfor %}
+                                                        </ul>
                                                     {% else %}
                                                         <li>No Extras</li>
                                                     {% endif %}
@@ -78,11 +90,13 @@
                                                     <ul>
                                                     {% if not item.paid_extras == 0 %}
                                                         <li>Bench Players:</li>
+                                                        <ul>
                                                     {% for paid_extras in item.paid_extras %}
                                                         <li>{{ paid_extras }}</li>
                                                     {% empty %}
                                                         <li>No Paid Extras</li>
                                                     {% endfor %}
+                                                        </ul>
                                                     {% else %}
                                                         <li>No Bench Players</li>
                                                     {% endif %}
@@ -91,11 +105,13 @@
                                                     <ul>
                                                     {% if not item.sauces == 0 %}
                                                         <li>Sauces:</li>
+                                                        <ul>
                                                     {% for sauces in item.sauces %}
                                                         <li>{{ sauces }}</li>
                                                     {% empty %}
                                                         <li>No Sauces</li>
                                                     {% endfor %}
+                                                        </ul>
                                                     {% else %}
                                                         <li>No Sauces</li>
                                                     {% endif %}
@@ -122,10 +138,27 @@
                                     <img src="{% static 'website/v2/images/visa.png' %}" alt="Visa">
                                     <img src="{% static 'website/v2/images/mastercard.png' %}" alt="Mastercard">
                                     <img src="{% static 'website/v2/images/american-express.png' %}" alt="American Express">
+                                    <form class="form-vertical form-label-left input_mask" method="post">
                                     <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
-                                        <form class="form-vertical form-label-left input_mask" method="post">
+                                        {% if FailTrx %}
+                                            <div class="form-control-static">
+                                                <div class="alert alert-danger">{{FailTrx}}
+                                                    <ul>
+                                                    {% for e in FailMsj %}
+                                                        <li>{{ e.code }} - {{ e.description }}</li>
+                                                    {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        {% endif %}
                                         {% csrf_token %}
                                         {% for field in pay_form %}
+                                            {% if field.is_hidden %}
+                                                {{ field }}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% for field in pay_form %}
+                                            {% if not field.is_hidden %}
                                             <div class="col-md-9 col-sm-9 col-xs-12 form-group has-feedback">
                                                 <label class="control-label col-md-6 col-sm-6 col-xs-12">{{ field.label }}</label>
                                                 {{ field }}
@@ -139,13 +172,13 @@
                                                 {% endif %}
                                             </div>
                                             <br>
+                                            {% endif %}
                                         {% endfor %}
                                         
-                                    </p>
+                                    
                                 </div>
                                 <!-- /.col -->
                                 <div class="col-xs-6">
-                                    <p class="lead">Amount Due 2/22/2014</p>
                                     <div class="table-responsive">
                                         <table class="table">
                                             <tbody>
@@ -157,7 +190,7 @@
                                                     <th>Tax ({{ tax }}%)</th>
                                                     <td>${{ amounts.tax|floatformat:"2" }}</td>
                                                 </tr>
-                                                {% if data_client.delivery %}
+                                                {% if data_client.type_of_sale == 'D' %}
                                                 <tr>
                                                     <th>Delivery:</th>
                                                     <td>${{ amounts.delivery }}</td>
@@ -181,6 +214,7 @@
                                     <button type="submit" class="btn btn-success pull-right"><i class="fa fa-credit-card"></i> Submit Payment</button>
                                 </div>
                                 </form>
+                                </p>
                             </div>
                         </section>
                     </div>
