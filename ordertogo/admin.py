@@ -31,3 +31,21 @@ class locationsAdmin(admin.ModelAdmin):
 	search_fields = ['description','location','zip_code','x_coord','y_coord']
 
 admin.site.register(LocationsAvailable, locationsAdmin)
+
+class OrdersAdmin(admin.ModelAdmin):
+	list_display = ['order_number','order_type','user','batch','address','time']
+	search_fields = ['order_number','order_type','user','batch','address','time']
+
+admin.site.register(Order, OrdersAdmin)
+
+class OrderDetailAdmin(admin.ModelAdmin):
+	list_display = ['order_number','item','arepa_type','product_selected']
+	search_fields = ['order_number','item','arepa_type','product_selected']
+
+admin.site.register(OrderDetail, OrderDetailAdmin)
+
+class OrderPaymentAdmin(admin.ModelAdmin):
+	list_display = ['order_number','cardholder_name']
+	search_fields = ['order_number','cardholder_name']
+
+admin.site.register(OrderPaymentDetail, OrderPaymentAdmin)

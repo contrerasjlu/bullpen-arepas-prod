@@ -222,16 +222,16 @@ class PreCheckoutForm_Delivery(forms.Form):
 
     def clean_address(self):
         address = self.cleaned_data.get('address')
-        
         key = GenericVariable.objects.get(code='google.API.KEY')
         origins = PaymentBatch.objects.filter(status='O', open_for_delivery=True)
-        valid = True
+        valid_address = True
         for location in origins:
-            valid = ValidateAddress(key.value,location.address_for_truck,address,location.max_miles)
-
-        if valid==False:
+            valid_address = ValidateAddress(key.value,location.address_for_truck,address,location.max_miles)
+            if valid_address == False:
+                break
+        else:
             raise forms.ValidationError("You must enter an address in the range")
-        
+
         return address
 
 class PreCheckoutForm_PickItUp(forms.Form):
@@ -265,7 +265,9 @@ def ValidateAddress(key,origin,destination,max_miles):
     miles = directions_result[0]['legs'][0]['distance']['text'].split(' ')
 
     if Decimal(miles[0]) > max_miles:
-        return False
+        result = True
     else:
-        return True
+        result = False
+
+    return result
 

@@ -175,7 +175,7 @@ class Order(models.Model):
 	date = models.DateTimeField(verbose_name="Order Date and Time", auto_now_add=True)
 
 	#Numero de Orden - Calculado
-	order_number = models.IntegerField(verbose_name="Order Number")
+	order_number = models.IntegerField(verbose_name="Order Number", unique=True)
 
 	#Tipo de Ordenes
 	order_type = models.CharField(
@@ -224,16 +224,22 @@ class Order(models.Model):
         validators=[MinValueValidator(0.00)]
         )
 
-	#Monto total del pedido (Tax + Subtotal)
+	delivery_amt = models.DecimalField(
+		verbose_name='Delivery',
+		max_digits=10,
+		decimal_places=2,
+		default=0
+	)
+
+	#Monto total del pedido (Tax + Delivery + Subtotal)
 	total_amt = models.DecimalField(
 		verbose_name='Total',
         max_digits=10,
         decimal_places=2,
         validators=[MinValueValidator(0.00)]
         )
-
 	def __unicode__(self):
-		return self.order_number
+		return str(self.order_number)
 
 #Modelo de Detalle del la Orden (Productos seleccionados por el cliente)
 class OrderDetail(models.Model):
@@ -249,6 +255,9 @@ class OrderDetail(models.Model):
 	#Pedido
 	order_number = models.ForeignKey(Order)
 
+	def __unicode__(self):
+		return str(self.order_number.order_number)
+
 #Modelo de Detalle del pago de la orden (Tarjeta, etc)
 class OrderPaymentDetail(models.Model):
 	order_number = models.ForeignKey(Order)
@@ -256,7 +265,7 @@ class OrderPaymentDetail(models.Model):
 	card_type = models.CharField(max_length=20)
 	card_number = models.CharField(max_length=4)
 	exp_date = models.CharField(max_length=4)
-	gateway_message = models.CharField(max_length=15)
+	gateway_message = models.CharField(max_length=50)
 	bank_message = models.CharField(max_length=50)
 	bank_resp_code = models.CharField(max_length=50)
 	gateway_resp_code = models.CharField(max_length=50)
@@ -272,6 +281,10 @@ class OrderPaymentDetail(models.Model):
 	validation_status = models.CharField(max_length=50)
 	method = models.CharField(max_length=50)
 	transaction_id = models.CharField(max_length=100)
+
+	def __unicode__(self):
+		return str(self.order_number.order_number)
+
 
 # Modelo Clasico de Variables Genericas
 class GenericVariable(models.Model):

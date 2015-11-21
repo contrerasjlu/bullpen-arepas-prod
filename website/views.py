@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_list_or_404
 from ordertogo.models import *
 from django.http import Http404,HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.core.urlresolvers import reverse
@@ -15,13 +15,8 @@ def load_vars(code):
 #Funcion para saber si esta abierto el punto de venta.
 def is_open():
 	#Si esta Abierto y correctamente (No existen mas de un lote abierto)...
-	try:
-		batch = PaymentBatch.objects.get(status="O")
-		#TODO: Buscar la forma de limitar la hora tambien en la consulta
-	except PaymentBatch.DoesNotExist:
-		return False
-
-	except PaymentBatch.MultipleObjectsReturned:
+	a = PaymentBatch.objects.filter(status="O")
+	if len(a) == 0:
 		return False
 	else:
 		return True
@@ -55,9 +50,7 @@ def closed(request):
 def cart(request):
 	context = {}
 	context['status'] = is_open()
-	if context['status']==False:
-		return HttpResponseRedirect(reverse('website:closed'))
-	
+		
 	if 'cart' in request.session:
 		context['item_count'] = len(request.session['cart'])
 		the_cart = []
@@ -147,19 +140,26 @@ def cart(request):
 
 def menu(request):
 	context = cart(request)
+	if 'finish' in request.session:
+		del request.session['finish']
+
+	if context['status']==False:
+		return HttpResponseRedirect(reverse('website:closed'))
+
 	arepas = product.objects.filter(Active=True,category=category.objects.get(code='arepas')).order_by('order_in_menu')
 	kids = product.objects.filter(Active=True,category=category.objects.get(code='kids')).order_by('order_in_menu')
 	
 	context['arepas'] = arepas
 	context['kids'] = kids
-
-	if not 'order_number' in request.session:
-		request.session['order_number'] = get_order_number()
-
-	return render(request, 'website/plain_page.html', context)
+	try:
+		return render(request, 'website/plain_page.html', context)
+	except ValueError:
+		return HttpResponseRedirect(reverse('website:closed'))
 
 def ProductDetail(request,id_for_prod):
 	context = cart(request);
+	if context['status']==False:
+		return HttpResponseRedirect(reverse('website:closed'))
 
 	try:
 		Product = product.objects.get(pk=id_for_prod)
@@ -304,16 +304,36 @@ def userLogout(request):
 @login_required(redirect_field_name='', login_url='website/login/')
 def pre_checkout(request):
 	context = cart(request)
+	if context['status']==False:
+		return HttpResponseRedirect(reverse('website:closed'))
+
 	if context['cart_is_empty'] == True:
 		return HttpResponseRedirect(reverse('website:menu'))
+
+	if 'data_client' in request.session:
+		del request.session['data_client']
 
 	if request.POST:
 		if request.POST['type_of_sale'] == 'D':
 			data_client = PreCheckoutForm_Delivery(request.POST)
 			if data_client.is_valid():
+				origins = PaymentBatch.objects.filter(status='O', open_for_delivery=True)
+				near = 0
+				for location in origins:
+					valid = ValidateAddress(load_vars('google.API.KEY'),location.address_for_truck,request.POST['address'],location.max_miles)
+					print valid
+					if not valid == False:
+						if near == 0:
+							near = valid
+							near_batch = location.id
+						elif near > valid:
+							near =  valid
+							near_batch = location.id
+
 				request.session['data_client'] = {
 					'type_of_sale': request.POST['type_of_sale'],
 					'label_for_type_of_sale': 'Delivery',
+					'batch': near_batch,
 					'address': RewriteAddress(request.POST['address'], load_vars('google.API.KEY'))
 				}
 				return HttpResponseRedirect(reverse('website:checkout'))
@@ -350,11 +370,12 @@ def pre_checkout(request):
 		context['default_type_of_sale'] = 'D'
 		return render(request, 'website/pre_checkout.html', context)
 
-
-
 @login_required(redirect_field_name='', login_url='/website/login')
 def checkout(request):
 	context = cart(request)
+	if context['status']==False:
+		return HttpResponseRedirect(reverse('website:closed'))
+
 	if context['cart_is_empty'] == True:
 		return HttpResponseRedirect(reverse('website:menu'))
 
@@ -418,40 +439,145 @@ def checkout(request):
 					'method' : pay['object'].json()['method'],
 					'transaction_id' : pay['object'].json()['transaction_id']
 				}
-				for key, value in PayEgg.iteritems():
-					print key, value
 
 				if context['data_client']['type_of_sale'] == 'P':
 					this_order = Order(
 						order_number=context['order_number'],
 						order_type=context['data_client']['type_of_sale'],
 						user=request.user,
-						batch=context['data_client']['location'],
-						address=context['data_client'][''],
+						batch=PaymentBatch.objects.get(location=context['data_client']['location']),
+						address='--',
 						time=context['data_client']['time'],
 						sub_amt=context['amounts']['subtotal'],
 						tax_amt=context['amounts']['tax'],
+						delivery_amt=0,
 						total_amt=context['amounts']['total']
 					)
 				elif context['data_client']['type_of_sale'] == 'D':
+					from decimal import Decimal
 					this_order = Order(
 						order_number=context['order_number'],
 						order_type=context['data_client']['type_of_sale'],
 						user=request.user,
-						batch=context['data_client']['location'],
-						address=context['data_client'][''],
-						time=context['data_client']['time'],
+						batch=PaymentBatch.objects.get(pk=context['data_client']['batch']),
+						address=context['data_client']['address'],
+						time='--',
 						sub_amt=context['amounts']['subtotal'],
 						tax_amt=context['amounts']['tax'],
+						delivery_amt=Decimal(load_vars('delivery.cost')),
 						total_amt=context['amounts']['total']
 					)
 				else:
 					return HttpResponseRedirect(reverse('website:pre_checkout'))
 
 				this_order.save()
-				
+
+				# Almacenar el detalle de la orden
+				the_session_cart = request.session['cart']
+				i=1
+				for item in the_session_cart:			
+					if item['type'] == 'Arepa':
+						arepa_type = item['arepa_type'] + ' ' + item['type']
+					else:
+						arepa_type = item['type']
+					a = product.objects.get(pk=item['product_id'])
+					this_detail = OrderDetail(
+						item=i,
+						arepa_type=arepa_type,
+						product_selected=a,
+						order_number=this_order
+					)
+					this_detail.save()
+					
+					if not a.extras == 0:
+						for extra in item['extras']:
+							extras_detail = OrderDetail(
+								item=this_detail.item,
+								arepa_type='With',
+								product_selected=product.objects.get(pk=extra),
+								order_number=Order.objects.get(pk=this_order.id)
+							)
+							extras_detail.save()
+					
+					try:
+						if not item['paid_extras'] == None:
+							for paid_extra in item['paid_extras']:
+								paid_extras_detail = OrderDetail(
+									item=this_detail.item,
+									arepa_type='Paid Extra',
+									product_selected=product.objects.get(pk=paid_extra),
+									order_number=Order.objects.get(pk=this_order.id)
+								)
+								paid_extras_detail.save()
+					except KeyError:
+						pass
+
+					try:
+						if not item['sauces'] == None:
+							for sauce in item['sauces']:
+								sauce_detail = OrderDetail(
+									item=this_detail.item,
+									arepa_type='Sauces',
+									product_selected=product.objects.get(pk=sauce),
+									order_number=Order.objects.get(pk=this_order.id)
+								)
+								sauce_detail.save()
+					except KeyError:
+						pass
+
+					if not item['soft_drinks'] == '':
+						drink = OrderDetail(
+							item=this_detail.item,
+							arepa_type='Drink',
+							product_selected=product.objects.get(pk=item['soft_drinks']),
+							order_number=Order.objects.get(pk=this_order.id)
+						)
+						drink.save()
+					i+=1
+
+				# Almacenar el detalle del pago
+
+				PayEgg_model = OrderPaymentDetail(
+					order_number = this_order,
+					cardholder_name = PayEgg['cardholder_name'],
+					card_type = PayEgg['card_type'],
+					card_number = PayEgg['card_number'],
+					exp_date = PayEgg['exp_date'],
+					gateway_message = PayEgg['gateway_message'],
+					bank_message = PayEgg['bank_message'],
+					bank_resp_code = PayEgg['bank_resp_code'],
+					gateway_resp_code = PayEgg['gateway_resp_code'],
+					cvv2 = PayEgg['cvv2'],
+					amount = PayEgg['amount'],
+					transaction_tag = PayEgg['transaction_tag'],
+					transaction_type = PayEgg['transaction_type'],
+					currency = PayEgg['currency'],
+					correlation_id = PayEgg['correlation_id'],
+					token_type = PayEgg['token_type'],
+					token_value = PayEgg['token_value'],
+					transaction_status = PayEgg['transaction_status'],
+					validation_status = PayEgg['validation_status'],
+					method = PayEgg['method'],
+					transaction_id = PayEgg['transaction_id']
+				)
+				PayEgg_model.save()
+				del request.session['data_client']
+				del request.session['order_number']
+				del request.session['cart']
+				request.session['finish'] = True
+				#send_email()
+				return HttpResponseRedirect(reverse('website:thankyou'))
 
 	return render(request, 'website/invoice.html', context)
+
+@login_required(redirect_field_name='', login_url='website/login/')
+def thankyou(request):
+    try:
+    	if request.session['finish'] == True:
+    		return render(request, 'website/thankyou.html')
+    except KeyError:
+    	return HttpResponseRedirect(reverse('website:menu'))
+
 
 def RewriteAddress(address, key):
 	import googlemaps
@@ -471,11 +597,12 @@ def ValidateAddress(key,origin,destination,max_miles):
         mode="transit"
     )
     miles = directions_result[0]['legs'][0]['distance']['text'].split(' ')
-
-    if Decimal(miles[0]) > max_miles:
-        return False
+    if Decimal(miles[0]) < max_miles:
+        result = Decimal(miles[0])
     else:
-        return True
+        result = False
+
+    return result
 
 #Master: 5424180279791732
 def payment_try(name,card,exp,desc, amt, cvv):
@@ -520,3 +647,51 @@ def payment_try(name,card,exp,desc, amt, cvv):
         response['object'] = Error
 
     return response
+
+def send_email():
+	import smtplib
+
+	from email.mime.multipart import MIMEMultipart
+	from email.mime.text import MIMEText
+
+	# me == my email address
+	# you == recipient's email address
+	me = "my@email.com"
+	you = "ingjorgecontreras@gmail.com"
+
+	# Create message container - the correct MIME type is multipart/alternative.
+	msg = MIMEMultipart('alternative')
+	msg['Subject'] = "Link"
+	msg['From'] = me
+	msg['To'] = you
+
+	# Create the body of the message (a plain-text and an HTML version).
+	text = "Hi!\nHow are you?\nHere is the link you wanted:\nhttps://www.python.org"
+	html = """\
+	<html>
+	  <head></head>
+	  <body>
+	    <p>Hi!<br>
+	       How are you?<br>
+	       Here is the <a href="https://www.python.org">link</a> you wanted.
+	    </p>
+	  </body>
+	</html>
+	"""
+
+	# Record the MIME types of both parts - text/plain and text/html.
+	part1 = MIMEText(text, 'plain')
+	part2 = MIMEText(html, 'html')
+
+	# Attach parts into message container.
+	# According to RFC 2046, the last part of a multipart message, in this case
+	# the HTML message, is best and preferred.
+	msg.attach(part1)
+	msg.attach(part2)
+
+	# Send the message via local SMTP server.
+	s = smtplib.SMTP('smpt.gmail.com')
+	# sendmail function takes 3 arguments: sender's address, recipient's address
+	# and message to send - here it is sent as one string.
+	s.sendmail(me, you, msg.as_string())
+	s.quit()
