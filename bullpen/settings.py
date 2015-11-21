@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'ordertogo',
     'rest_framework',
     'website',
+    'manage_location',
     #'debug_toolbar',
     'widget_tweaks',
 )
@@ -94,7 +95,7 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = 'es-us'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'America/Caracas'
 
