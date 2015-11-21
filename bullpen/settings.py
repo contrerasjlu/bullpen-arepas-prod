@@ -111,3 +111,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
+EMAIL_HOST_USER = 'ingjorgecontreras@gmail.com'
+EMAIL_HOST_PASSWORD = 'addf963cdd'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST = 'smtp.gmail.com'

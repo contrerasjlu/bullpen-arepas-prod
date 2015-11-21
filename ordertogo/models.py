@@ -247,7 +247,7 @@ class OrderDetail(models.Model):
 	item = models.IntegerField(verbose_name="Item")
 
 	#Baked or Fried
-	arepa_type = models.CharField(verbose_name="Baked or Fried", default="Baked", max_length=5, blank=True)
+	arepa_type = models.CharField(verbose_name="Baked or Fried", default="Baked", max_length=15, blank=True)
 
 	#Producto que solicito
 	product_selected = models.ForeignKey(product)
