@@ -39,8 +39,8 @@ class OrdersAdmin(admin.ModelAdmin):
 admin.site.register(Order, OrdersAdmin)
 
 class OrderDetailAdmin(admin.ModelAdmin):
-	list_display = ['order_number','item','arepa_type','product_selected']
-	search_fields = ['order_number','item','arepa_type','product_selected']
+	list_display = ['order_number','item','main_product','arepa_type','product_selected']
+	search_fields = ['item','arepa_type']
 
 admin.site.register(OrderDetail, OrderDetailAdmin)
 

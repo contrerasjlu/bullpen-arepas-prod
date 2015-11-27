@@ -1,0 +1,147 @@
+{% extends 'LocationManager/index.html' %}
+{% block WindowTittle %}| Order {{ Order.order_number }} {% endblock %}
+{% block Content %}
+{% load static %}
+<!-- page content -->
+            <div class="right_col" role="main">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel tile">
+                            <div class="x_title no-print">
+                                <h2>Order Number -<small>{{ Order.order_number }}</small></h2>
+                                <div class="clearfix"></div>
+                                <div class="row no-print">
+                                    <div class="col-xs-12">
+                                        <div class="pull-right">
+                                            <a href="#" id="print-invoice">
+                                                Print Invoice <i class="fa fa-print"></i> 
+                                            </a>
+                                            |
+                                            <a href="#"> 
+                                            {% if Order.order_status == 'P' %}
+                                                Send to Kitchen
+                                            {% elif Order.order_status == 'K' and Order.order_type == 'D' %}
+                                                Out For Delivery
+                                            {% elif Order.order_status == 'K' and Order.order_type == 'P' %}
+                                                Finish Order
+                                            {% elif Order.order_status == 'O' %}
+                                                Finish Order
+                                            {% else %}
+                                                Back to List
+                                            {% endif %}
+                                             <i class="fa fa-arrow-right"></i> 
+                                            </a>
+                                        </div>
+                                        <a href="{% url 'LocationManager:orders_list' Order.batch_id Order.order_status %}">
+                                            <i class="fa fa-arrow-left"></i> Back to List
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <section class="content invoice">
+                                <!-- title row -->
+                                    <div class="row">
+                                        <div class="col-xs-12 invoice-header">
+                                        <h1>
+                                            <img src="{% static 'LocationManager/images/logo_bullpen.png' %}" />
+                                            <small class="pull-right">{{ Order.date|date:"F jS Y h:m a" }}</small>
+                                        </h1>
+                                        </div>
+                                    </div>
+                                <!-- info row -->
+                                    <div class="row invoice-info">
+                                        <div class="col-sm-4 invoice-col">
+                                            <b>Type of Sale:</b> {% if Order.order_type == 'D' %}Delivery{% elif Order.order_type == 'P' %}Pick it Up{% endif %}
+                                            <br>
+                                            <b>Order:</b> {{ Order.order_number }}
+                                            <br>
+                                            {% if Order.order_type == 'D' %}
+                                            <b>Address:</b> {{ Order.address }}
+                                            <br>
+                                            {% endif %}
+                                            {% if Order.order_type == 'P' %}
+                                            <b>Location:</b> {{ Order.batch }}
+                                            <br>
+                                            <b>Time:</b> {{ Order.time }} min
+                                            <br>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                <!-- /.row -->
+
+                                <!-- Table row -->
+                                    <div class="row">
+                                        <div class="col-xs-12 table">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Item</th>
+                                                        <th>Product</th>
+                                                        <th>Serial #</th>
+                                                        <th style="width: 59%">Description</th>
+                                                        <th>Subtotal Item</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for item in invoice %}
+                                                <tr>
+                                                    <td>{{ item.item }}</td>
+                                                    <td>{{ item.product }}</td>
+                                                    <td>{{ item.code }}</td>
+                                                    <td>{{ item.description }}</td>
+                                                    <td>${{ item.subtotal }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                <!-- /.col -->
+                                    </div>
+                            <!-- /.row -->
+
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <div class="table-responsive">
+                                                <table class="table">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th style="width:50%">Subtotal Order:</th>
+                                                            <td>${{ OrderDetail.subtotal }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Tax ({{ tax_value }}%)</th>
+                                                            <td>${{ OrderDetail.tax|floatformat:"2" }}</td>
+                                                        </tr>
+                                                        {% if Order.order_type == 'D' %}
+                                                        <tr>
+                                                            <th>Delivery:</th>
+                                                            <td>${{ delivery_cost }}</td>
+                                                        </tr>
+                                                        {% endif %}
+                                                        <tr>
+                                                            <th>Total:</th>
+                                                            <td>${{ OrderDetail.total|floatformat:"2" }}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <!-- /.col -->
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+{% endblock %}
+{% block FooterDeclarations %}
+<script type="text/javascript">
+    $("#print-invoice").click(function(){
+        $(".no-print").hide()
+        window.print()
+        $(".no-print").show()
+    })
+</script>
+{% endblock %}

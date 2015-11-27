@@ -1,0 +1,105 @@
+{% extends 'LocationManager/index.html' %}
+{% block WindowTittle %}| Locations Batches{% endblock %}
+{% block Content %}
+<!-- page content -->
+            <div class="right_col" role="main">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel tile">
+                            <div class="x_title">
+                                <h2>Open Batches <small>Select to Change Details</small></h2>
+                                <div class="clearfix"></div>
+                                <a href="{% url 'LocationManager:batches-create' %}">
+                                    <i class="fa fa-plus"></i> New Batch
+                                </a>
+                            </div>
+                            <div class="x_content">
+                                <table class="table table-striped responsive-utilities jambo_table">
+                                    <thead>
+                                        <tr class="headings">
+                                            <th>Date</th>
+                                            <th>Batch Code</th>
+                                            <th>Location</th>
+                                            <th>Mobile Address</th>
+                                            <th>Zip Code <small>(For Moble Address)</small></th>
+                                            <th>Max Miles <small>(For Delivery)</small></th>
+                                            <th>Open For Delivery</th>
+                                            <th>Common Tasks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for batch in PaymentBatch_Open %}
+                                        <tr>
+                                            <td>{{ batch.date|date:"d-m-Y" }}</td>
+                                            <td>
+                                                <a href="{% url 'LocationManager:batches-update' batch.id %}">{{ batch.batch_code }}</a>
+                                            </td>
+                                            <td>{{ batch.location }}</td>
+                                            <td>{{ batch.address_for_truck }}</td>
+                                            <td>{{ batch.zip_code_for_truck }}</td>
+                                            <td><span class="badge badge-success">{{ batch.max_miles }}</span></td>
+                                            <td>
+                                                {% if batch.open_for_delivery == True %}
+                                                <span class="label label-success">Open</span>
+                                                {% else %}
+                                                <span class="label label-warning">Closed</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'LocationManager:close-batch' batch.id %}">
+                                                    <span class="label label-danger">Close</span>
+                                                </a>
+                                                {% if batch.open_for_delivery == True %}
+                                                <a href="{% url 'LocationManager:close-batch-delivery' batch.id %}">
+                                                    <span class="label label-danger">Close Delivery</span>
+                                                </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Closed Batches <small>Select to View Orders</small></h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <table class="table table-striped responsive-utilities jambo_table">
+                                    <thead>
+                                        <tr class="headings">
+                                            <th>Date</th>
+                                            <th>Batch Code</th>
+                                            <th>Location</th>
+                                            <th>Mobile Address</th>
+                                            <th>Zip Code <small>(For Moble Address)</small></th>
+                                            <th>Max Miles <small>(For Delivery)</small></th>
+                                            <th>Common Tasks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for batch in PaymentBatch_Closed %}
+                                        <tr>
+                                            <td>{{ batch.date|date:"d-m-Y" }}</td>
+                                            <td>{{ batch.batch_code }}</td>
+                                            <td>{{ batch.location }}</td>
+                                            <td>{{ batch.address_for_truck }}</td>
+                                            <td>{{ batch.zip_code_for_truck }}</td>
+                                            <td><span class="badge badge-success">{{ batch.max_miles }}</span></td>
+                                            <td>View Orders</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+{% endblock %}

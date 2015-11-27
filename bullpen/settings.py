@@ -40,7 +40,7 @@ INSTALLED_APPS = (
     'ordertogo',
     'rest_framework',
     'website',
-    'manage_location',
+    'LocationManager',
     #'debug_toolbar',
     'widget_tweaks',
 )

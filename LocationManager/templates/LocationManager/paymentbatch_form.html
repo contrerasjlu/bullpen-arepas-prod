@@ -1,0 +1,49 @@
+{% extends 'LocationManager/index.html' %}
+{% block WindowTittle %}| Payment Batches {% endblock %}
+{% block Content %}
+{% load widget_tweaks %}
+<!-- page content -->
+            <div class="right_col" role="main">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel tile">
+                            <div class="x_title">
+                                <h2>Payment Batch</h2>
+                                <div class="clearfix"></div>
+                                <a href="{% url 'LocationManager:batches-list' %}">
+                                    <i class="fa fa-arrow-left"></i> Back to Batches
+                                </a>
+                            </div>
+                            <div class="x_content">
+                                <form id="form-payment-batch" data-parsley-validate class="form-horizontal form-label-left" method="post">
+                                {% csrf_token %}
+                                {{ form.non_field_errors }}
+                                {% for item in form %}
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="{{ item.id_for_label }}">{{ item.label }} <span class="required">*</span>
+                                            </label>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                            {% if forloop.last %}
+                                            {{ item | add_class:'flat' }}
+                                            {% else %}
+                                            {{ item | add_class:'form-control col-md-7 col-xs-12' }}
+                                            {% endif %}
+                                            <small>{{ item.help_text }}</small>
+                                            </div>
+                                            {% if item.errors %}
+                                            <div class="alert">
+                                            {% for error in item.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                {% endfor %}
+                                <div class="col-md-9 col-sm-9 col-xs-12 pull-right">
+                                    <button type="submit" class="btn btn-secondary">Save</button>
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+{% endblock %}

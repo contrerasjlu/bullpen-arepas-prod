@@ -1,0 +1,64 @@
+{% extends 'LocationManager/index.html' %}
+{% block WindowTittle %}| Orders {% endblock %}
+{% block Content %}
+<!-- page content -->
+            <div class="right_col" role="main">
+                <div class="row">
+                
+                {% for batch in batches %}
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel tile">
+                            <div class="x_title">
+                                <h2>{{ batch }} <small>{{ batch.code }}</small></h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <div class="row">
+                                    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                        <div class="tile-stats">
+                                            <div class="icon">
+                                                <i class="fa fa-shopping-cart"></i>
+                                            </div>
+                                            <div class="count">{{ batch.paid }}</div>
+                                            <h3><a href="{% url 'LocationManager:orders_list' batch.id 'P' %}">Incommings</a></h3>
+                                            <p>Delivery or Pick it Up</p>
+                                        </div>
+                                    </div>
+                                    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                        <div class="tile-stats">
+                                            <div class="icon">
+                                                <i class="fa fa-cutlery"></i>
+                                            </div>
+                                            <div class="count">{{ batch.kitchen }}</div>
+                                            <h3><a href="{% url 'LocationManager:orders_list' batch.id 'K' %}">In the Kitchen</a></h3>
+                                            <p>Already attended</p>
+                                        </div>
+                                    </div>
+                                    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                        <div class="tile-stats">
+                                            <div class="icon">
+                                                <i class="fa fa-truck"></i>
+                                            </div>
+                                            <div class="count">{{ batch.out_for_delivery }}</div>
+                                            <h3><a href="{% url 'LocationManager:orders_list' batch.id 'O' %}">Out For Delivery</a></h3>
+                                            <p>Delivery Orders Only</p>
+                                        </div>
+                                    </div>
+                                    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                        <div class="tile-stats">
+                                            <div class="icon">
+                                                <i class="fa fa-check"></i>
+                                            </div>
+                                            <div class="count">{{ batch.delivered }}</div>
+                                            <h3><a href="{% url 'LocationManager:orders_list' batch.id 'D' %}">Delivered</a></h3>
+                                            <p>All the Orders Done</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+{% endblock %}

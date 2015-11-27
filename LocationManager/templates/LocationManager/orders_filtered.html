@@ -1,0 +1,63 @@
+{% extends 'LocationManager/index.html' %}
+{% block WindowTittle %}| Orders {% endblock %}
+{% block Content %}
+<!-- page content -->
+            <div class="right_col" role="main">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel tile">
+                            <div class="x_title">
+                                <h2>Orders <small>
+                                    {% if type_view == 'P' %}
+                                    Incommings
+                                    {% elif type_view == 'K' %}
+                                    In The Kitchen
+                                    {% elif type_view == 'O' %}
+                                    Out For Delivery
+                                    {% elif type_view == 'D' %}
+                                    Delivered
+                                    {% endif %}
+                                </small></h2>
+                                <div class="clearfix"></div>
+                                <a href="{% url 'LocationManager:orders' %}">
+                                    <i class="fa fa-arrow-left"></i> Back to Batches
+                                </a>
+                            </div>
+                            <div class="x_content">
+                                <table class="table table-striped responsive-utilities jambo_table dataTable">
+                                    <thead>
+                                        <tr class="headings">
+                                            <th>Order Number</th>
+                                            <th>Order Type</th>
+                                            <th>Address to Delivery</th>
+                                            <th>Time to Pick it Up</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for order in Orders %}
+                                        <tr>
+                                            <td>{{ order.order_number }}</td>
+                                            <td>{{ order.order_type }}</td>
+                                            <td>{{ order.address }}</td>
+                                            <td>
+                                                {% if order.order_type == 'P' %}
+                                                    {{ order.time }} min
+                                                {% else %}
+                                                    --
+                                                {% endif %}
+                                            </td>
+                                            <td><a href="{% url 'LocationManager:orders_detail' order.id %}">View Order</a></td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="8">Sorry, no Orders</td>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+{% endblock %}
