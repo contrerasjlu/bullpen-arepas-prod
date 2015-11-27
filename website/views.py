@@ -485,7 +485,8 @@ def checkout(request):
 						item=i,
 						arepa_type=arepa_type,
 						product_selected=a,
-						order_number=this_order
+						order_number=this_order,
+						main_product=True,
 					)
 					this_detail.save()
 					

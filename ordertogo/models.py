@@ -68,27 +68,27 @@ class product(models.Model):
 class LocationsAvailable(models.Model):
 	#Descripcion Huminizada
 	description = models.CharField(
-		verbose_name="Descripcion",
+		verbose_name="Description",
 		max_length = 100
 	)
 	#Direccion del local o truck
 	location = models.CharField(
-		verbose_name="Dirección de la Locación", 
+		verbose_name="Address", 
 		max_length=1000,
-		help_text="Ingrese la Dirección donde se ubica la locacion")
+		help_text="Type the address without the zip code")
 
 	#Código zip de la ubicación del truck
 	zip_code = models.CharField(
-		verbose_name="Código Zip",
+		verbose_name="Zip Code",
 		max_length=4,
-		help_text="Ingrese el código postal de la ubicacion del truck"
+		help_text="Type the 4 digits zip code"
 		)
 
 	#Coordenadas generadas por Google de Latitud
-	x_coord = models.CharField(verbose_name="Latitud", max_length=50)
+	x_coord = models.CharField(verbose_name="Latitud", max_length=50, blank=True)
 
 	#Coordenadas generadas por Google de Longitud
-	y_coord = models.CharField(verbose_name="Longitud", max_length=50)
+	y_coord = models.CharField(verbose_name="Longitud", max_length=50, blank=True)
 
 	def __unicode__(self):
 		return self.description
@@ -96,7 +96,7 @@ class LocationsAvailable(models.Model):
 #Modelo para el Lote de Pago a crear
 class PaymentBatch(models.Model):
 	#Matriz de status del lote de pago
-	batch_status = (("O", "Abierto"),("C", "Cerrado"),)
+	batch_status = (("O", "Open"),("C", "Closed"),)
 
 	#Fecha de la apertura del lote de pago
 	date = models.DateField(
@@ -110,41 +110,43 @@ class PaymentBatch(models.Model):
 
 	#Direccion del truck
 	address_for_truck = models.CharField(
-		verbose_name="Dirección de la Locación movil", 
+		verbose_name="Address for Truck", 
 		max_length=1000,
-		help_text="Ingrese la Dirección donde se ubica la locacion movil",
+		help_text="If the Location selected is NOT mobile, please leave blank this field",
 		blank=True
 	)
 
 	zip_code_for_truck = models.CharField(
-		verbose_name="Código Zip",
+		verbose_name="Zip Code",
 		max_length=4,
-		help_text="Ingrese el código postal de la ubicacion del truck"
+		help_text="If the Location selected is NOT mobile, please leave blank this field",
+		blank=True
 	)
 
 	#Maximo de millas a recorres por el delivery
 	max_miles = models.IntegerField(
-		verbose_name="Millas Máximas", 
-		help_text="Ingrese la Cantidad de millas máximas para el Delivery"
+		verbose_name="Max miles for Delivery", 
+		help_text="Please insert a value for the coverage round area"
 	)
 
 	#Codigo de Lote para el dia
 	batch_code = models.CharField(
-		verbose_name="Código de Lote", 
+		verbose_name="Batch Code", 
 		max_length=10, 
-		help_text="Ingrese el código que se asignará al Lote",
+		help_text="This code will be used as a identifier for the batch",
 		unique=True
 		)
 
 	#Hora de cierre en hora militar
 	time_to_close = models.TimeField(
 		verbose_name="Hora de Cierre",
-		help_text="Ingrese la Hora de cierre del lote en hora militar, Ej: 23000"
+		help_text="Ingrese la Hora de cierre del lote en hora militar, Ej: 23000",
+		auto_now_add=True
 		)
 
 	#Indicador para saber si el Lote esta abierto para Delivery
 	open_for_delivery = models.BooleanField(
-		verbose_name="Abierto para Delivery?",
+		verbose_name="Open for Delivery?",
 		default=True
 		)
 
@@ -170,6 +172,8 @@ class Order(models.Model):
 
 	#Matriz de tiempos de pick it up
 	MAX_TIME = (('15','15 Minutes'),('20','20 Minutes'),('25','25 Minutes'),)
+
+	ORDER_STATUS = (('P','Paid'),('K','Kitchen'),('O','Out for Delivery'),('D','Delivered'),)
 
 	#Fecha y Hora de la Orden
 	date = models.DateTimeField(verbose_name="Order Date and Time", auto_now_add=True)
@@ -238,6 +242,14 @@ class Order(models.Model):
         decimal_places=2,
         validators=[MinValueValidator(0.00)]
         )
+
+	order_status = models.CharField(
+		verbose_name="Status",
+		max_length=1,
+		choices=ORDER_STATUS,
+		default='P'
+	)
+
 	def __unicode__(self):
 		return str(self.order_number)
 
@@ -254,6 +266,11 @@ class OrderDetail(models.Model):
 
 	#Pedido
 	order_number = models.ForeignKey(Order)
+
+	# Producto Principal (Bool)
+	main_product = models.BooleanField(
+		verbose_name='Indica si es el producto principal del item',
+		default=False)
 
 	def __unicode__(self):
 		return str(self.order_number.order_number)

@@ -1,0 +1,46 @@
+{% extends 'LocationManager/index.html' %}
+{% block WindowTittle %}| Locations Availables{% endblock %}
+{% block Content %}
+<!-- page content -->
+            <div class="right_col" role="main">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel tile fixed_height_320">
+                            <div class="x_title">
+                                <h2>Locations Availables <small>A great power comes with a great responsability</small></h2>
+                                <div class="clearfix"></div>
+                                <a href="{% url 'LocationManager:locations-create' %}">
+                                    <i class="fa fa-plus"></i> New Location
+                                </a>
+                            </div>
+                            <div class="x_content">
+                                <table class="table table-striped responsive-utilities jambo_table">
+                                    <thead>
+                                        <tr class="headings">
+                                            <th>Description</th>
+                                            <th>Location</th>
+                                            <th>Zip Code</th>
+                                            <th>Common Tasks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for location in locations %}
+                                        <tr>
+                                            <td>{{ location.description }}</td>
+                                            <td>{{ location.location }}</td>
+                                            <td>{{ location.zip_code }}</td>
+                                            <td>
+                                                <a href="{% url 'LocationManager:locations-update' location.id %}">
+                                                    <span class="label label-success">View Location</span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+{% endblock %}
