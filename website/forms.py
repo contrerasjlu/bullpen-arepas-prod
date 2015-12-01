@@ -219,19 +219,31 @@ class PreCheckoutForm_Delivery(forms.Form):
         help_text="We can only makes delivery in a certain range",
         widget=forms.TextInput(attrs={'class': 'form-control has-feedback-left','placeholder':'Address'})
     )
-
+    # 750 South Perry Street, Suite 400. Lawrenceville, GA 30046
     def clean_address(self):
         address = self.cleaned_data.get('address')
         key = GenericVariable.objects.get(code='google.API.KEY')
+        
         origins = PaymentBatch.objects.filter(status='O', open_for_delivery=True)
-        valid_address = True
-        for location in origins:
-            valid_address = ValidateAddress(key.value,location.address_for_truck,address,location.max_miles)
-            if valid_address == False:
-                break
+        if len(origins) > 1:
+            i = 0
+            for location in origins:
+                print location.address_for_truck
+                print address
+                valid_address = ValidateAddress(
+                    key.value,
+                    location.address_for_truck,
+                    address,
+                    location.max_miles)
+                if valid_address == True:
+                    i+=1
         else:
+            raise forms.ValidationError("Sorry, we couldn't verify your address. Try it later")
+
+        if i == 0:
             raise forms.ValidationError("You must enter an address in the range")
 
+        print i
         return address
 
 class PreCheckoutForm_PickItUp(forms.Form):
@@ -255,16 +267,19 @@ class PreCheckoutForm_PickItUp(forms.Form):
 def ValidateAddress(key,origin,destination,max_miles):
     import googlemaps
     from decimal import Decimal
+    import json, pprint
+
     gmaps = googlemaps.Client(key=key)
     dest = gmaps.geocode(destination)
     directions_result = gmaps.directions(
         origin,
-        dest[0]['formatted_address'],
-        mode="transit"
+        dest[0]['formatted_address']
     )
+    
+    
     miles = directions_result[0]['legs'][0]['distance']['text'].split(' ')
-
-    if Decimal(miles[0]) > max_miles:
+    
+    if  max_miles > Decimal(miles[0]):
         result = True
     else:
         result = False

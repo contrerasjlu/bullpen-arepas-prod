@@ -6,15 +6,37 @@ from django.http import Http404,HttpResponseRedirect, HttpResponse, HttpResponse
 from django.core.urlresolvers import reverse, reverse_lazy
 from random import randint
 from datetime import *
-#from .forms import *
 from django.contrib.auth import authenticate, login, logout, user_logged_in
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.views.generic import ListView, CreateView, UpdateView
+from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from decimal import Decimal
+
+################# Funciones Genericas #######################
+# 1. load_vars: Funcion Generica para la busqueda de parametros 
+#               generales del modelo de OrderToGo
+#
+# 2. load_menu: Funcion generica para cargar el menu del sitio 
+#               de LocationManager
+##############################################################
 
 def load_vars(code):
 	code = GenericVariable.objects.get(code=code)
 	return code.value
+
+# 
+def load_menu():
+	menu = location_admin_menu.objects.all().order_by('order')
+	return menu
+
+################## Autenticacion #############################
+# 1. Auth: Funcion para la autenticacion del usuario en 
+#          LocationManager
+#
+# 2. logout_user: Salir de la sesion
+#############################################################
+
+# TODO: Buscar la forma generica de estas funciones no se necesita nada especial, adicionalemente
+#       se puede manipular para que funcione como un TemplateView
 
 def auth(request):
 	if request.POST:
@@ -32,11 +54,12 @@ def auth(request):
 
 	return render(request, 'LocationManager/login.html')
 
-def load_menu():
-	menu = location_admin_menu.objects.all().order_by('order')
-	return menu
+def logout_user(request):
+	logout(request)
+	return HttpResponseRedirect(reverse('LocationManager:index'))
 
-@login_required(redirect_field_name='', login_url='/location/login')
+# Pagina Principal
+@login_required(redirect_field_name='', login_url='LocationManager:auth')
 def index(request):
 	context = {}
 	context['menu'] = load_menu()
@@ -44,10 +67,15 @@ def index(request):
 	context['batches'] = PaymentBatch.objects.filter(status='O', open_for_delivery=True).order_by('date').order_by('status')[:5]
 	return render(request, 'LocationManager/index.html', context)
 
-def logout_user(request):
-	logout(request)
-	return HttpResponseRedirect(reverse('LocationManager:index'))
-
+###################### Modelo Locations Available #######################
+# 1. LocationList: Vista de Lista de los Locationsavailable
+#
+# 2. LocationAvailableCreateView: Vista del formulario de creacion 
+#    de registros del modelo LocationsAvailable
+#
+# 3. LocationsAvailableUpdateView: Vista del formulario de 
+#    actualizacion de registros del modelo LocationsAvailable
+########################################################################
 class LocationsList(ListView):
 	model = LocationsAvailable
 	template_name = 'LocationManager/locations.html'
@@ -60,6 +88,41 @@ class LocationsList(ListView):
 		context['menu'] = load_menu()
 		return context
 
+class LocationsAvailableCreateView(CreateView):
+    model = LocationsAvailable
+    template_name = "LocationManager/location_form.html"
+    fields = ['description','location','zip_code']
+    success_url = reverse_lazy('LocationManager:locations-list')
+
+    def get_context_data(self, **kwargs):
+		# Call the base implementation first to get a context
+		context = super(LocationsAvailableCreateView, self).get_context_data(**kwargs)
+		# Add Menu
+		context['menu'] = load_menu()		
+		return context
+
+class LocationsAvailableUpdateView(UpdateView):
+    model = LocationsAvailable
+    template_name = "LocationManager/location_form.html"
+    fields = ['description','location','zip_code']
+    success_url = reverse_lazy('LocationManager:locations-list')
+
+    def get_context_data(self, **kwargs):
+		# Call the base implementation first to get a context
+		context = super(LocationsAvailableUpdateView, self).get_context_data(**kwargs)
+		# Add Menu
+		context['menu'] = load_menu()		
+		return context
+
+###################### Modelo Payment Batches #######################
+# 1. BatchesList: Vista de Lista de los Payment Batches abiertos y cerrados
+#
+# 2. BatchesCreate: Vista del formulario de creacion de registros 
+#    del modelo Payment Batches
+#
+# 3. BatchesUpdate: Vista del formulario de actualizacion de registros 
+#    del modelo LocationsAvailable
+########################################################################
 class BatchesList(ListView):
 	template_name = 'LocationManager/batches.html'
 	context_object_name = 'PaymentBatch_Open'
@@ -70,7 +133,7 @@ class BatchesList(ListView):
 		context = super(BatchesList, self).get_context_data(**kwargs)
 		# Add Menu
 		context['menu'] = load_menu()
-		context['PaymentBatch_Closed'] = PaymentBatch.objects.filter(status='C').order_by('date')[:30]
+		context['PaymentBatch_Closed'] = PaymentBatch.objects.filter(status='C').order_by('-close_date')[:30]
 		return context
 
 class BatchesCreate(CreateView):
@@ -96,9 +159,18 @@ class BatchesUpdate(UpdateView):
 		# Call the base implementation first to get a context
 		context = super(BatchesUpdate, self).get_context_data(**kwargs)
 		# Add Menu
-		context['menu'] = load_menu()		
+		context['menu'] = load_menu()
 		return context
 
+###################### Modelo Payment Batches #######################
+# 1. BatchesList: Vista de Lista de los Payment Batches abiertos y cerrados
+#
+# 2. BatchesCreate: Vista del formulario de creacion de registros 
+#    del modelo Payment Batches
+#
+# 3. BatchesUpdate: Vista del formulario de actualizacion de registros 
+#    del modelo LocationsAvailable
+########################################################################
 class orders(ListView):
 	template_name = 'LocationManager/orders.html'
 	context_object_name = 'batches'
@@ -116,7 +188,7 @@ class orders(ListView):
 		# Call the base implementation first to get a context
 		context = super(orders, self).get_context_data(**kwargs)
 		# Add Menu
-		context['menu'] = load_menu()		
+		context['menu'] = load_menu()
 		return context
 
 class HandleOrders(ListView):
@@ -126,7 +198,7 @@ class HandleOrders(ListView):
 
 	def get_queryset(self):
 		return Order.objects.filter(
-			order_status=self.kwargs['order_status'], 
+			order_status=self.kwargs['order_status'],
 			batch=PaymentBatch.objects.get(pk=self.kwargs['batch'])
 		).order_by('-id','date')
 
@@ -145,31 +217,34 @@ class HandleOrderDetail(ListView):
 	model = OrderDetail
 
 	def get_queryset(self):
-		return OrderDetail.objects.filter(order_number_id=self.kwargs['id_order']).aggregate(
-			subtotal=Sum('product_selected__price'),
-			tax=Sum('product_selected__price')*Decimal(load_vars('tax.percent')),
-			total=Case(
+		try:
+			detail = OrderDetail.objects.filter(order_number_id=self.kwargs['pk']).aggregate(
+				subtotal=Sum('product_selected__price'),
+				tax=Sum('product_selected__price')*Decimal(load_vars('tax.percent')),
+				total=Case(
 					When(order_number__order_type='P', then=Sum('product_selected__price')+
 															(Sum('product_selected__price')*Decimal(load_vars('tax.percent')))),
 					When(order_number__order_type='D', then=Sum('product_selected__price')+
 															(Sum('product_selected__price')*Decimal(load_vars('tax.percent')))+
 															(Decimal(load_vars('delivery.cost')))))
 			)
+		except OrderDetail.DoesNotExist:
+			return Http404('Wrong way')
+
+		return detail
 
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
 		context = super(HandleOrderDetail, self).get_context_data(**kwargs)
 		# Add Menu
 		context['menu'] = load_menu()
-		context['Order'] = get_object_or_404(Order, pk=self.kwargs['id_order'])
+		context['Order'] = get_object_or_404(Order, pk=self.kwargs['pk'])
 		context['tax_value'] = Decimal(load_vars('tax.percent')) * 100
 		context['delivery_cost'] = Decimal(load_vars('delivery.cost'))
 
-		# Para deslodar el querydict del OrderDetail se tiene que ir de item en item
-		# Vamos a buscar el maximo item del query y se almacena en una variable
-
 		cart = OrderDetail.objects.filter(
-				order_number_id=self.kwargs['id_order'], main_product=True).order_by('-order_number','item','-main_product')
+				order_number_id=self.kwargs['pk'], main_product=True
+				).order_by('-order_number','item','-main_product')
 
 		cart_for_context = []
 
@@ -247,44 +322,67 @@ class HandleOrderDetail(ListView):
 
 		context['invoice'] = cart_for_context
 		
-		return 
+		return context
 
-@login_required(redirect_field_name='', login_url='/location/login')
+@login_required(redirect_field_name='', login_url='LocationManager:auth')
+def OrderUpdate(request, pk):
+	order = get_object_or_404(Order, pk=pk)
+
+	# Si la orden esta en incommig va para la concina
+	if order.order_status=='P':
+		order.order_status = 'K'
+		order.save()
+		return HttpResponseRedirect(reverse('LocationManager:orders'))
+	
+	# Si la orden es Pick it Up
+	if order.order_type == 'P' and order.order_status == 'K':
+		order.order_status = 'D'
+		order.save()
+		return HttpResponseRedirect(reverse('LocationManager:orders'))
+
+	# Si la orden es Delivered
+	elif order.order_type == 'D' and order.order_status == 'K':
+		order.order_status='O'
+		order.save()
+		return HttpResponseRedirect(reverse('LocationManager:orders'))
+
+	# Si la orden estan en Out For Delivery para Delivery
+	if order.order_status=='O':
+		order.order_status='D'
+		order.save()
+		return HttpResponseRedirect(reverse('LocationManager:orders'))
+
+	# Si la orden ya fue entregada, 404
+	if order.order_status=='D':
+		return HttpResponseRedirect(reverse('LocationManager:orders'))
+
+@login_required(redirect_field_name='', login_url='LocationManager:auth')
 def CloseBatch(request, batch):
-	batch = PaymentBatch.objects.get(pk=batch)
+	batch = get_object_or_404(PaymentBatch, pk=batch)
 	batch.status = 'C'
 	batch.save()
 	return HttpResponseRedirect(reverse('LocationManager:batches-list'))
 
-@login_required(redirect_field_name='', login_url='/location/login')
+@login_required(redirect_field_name='', login_url='LocationManager:auth')
 def CloseBatchDelivery(request, batch):
-	batch = PaymentBatch.objects.get(pk=batch)
+	batch = get_object_or_404(PaymentBatch, pk=batch)
 	batch.open_for_delivery = False
 	batch.save()
 	return HttpResponseRedirect(reverse('LocationManager:batches-list'))
 
-class LocationsAvailableCreateView(CreateView):
-    model = LocationsAvailable
-    template_name = "LocationManager/location_form.html"
-    fields = ['description','location','zip_code']
-    success_url = reverse_lazy('LocationManager:locations-list')
+@login_required(redirect_field_name='', login_url='LocationManager:auth')
+def BatchesReport(request, pk):
+	from datetime import datetime, date, timedelta
+	context = {}
+	context['menu'] = load_menu()
+	order = get_object_or_404(PaymentBatch, pk=pk)
+	context['hours'] = order.close_date - order.date
+	context['calc_orders'] = Order.objects.filter(batch_id=pk).aggregate(
+		total=Count('id'),
+		revenue=Sum('total_amt'),
+		tax=Sum('tax_amt'),
+		delivery_amt=Sum('delivery_amt'),
+		delivery_order=Count(Case(When(order_type='D', then='order_type'))),
+		pickitup=Count(Case(When(order_type='P', then='order_type'))))
 
-    def get_context_data(self, **kwargs):
-		# Call the base implementation first to get a context
-		context = super(LocationsAvailableCreateView, self).get_context_data(**kwargs)
-		# Add Menu
-		context['menu'] = load_menu()		
-		return context
-
-class LocationsAvailableUpdateView(UpdateView):
-    model = LocationsAvailable
-    template_name = "LocationManager/location_form.html"
-    fields = ['description','location','zip_code']
-    success_url = reverse_lazy('LocationManager:locations-list')
-
-    def get_context_data(self, **kwargs):
-		# Call the base implementation first to get a context
-		context = super(LocationsAvailableUpdateView, self).get_context_data(**kwargs)
-		# Add Menu
-		context['menu'] = load_menu()		
-		return context
+	print context['calc_orders']

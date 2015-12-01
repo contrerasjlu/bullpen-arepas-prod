@@ -33,12 +33,12 @@
                         <form class="form-vertical form-label-left input_mask" method="post">
                         {% csrf_token %}
                         {{ form_delivery.type_of_sale }}
-                            <div class="col-md-9 col-sm-9 col-xs-6 form-group has-feedback">
+                            <div class="col-md-9 col-sm-9 col-xs-12 form-group has-feedback">
                                 <label class="control-label col-md-6 col-sm-6 col-xs-12">{{ form.address_delivery.label }}</label>
                                 {{ form_delivery.address }}
                                 <span class="fa fa-home form-control-feedback left" aria-hidden="true"></span>
                                 <p>
-                                    <span class="fa fa-info-circle"> {{form_delivery.address.help_text}}</span>
+                                    <span class="fa fa-info-circle" style="top:4px;"> {{form_delivery.address.help_text}}</span>
                                 </p>
                                 {% if form_delivery.address.errors %}
                                 <br>

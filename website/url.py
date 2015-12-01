@@ -18,6 +18,4 @@ urlpatterns = [
     url(r'^menu/checkout/thankyou/$', views.thankyou, name="thankyou"),
     url(r'^menu/empty-cart$', views.empty_cart, name="empty_cart"),
     url(r'^menu/closed/$', views.closed, name="closed"),
-
-    #url(r'^tryout/$', views.try_out, name="try_out"),
 ]

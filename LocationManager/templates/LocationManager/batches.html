@@ -56,6 +56,10 @@
                                                 {% endif %}
                                             </td>
                                         </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="8">Sorry, No Batches</td>
+                                        </tr>
                                     {% endfor %}
                                     </tbody>
                                 </table>
@@ -71,28 +75,24 @@
                                 <div class="clearfix"></div>
                             </div>
                             <div class="x_content">
-                                <table class="table table-striped responsive-utilities jambo_table">
+                                <table id="PaymentBatch_Closed" class="table table-striped responsive-utilities jambo_table">
                                     <thead>
                                         <tr class="headings">
-                                            <th>Date</th>
+                                            <th>Open Date and Time</th>
+                                            <th>Close Date and Time</th>
                                             <th>Batch Code</th>
-                                            <th>Location</th>
-                                            <th>Mobile Address</th>
-                                            <th>Zip Code <small>(For Moble Address)</small></th>
-                                            <th>Max Miles <small>(For Delivery)</small></th>
+                                            <th>Batch Description</th>
                                             <th>Common Tasks</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                     {% for batch in PaymentBatch_Closed %}
                                         <tr>
-                                            <td>{{ batch.date|date:"d-m-Y" }}</td>
+                                            <td>{{ batch.date|date:"d-m-Y @ h:m a" }}</td>
+                                            <td>{{ batch.close_date|date:"d-m-Y @ h:m a" }}</td>
                                             <td>{{ batch.batch_code }}</td>
-                                            <td>{{ batch.location }}</td>
-                                            <td>{{ batch.address_for_truck }}</td>
-                                            <td>{{ batch.zip_code_for_truck }}</td>
-                                            <td><span class="badge badge-success">{{ batch.max_miles }}</span></td>
-                                            <td>View Orders</td>
+                                            <td>{{ batch }}</td>
+                                            <td><a href="{% url 'LocationManager:batches-report' batch.id %}">View Report</a></td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
@@ -102,4 +102,38 @@
                     </div>
                 </div>
             </div>
+{% endblock %}
+{% block FooterDeclarations %}
+{% load static %}
+<script src="{% static 'LocationManager/js/datatables/js/jquery.dataTables.js' %}"></script>
+<script>
+    var asInitVals = new Array();
+    $(document).ready(function () {
+        var oTable = $('#PaymentBatch_Closed').dataTable({
+            "oLanguage": {"sSearch": "Search all columns:"},
+            'iDisplayLength': 12,
+            "sPaginationType": "full_numbers",
+            "dom": 'T<"clear">lfrtip'
+        });
+        $("tfoot input").keyup(function () {
+            /* Filter on the column based on the index of this element's parent <th> */
+            oTable.fnFilter(this.value, $("tfoot th").index($(this).parent()));
+        });
+        $("tfoot input").each(function (i) {
+            asInitVals[i] = this.value;
+        });
+        $("tfoot input").focus(function () {
+            if (this.className == "search_init") {
+                this.className = "";
+                this.value = "";
+            }
+        });
+        $("tfoot input").blur(function (i) {
+            if (this.value == "") {
+                this.className = "search_init";
+                this.value = asInitVals[$("tfoot input").index(this)];
+            }
+        });
+    });
+        </script>
 {% endblock %}

@@ -24,7 +24,7 @@
                                 </a>
                             </div>
                             <div class="x_content">
-                                <table class="table table-striped responsive-utilities jambo_table dataTable">
+                                <table id="orders-table" class="table table-striped responsive-utilities jambo_table dataTable">
                                     <thead>
                                         <tr class="headings">
                                             <th>Order Number</th>
@@ -60,4 +60,38 @@
                     </div>
                 </div>
             </div>
+{% endblock %}
+{% block FooterDeclarations %}
+{% load static %}
+<script src="{% static 'LocationManager/js/datatables/js/jquery.dataTables.js' %}"></script>
+<script>
+    var asInitVals = new Array();
+    $(document).ready(function () {
+        var oTable = $('#orders-table').dataTable({
+            "oLanguage": {"sSearch": "Search all columns:"},
+            'iDisplayLength': 12,
+            "sPaginationType": "full_numbers",
+            "dom": 'T<"clear">lfrtip'
+        });
+        $("tfoot input").keyup(function () {
+            /* Filter on the column based on the index of this element's parent <th> */
+            oTable.fnFilter(this.value, $("tfoot th").index($(this).parent()));
+        });
+        $("tfoot input").each(function (i) {
+            asInitVals[i] = this.value;
+        });
+        $("tfoot input").focus(function () {
+            if (this.className == "search_init") {
+                this.className = "";
+                this.value = "";
+            }
+        });
+        $("tfoot input").blur(function (i) {
+            if (this.value == "") {
+                this.className = "search_init";
+                this.value = asInitVals[$("tfoot input").index(this)];
+            }
+        });
+    });
+        </script>
 {% endblock %}

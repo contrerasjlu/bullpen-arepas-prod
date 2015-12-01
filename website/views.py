@@ -264,6 +264,8 @@ def ProductDetail(request,id_for_prod):
 def empty_cart(request):
 	if 'cart' in request.session:
 		del request.session['cart']
+	if 'order_number' in request.session:
+		del request.session['order_number']
 	return HttpResponseRedirect(reverse('website:menu'))
 
 def create_account(request):
@@ -329,6 +331,8 @@ def pre_checkout(request):
 						elif near > valid:
 							near =  valid
 							near_batch = location.id
+					else:
+						return HttpResponseRedirect(reverse('website:pre_checkout'))	
 
 				request.session['data_client'] = {
 					'type_of_sale': request.POST['type_of_sale'],
@@ -346,8 +350,8 @@ def pre_checkout(request):
 		elif request.POST['type_of_sale'] == 'P':
 			data_client = PreCheckoutForm_PickItUp(request.POST)
 			if data_client.is_valid():
-
-				location_desc =  PaymentBatch.objects.get(location=request.POST['location'])
+				print request.POST['location']
+				location_desc =  PaymentBatch.objects.get(location_id=request.POST['location'], status='O')
 
 				request.session['data_client'] = {
 					'type_of_sale': request.POST['type_of_sale'],
@@ -445,7 +449,7 @@ def checkout(request):
 						order_number=context['order_number'],
 						order_type=context['data_client']['type_of_sale'],
 						user=request.user,
-						batch=PaymentBatch.objects.get(location=context['data_client']['location']),
+						batch=PaymentBatch.objects.get(location=context['data_client']['location'], status='O'),
 						address='--',
 						time=context['data_client']['time'],
 						sub_amt=context['amounts']['subtotal'],
@@ -566,7 +570,7 @@ def checkout(request):
 				del request.session['order_number']
 				del request.session['cart']
 				request.session['finish'] = True
-				send_invoice_email()
+				#send_invoice_email()
 				return HttpResponseRedirect(reverse('website:thankyou'))
 
 	return render(request, 'website/invoice.html', context)
@@ -594,11 +598,13 @@ def ValidateAddress(key,origin,destination,max_miles):
     dest = gmaps.geocode(destination)
     directions_result = gmaps.directions(
         origin,
-        dest[0]['formatted_address'],
-        mode="transit"
+        dest[0]['formatted_address']
     )
+    
+    
     miles = directions_result[0]['legs'][0]['distance']['text'].split(' ')
-    if Decimal(miles[0]) < max_miles:
+    
+    if  max_miles > Decimal(miles[0]):
         result = Decimal(miles[0])
     else:
         result = False

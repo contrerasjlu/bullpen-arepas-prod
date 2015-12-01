@@ -17,19 +17,16 @@
                                                 Print Invoice <i class="fa fa-print"></i> 
                                             </a>
                                             |
-                                            <a href="#"> 
+                                            <a href="{% url 'LocationManager:order-update' Order.id %}"> 
                                             {% if Order.order_status == 'P' %}
-                                                Send to Kitchen
+                                                Send to Kitchen <i class="fa fa-arrow-right"></i> 
                                             {% elif Order.order_status == 'K' and Order.order_type == 'D' %}
-                                                Out For Delivery
+                                                Out For Delivery <i class="fa fa-arrow-right"></i> 
                                             {% elif Order.order_status == 'K' and Order.order_type == 'P' %}
-                                                Finish Order
+                                                Finish Order <i class="fa fa-arrow-right"></i> 
                                             {% elif Order.order_status == 'O' %}
-                                                Finish Order
-                                            {% else %}
-                                                Back to List
+                                                Finish Order <i class="fa fa-arrow-right"></i> 
                                             {% endif %}
-                                             <i class="fa fa-arrow-right"></i> 
                                             </a>
                                         </div>
                                         <a href="{% url 'LocationManager:orders_list' Order.batch_id Order.order_status %}">
