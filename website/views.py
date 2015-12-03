@@ -296,14 +296,14 @@ def create_account(request):
 
 
 
-@login_required(redirect_field_name='', login_url='website/login/')
+@login_required(redirect_field_name='', login_url='website:login-auth')
 def userLogout(request):
     logout(request)
     if 'cart' in request.session:
 		del request.session['cart']
     return HttpResponseRedirect(reverse('website:menu'))
 
-@login_required(redirect_field_name='', login_url='website/login/')
+@login_required(redirect_field_name='', login_url='website:login-auth')
 def pre_checkout(request):
 	context = cart(request)
 	if context['status']==False:
@@ -374,7 +374,7 @@ def pre_checkout(request):
 		context['default_type_of_sale'] = 'D'
 		return render(request, 'website/pre_checkout.html', context)
 
-@login_required(redirect_field_name='', login_url='/website/login')
+@login_required(redirect_field_name='', login_url='website:login-auth')
 def checkout(request):
 	context = cart(request)
 	if context['status']==False:
@@ -575,7 +575,7 @@ def checkout(request):
 
 	return render(request, 'website/invoice.html', context)
 
-@login_required(redirect_field_name='', login_url='website/login/')
+@login_required(redirect_field_name='', login_url='website:login-auth')
 def thankyou(request):
     try:
     	if request.session['finish'] == True:
@@ -630,6 +630,8 @@ def payment_try(name,card,exp,desc, amt, cvv):
     payeezy.token = str(load_vars('pay.token'))
 
     payeezy.url = load_vars('pay.url')
+
+    payeezy.merchant_ref
 
     responseAuthorize =  payeezy.transactions.authorize(amount=amt,
                                                         currency_code='usd',
