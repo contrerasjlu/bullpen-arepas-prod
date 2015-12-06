@@ -22,7 +22,7 @@
                             <div class="row">
                                 <div class="col-xs-12 invoice-header">
                                     <h1>
-                                        <i class="fa fa-globe"></i> Bullpen Arepas.
+                                        <i ></i> Bullpen Arepas.
                                         <small class="pull-right">{% now "F jS Y" %}</small>
                                     </h1>
                                 </div>
@@ -139,7 +139,7 @@
                                     <img src="{% static 'website/v2/images/mastercard.png' %}" alt="Mastercard">
                                     <img src="{% static 'website/v2/images/american-express.png' %}" alt="American Express">
                                     <form class="form-vertical form-label-left input_mask" method="post">
-                                    <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
+                                    <p class="" style="margin-top: 10px;">
                                         {% if FailTrx %}
                                             <div class="form-control-static">
                                                 <div class="alert alert-danger">{{FailTrx}}
@@ -160,7 +160,7 @@
                                         {% for field in pay_form %}
                                             {% if not field.is_hidden %}
                                             <div class="col-md-9 col-sm-9 col-xs-12 form-group has-feedback">
-                                                <label class="control-label col-md-6 col-sm-6 col-xs-12">{{ field.label }}</label>
+                                                <label class="control-label col-md-12 col-sm-12 col-xs-12">{{ field.label }}</label>
                                                 {{ field }}
                                                 <p><span class="fa fa-info-circle"> {{field.help_text}}</span></p>
                                                 {% if field.errors %}

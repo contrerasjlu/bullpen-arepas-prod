@@ -1,0 +1,83 @@
+{% extends 'LocationManager/index.html' %}
+{% block WindowTittle %}| Batch Report {% endblock %}
+{% block Content %}
+<!-- page content -->
+            <div class="right_col" role="main">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel tile">
+                            <div class="x_title">
+                                <h2>Batch Report for <small>{{ batch.batch_code }}</small></h2>
+                                <div class="clearfix"></div>
+                                <a href="{% url 'LocationManager:batches-list' %}">
+                                    <i class="fa fa-arrow-left"></i> Back to Batches
+                                </a>
+                            </div>
+                            <div class="x_content">
+                                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                    <div class="tile-stats">
+                                        <div class="icon">
+                                            <i class="fa fa-shopping-cart"></i>
+                                        </div>
+                                        <div class="count">{{ calc_orders.total }}</div>
+                                        <h3>Total</h3>
+                                        <p>Total Orders</p>
+                                    </div>
+                                </div>
+                                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                    <div class="tile-stats">
+                                        <div class="count">$ {{ calc_orders.revenue }}</div>
+                                        <h3>Revenue</h3>
+                                        <p>Order + Tax + Delivery</p>
+                                    </div>
+                                </div>
+                                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                    <div class="tile-stats">
+                                        <div class="count">$ {{ calc_orders.tax }}</div>
+                                        <h3>Tax</h3>
+                                        <p>Total Amount</p>
+                                    </div>
+                                </div>
+                                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                    <div class="tile-stats">
+                                        <div class="count">$ {{ calc_orders.delivery_amt }}</div>
+                                        <h3>Delivery Revenue</h3>
+                                        <p>Total Amount</p>
+                                    </div>
+                                </div>
+                                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                    <div class="tile-stats">
+                                        <div class="icon">
+                                            <i class="fa fa-taxi"></i>
+                                        </div>
+                                        <div class="count">{{ calc_orders.delivery_order }}</div>
+                                        <h3>Delivery Orders</h3>
+                                        <p>Total</p>
+                                    </div>
+                                </div>
+                                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                    <div class="tile-stats">
+                                        <div class="icon">
+                                            <i class="fa fa-truck"></i>
+                                        </div>
+                                        <div class="count">{{ calc_orders.pickitup }}</div>
+                                        <h3>Pick it Up Orders</h3>
+                                        <p>Total</p>
+                                    </div>
+                                </div>
+                                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                    <div class="tile-stats">
+                                        <div class="icon">
+                                            <i class="fa fa-file-excel-o"></i>
+                                        </div>
+                                        <div class="count">Report</div>
+                                        <h3> </h3>
+                                        <p><a href="{% url 'LocationManager:batches-report-download' batch.id %}">Download</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+{% endblock %}

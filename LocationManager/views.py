@@ -376,6 +376,7 @@ def BatchesReport(request, pk):
 	context = {}
 	context['menu'] = load_menu()
 	order = get_object_or_404(PaymentBatch, pk=pk)
+	context['batch'] = order
 	context['hours'] = order.close_date - order.date
 	context['calc_orders'] = Order.objects.filter(batch_id=pk).aggregate(
 		total=Count('id'),
@@ -385,4 +386,30 @@ def BatchesReport(request, pk):
 		delivery_order=Count(Case(When(order_type='D', then='order_type'))),
 		pickitup=Count(Case(When(order_type='P', then='order_type'))))
 
-	print context['calc_orders']
+	return render(request, 'LocationManager/report.html', context)
+
+@login_required(login_url='LocationManager:auth')
+def csv(request, pk):
+	from django.http import HttpResponse
+	import csv
+	batch = get_object_or_404(PaymentBatch, pk=pk)
+	orders = Order.objects.filter(batch_id=pk)
+	response = HttpResponse(content_type='text/csv')
+	response['Content-Disposition'] = 'attachment; filename="Report-for-'+batch.batch_code+'.csv"'
+	writer = csv.writer(response)
+	writer.writerow(['Bullpen Arepas LLC.', 'Report for Batch:', batch.batch_code ])
+	writer.writerow(['Open Date',batch.date,'Close Date',batch.close_date ])
+	writer.writerow(['=========','========','==========','==============='])
+	writer.writerow(['Orders'])
+	writer.writerow(['Date','Type','Client','Order Number','Subtotal','Delivery','Tax','Total'])
+	for order in orders:
+		writer.writerow([order.date,
+						 order.order_type,
+						 order.user,
+						 order.order_number,
+						 order.sub_amt,
+						 order.delivery_amt,
+						 order.tax_amt,
+						 order.total_amt])
+
+	return response

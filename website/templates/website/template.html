@@ -19,7 +19,7 @@
 
     <!-- Custom styling plus plugins -->
     <link href="{% static 'website/v2/css/custom.css' %}" rel="stylesheet">
-    <link href="{% static 'website/v2/css/icheck/flat/green.css' %}" rel="stylesheet">
+    <link href="{% static 'website/v2/css/icheck/flat/orange.css' %}" rel="stylesheet">
 
 
     <script src="{% static 'website/v2/js/jquery.min.js' %}"></script>
@@ -40,7 +40,7 @@
     <div class="container body">
         <div class="main_container">
             <div class="navbar nav_title" style="border: 0;">
-                <a href="{% url 'website:index' %}" class="site_title"><i class="fa fa-paw"></i> <span>Bullpen Arepas</span></a>
+                <a href="{% url 'website:index' %}" class="site_title" style="text-align:center"><img src="{% static 'website\v2\images\logo-min3.png' %}" alt="logo" /><span></span></a>
             </div>
            <!-- top navigation -->
             <div class="top_nav">
@@ -73,12 +73,9 @@
                                     {% for item in cart %}
                                     <li>
                                         <a href="#">
-                                            <span class="image">
-                                                <img src="{% static item.image %}" alt="Profile Image" />
-                                            </span>
                                             <span>
+                                            	<span class="time">{{ item.type }}</span></br>
                                                 <span>{{ item.product }}</span>
-                                                <span class="time">{{ item.type }}</span>
                                             </span>
                                             {% if item.extras %}
                                             <span class="message">
@@ -115,14 +112,14 @@
                                         </a>
                                     </li>
                                     {% endfor %}
-                                    <li><div class="col-sm-4">
+                                    <li><div class="col-sm-6 col-xs-6">
                                             <a href="{% url 'website:pre_checkout' %}">
-                                                <i class="fa fa-shopping-cart"> Checkout</i>
+                                                <i class="fa fa-money"></i> Checkout
                                             </a>
-                                        <div>
-                                        <div class="col-sm-4 pull-right">
-                                            <a href="{% url 'website:empty_cart' %}">
-                                                <i class="fa fa-shopping-cart"> Empty Cart</i>
+                                        </div>
+                                        <div class="col-md-6 col-xs-6">
+                                            <a href="{% url 'website:empty_cart' %}" >
+                                                <i class="fa fa-times"></i> Empty Cart
                                             </a>
                                         </div>
                                     </li>
@@ -230,8 +227,7 @@
                 <!-- footer content -->
                 <footer>
                     <div class="">
-                        <p class="pull-right">Copyright Bullpen Arepas 2015. |
-                            <span class="lead"> <i class="fa fa-paw"></i> Bullpen Arepas</span>
+                        <p class="pull-right">Copyright Bullpen Arepas 2015.</p>
                         </p>
                     </div>
                     <div class="clearfix"></div>

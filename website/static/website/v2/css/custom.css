@@ -11,7 +11,7 @@ body.nav-sm .container.body .right_col {
     margin-left: 70px;
     z-index: 2;
 }
-.right_col{min-height: 1000px;}
+.right_col{/*min-height: 1000px;*/}
 body.nav-sm .navbar.nav_title {
     width: 70px;
 }
@@ -215,7 +215,7 @@ body.nav-md .container.body .right_col {
 .nav_title {
     width: 230px;
     float: left;
-    background: #DF9745;
+    background: #EDEDED ;
     border-radius: 0;
     height: 57px;
 }
@@ -370,7 +370,7 @@ dark,
 
 body {
     color: #666666;
-    background: #DF9745;
+   /* background: #DF9745;*/
     /*#ECF0F1; #FCFCFC*/
     
     font-family: "Helvetica Neue", Roboto, Arial, "Droid Sans", sans-serif;
@@ -569,7 +569,7 @@ table.no-margin .progress {
 
 .row {
     margin-right: -10px;
-    margin-left: -10px;
+    /*margin-left: -10px;*/
 }
 
 .grid_slider .col-md-6 {
@@ -1698,7 +1698,7 @@ ul.msg_list li a .time {
     font-size: 11px;
     font-style: italic;
     font-weight: bold;
-    position: absolute;
+	/*position: absolute;*/
     right: 35px;
 }
 
@@ -3713,7 +3713,7 @@ ul.social li {
 
 .wizard_horizontal ul.wizard_steps li a.done:before,
 .wizard_horizontal ul.wizard_steps li a.done .step_no {
-    background: #1ABB9C;
+    background: #A77134;
     color: #fff;
 }
 
@@ -4630,8 +4630,8 @@ ul.project_files li a i {
     top: 15px;
     width: 120px;
     line-height: 20px;
-    background-color: #555;
-    box-shadow: 0 0 3px rgba(0, 0, 0, .3);
+    background-color: #DF9745;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.07);
 }
 
 .ui-ribbon-container.ui-ribbon-primary .ui-ribbon:after,
@@ -6312,6 +6312,11 @@ ul.notifications {
     text-decoration: none;
     text-transform: uppercase;
     padding: 9px 8px;
+}
+
+.memuleft{
+font-family: "Helvetica Neue",Roboto,Arial,"Droid Sans",sans-serif;
+font-size:11px;
 }
 
 .tabbed_notifications .text {

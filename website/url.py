@@ -1,12 +1,22 @@
 from django.conf.urls import url
-from website import views
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from website import views
+from .forms import CreateAccountForm
+
+
+LOGIN_REDIRECT_URL = 'website:menu'
 
 urlpatterns = [
-    url(r'^home/$', views.index, name="index"),
+    url(r'^$', views.index, name="index"),
 
     # Vistas autogeneradas
-    url(r'^login/$', auth_views.login, {'template_name': 'website/login.html', 'extra_context':{'new_user':'CreateAccountForm()'}}),
+    url(r'^login/$', auth_views.login, 
+        {
+        'template_name': 'website/login.html',
+        'extra_context':{'new_user':CreateAccountForm()}
+        }, name='login-auth'),
+    
     url(r'^signup/$', views.create_account, name="new_account"),
     url(r'^logout/$', views.userLogout, name="userlogout"),
 

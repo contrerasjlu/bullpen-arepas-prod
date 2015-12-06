@@ -19,12 +19,14 @@
 
                         <div class="clearfix"></div>
                         <br>
-                        <div class="col-md-9 col-sm-9 col-xs-12 form-group has-feedback" id="select-div">
-                            <label class="control-label col-md-6 col-sm-6 col-xs-12">How do you Want the Order?</label>
-                            <select class="form-control flat" id="id_type_of_sale_select">
-                                <option value="D" {%if default_type_of_sale == 'D' %}selected{% endif %}>Delivery to my Location</option>
-                                <option value="P" {%if default_type_of_sale == 'P' %}selected{% endif %}>I will Pick it Up</option>
-                            </select> 
+                        <div class="col-md-12">
+                            <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback" id="select-div">
+                                <label class="control-label" >How do you Want the Order?</label>
+                                <select class="form-control flat" id="id_type_of_sale_select">
+                                    <option value="D" {%if default_type_of_sale == 'D' %}selected{% endif %}>Delivery to my Location</option>
+                                    <option value="P" {%if default_type_of_sale == 'P' %}selected{% endif %}>I will Pick it Up</option>
+                                </select> 
+                            </div>
                         </div>
                         <br>
 
@@ -33,26 +35,28 @@
                         <form class="form-vertical form-label-left input_mask" method="post">
                         {% csrf_token %}
                         {{ form_delivery.type_of_sale }}
-                            <div class="col-md-9 col-sm-9 col-xs-12 form-group has-feedback">
-                                <label class="control-label col-md-6 col-sm-6 col-xs-12">{{ form.address_delivery.label }}</label>
-                                {{ form_delivery.address }}
-                                <span class="fa fa-home form-control-feedback left" aria-hidden="true"></span>
-                                <p>
-                                    <span class="fa fa-info-circle" style="top:4px;"> {{form_delivery.address.help_text}}</span>
-                                </p>
-                                {% if form_delivery.address.errors %}
-                                <br>
-                                <div class="alert alert-danger" role="alert">
-                                {% for msj in form_delivery.address.errors %}
-                                    {{ msj }}
-                                {% endfor %}
+                        	<div <div class="col-md-12">
+                                <div class=" form-group has-feedback col-md-9 col-sm-9 col-xs-12">
+                                    <label class="control-label" >{{ form.address_delivery.label }}</label>
+                                    {{ form_delivery.address }}
+                                    <span class="fa fa-home form-control-feedback left input-group-addon" aria-hidden="true"></span>
+                                    <p>
+                                        <span class="fa fa-info-circle" style="top:4px;" aria-describedby="basic-addon1"> {{form_delivery.address.help_text}}</span>
+                                    </p>
+                                    {% if form_delivery.address.errors %}
+                                    <br>
+                                    <div class="alert alert-danger" role="alert">
+                                    {% for msj in form_delivery.address.errors %}
+                                        {{ msj }}
+                                    {% endfor %}
+                                    </div>
+                                    {% endif %}
                                 </div>
-                                {% endif %}
                             </div>
                             <br>
-                            <div class="col-md-9 col-sm-9 col-xs-12 form-group has-feedback">
-                                <button type="submit" class="btn btn-warning">Let's Pay</button>
-                            </div>
+                             <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+                                    <button type="submit" class="btn btn-warning">Let's Pay</button>
+                             </div>
                         </form>
                         </div>
                         <!-- Form for Pick it Up -->
@@ -60,30 +64,34 @@
                         <form class="form-vertical form-label-left input_mask" method="post">
                         {% csrf_token %}
                         {{ form_pickitup.type_of_sale }}
-                            <div class="col-md-9 col-sm-9 col-xs-12 form-group has-feedback">
-                                <label class="control-label col-md-6 col-sm-6 col-xs-12">{{ form_pickitup.location.label }}</label>
-                                {{ form_pickitup.location }}
-                                {% if form_pickitup.location.errors %}
-                                <br>
-                                <div class="alert alert-danger" role="alert">
-                                {% for msj in form_pickitup.location.errors %}
-                                    {{ msj }}
-                                {% endfor %}
+                            <div class="col-md-12">
+                                <div class="col-md-4 col-sm-4 col-xs-12 form-group has-feedback">
+                                    <label class="control-label">{{ form_pickitup.location.label }}</label>
+                                    {{ form_pickitup.location }}
+                                    {% if form_pickitup.location.errors %}
+                                    <br>
+                                    <div class="alert alert-danger" role="alert">
+                                    {% for msj in form_pickitup.location.errors %}
+                                        {{ msj }}
+                                    {% endfor %}
+                                    </div>
+                                    {% endif %}
                                 </div>
-                                {% endif %}
-                            </div>
+                             </div>
                             <br>
-                            <div class="col-md-9 col-sm-9 col-xs-12 form-group has-feedback">
-                                <label class="control-label col-md-6 col-sm-6 col-xs-12">{{ form_pickitup.time.label }}</label>
-                                {{ form_pickitup.time }}
-                                {% if form_pickitup.time.errors %}
-                                <br>
-                                <div class="alert alert-danger" role="alert">
-                                {% for msj in form_pickitup.time.errors %}
-                                    {{ msj }}
-                                {% endfor %}
+                            <div class="col-md-12">
+                                <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback">
+                                    <label class="control-label">{{ form_pickitup.time.label }}</label>
+                                    {{ form_pickitup.time }}
+                                    {% if form_pickitup.time.errors %}
+                                    <br>
+                                    <div class="alert alert-danger" role="alert">
+                                    {% for msj in form_pickitup.time.errors %}
+                                        {{ msj }}
+                                    {% endfor %}
+                                    </div>
+                                    {% endif %}
                                 </div>
-                                {% endif %}
                             </div>
                             <br>
                             <div class="col-md-9 col-sm-9 col-xs-12 form-group has-feedback">

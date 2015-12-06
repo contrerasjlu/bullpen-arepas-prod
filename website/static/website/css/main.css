@@ -2341,7 +2341,7 @@ span.stButton_gradient,
   color: #686868;
   font-size: 18px;
   font-weight: 300;
-  padding: 100px 0;
+  padding: 20px 0;
 }
 
 #error-page .container-fluid {
@@ -2424,7 +2424,7 @@ span.stButton_gradient,
 ********404 page CSS******
 **************************/
 
-#error-page {
+#error-page 2 {
   display: table;
   height: 100%;
   min-height: 100%;
@@ -2467,7 +2467,7 @@ span.stButton_gradient,
 
 .btn-error {
   background-color: rgba(0, 0, 0, 0);
-  border: 3px solid #4FCCCD;
+  border: 3px solid #A77134;
   color: #797979;
   font-size: 16px;
   font-weight: 700;
@@ -2480,8 +2480,8 @@ span.stButton_gradient,
 }
 
 .btn-error:hover, .btn-error:focus  {
-  background-color: #4FCCCD;
-  border-color:#4FCCCD;
+  background-color: #A77134;
+  border-color:#A77134;
   color:#fff;
 }
 

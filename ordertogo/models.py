@@ -57,7 +57,7 @@ class product(models.Model):
 	order_in_menu = models.IntegerField()
 
 	#Imagen de Referencia para el Producto.
-	image = models.ImageField(blank=True)
+	image = models.ImageField(blank=True, upload_to='images')
 
 	#Indicador de estado
 	Active = models.BooleanField(default=True)
@@ -99,11 +99,16 @@ class PaymentBatch(models.Model):
 	batch_status = (("O", "Open"),("C", "Closed"),)
 
 	#Fecha de la apertura del lote de pago
-	date = models.DateField(
+	date = models.DateTimeField(
 		verbose_name="Fecha de Lote",
 		auto_now_add=True, 
 		help_text="Fecha en la que se Aperturó el Truck"
 		)
+
+	close_date = models.DateTimeField(
+		verbose_name="Fecha y Hora de Cierre", 
+		auto_now=True
+	)
 
 	#Relacionado con una locacion
 	location = models.ForeignKey(LocationsAvailable)
@@ -112,7 +117,7 @@ class PaymentBatch(models.Model):
 	address_for_truck = models.CharField(
 		verbose_name="Address for Truck", 
 		max_length=1000,
-		help_text="If the Location selected is NOT mobile, please leave blank this field",
+		help_text="Must be a Valid Address",
 		blank=True
 	)
 
@@ -133,7 +138,7 @@ class PaymentBatch(models.Model):
 	batch_code = models.CharField(
 		verbose_name="Batch Code", 
 		max_length=10, 
-		help_text="This code will be used as a identifier for the batch",
+		help_text="This code will be used to identify the batch",
 		unique=True
 		)
 
@@ -147,7 +152,8 @@ class PaymentBatch(models.Model):
 	#Indicador para saber si el Lote esta abierto para Delivery
 	open_for_delivery = models.BooleanField(
 		verbose_name="Open for Delivery?",
-		default=True
+		default=True,
+		help_text='Indicates if the Location accept Delivery Orders'
 		)
 
 	#Estado del Lote de Pago
@@ -160,10 +166,7 @@ class PaymentBatch(models.Model):
 		)
 
 	def __unicode__(self):
-		if self.address_for_truck == None:
-			return self.location.description + ' @ ' + self.location.location + ', ' + self.location.zip_code
-		else:
-			return self.location.description + ' @ ' + self.address_for_truck + ', ' + self.zip_code_for_truck
+		return self.location.description + ' @ ' + self.address_for_truck
 
 #Modelo de Ordenes Recibidas
 class Order(models.Model):

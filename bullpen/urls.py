@@ -19,8 +19,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    url(r'^', include('website.url', namespace='website')),
     url(r'^ordertogo/', include('ordertogo.url', namespace='order')),
-    url(r'^website/', include('website.url', namespace='website')),
     url(r'^location/', include('LocationManager.url', namespace='LocationManager')),
     url(r'^admin/', include(admin.site.urls)),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

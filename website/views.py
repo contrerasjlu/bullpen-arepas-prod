@@ -1,12 +1,14 @@
-from django.shortcuts import render, get_list_or_404
-from ordertogo.models import *
+from django.shortcuts import render, get_list_or_404, get_object_or_404
 from django.http import Http404,HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.core.urlresolvers import reverse
-from random import randint
-from datetime import *
-from .forms import *
 from django.contrib.auth import authenticate, login, logout, user_logged_in
 from django.contrib.auth.decorators import login_required, user_passes_test
+from random import randint
+from datetime import *
+from decimal import Decimal
+from ordertogo.models import *
+from .forms import *
+
 
 def load_vars(code):
 	code = GenericVariable.objects.get(code=code)
@@ -23,10 +25,10 @@ def is_open():
 
 #Generar un numero de orden aleatorio
 def get_order_number():
-	t = 10000
+	t = 100000
 	sure = False
 	while sure == False:
-		order = randint(5000, t)
+		order = randint(1000, t)
 		order = str(datetime.now().year)+str(order)
 		try:
 			Order.objects.get(order_number=order)
@@ -118,7 +120,7 @@ def cart(request):
 			subtotal += price
 			the_cart.append(this_item)
 
-		from decimal import Decimal
+		
 
 		amounts = {
 			'subtotal': subtotal,
@@ -139,18 +141,26 @@ def cart(request):
 
 
 def menu(request):
+	# Load the Cart to show the products already in cart
 	context = cart(request)
+
+	# If the pay was already did it, delete the var
 	if 'finish' in request.session:
 		del request.session['finish']
 
+	# If there any Batch open
 	if context['status']==False:
 		return HttpResponseRedirect(reverse('website:closed'))
 
-	arepas = product.objects.filter(Active=True,category=category.objects.get(code='arepas')).order_by('order_in_menu')
-	kids = product.objects.filter(Active=True,category=category.objects.get(code='kids')).order_by('order_in_menu')
-	
-	context['arepas'] = arepas
-	context['kids'] = kids
+	context['arepas'] = product.objects.filter(
+											   Active=True,
+											   category=category.objects.get(code='arepas')
+											   ).order_by('order_in_menu')
+	context['kids'] = product.objects.filter(
+								  			 Active=True,
+								  			 category=category.objects.get(code='kids')
+								  			 ).order_by('order_in_menu')
+
 	try:
 		return render(request, 'website/plain_page.html', context)
 	except ValueError:
@@ -161,17 +171,10 @@ def ProductDetail(request,id_for_prod):
 	if context['status']==False:
 		return HttpResponseRedirect(reverse('website:closed'))
 
-	try:
-		Product = product.objects.get(pk=id_for_prod)
-
-	except product.DoesNotExist:
-		return HttpResponseRedirect(reverse('website:menu'))
-
-	else:
-		context['product'] = Product
+	context['product'] = get_object_or_404(product, pk=id_for_prod)
 
 	if request.POST:
-		if Product.category.code == 'arepas':
+		if context['product'].category.code == 'arepas':
 			
 			arepa = ArepaForm(request.POST)
 
@@ -191,7 +194,7 @@ def ProductDetail(request,id_for_prod):
 				else:
 					sauces = None
 
-				if Product.extras == 0:
+				if context['product'].extras == 0:
 					extras = None
 				else:
 					extras = []
@@ -212,7 +215,6 @@ def ProductDetail(request,id_for_prod):
 					local_cart = request.session['cart']
 					local_cart.append(a)
 					request.session['cart'] = local_cart
-					print local_cart
 
 				else:
 					local_cart = []
@@ -224,7 +226,6 @@ def ProductDetail(request,id_for_prod):
 
 				html = 'website/arepa_wizard.html'
 				context['form'] = ArepaForm(request.POST)
-				print context['form']
 		else:
 			kid_meal = KidForm(request.POST)
 
@@ -250,14 +251,18 @@ def ProductDetail(request,id_for_prod):
 				html = 'website/kid_wizard.html'
 				context['form'] = KidForm(request.POST)
 	else:
-		if Product.category.code == 'arepas':
+		if context['product'].category.code == 'arepas':
 			html = 'website/arepa_wizard.html'
-			if Product.extras == 0:
+			if context['product'].extras == 0:
 				context['pabellon'] = product.objects.get(code='RF')
-			context['form'] = ArepaForm(initial={ 'id_for_product': id_for_prod })
+			context['form'] = ArepaForm(
+										initial={ 'id_for_product': id_for_prod }
+										)
 		else:
 			html = 'website/kid_wizard.html'
-			context['form'] = KidForm(initial={'id_for_product': id_for_prod})
+			context['form'] = KidForm(
+									  initial={'id_for_product': id_for_prod}
+									 )
 
 	return render(request, html, context)
 
@@ -295,15 +300,14 @@ def create_account(request):
 			return render(request, 'website/login.html', context)
 
 
-
-@login_required(redirect_field_name='', login_url='website:login-auth')
+@login_required(login_url='website:login-auth')
 def userLogout(request):
     logout(request)
     if 'cart' in request.session:
 		del request.session['cart']
     return HttpResponseRedirect(reverse('website:menu'))
 
-@login_required(redirect_field_name='', login_url='website:login-auth')
+@login_required(login_url='website:login-auth')
 def pre_checkout(request):
 	context = cart(request)
 	if context['status']==False:
@@ -322,8 +326,12 @@ def pre_checkout(request):
 				origins = PaymentBatch.objects.filter(status='O', open_for_delivery=True)
 				near = 0
 				for location in origins:
-					valid = ValidateAddress(load_vars('google.API.KEY'),location.address_for_truck,request.POST['address'],location.max_miles)
-					print valid
+					valid = ValidateAddress(
+											load_vars('google.API.KEY'),
+											location.address_for_truck,
+											request.POST['address'],
+											location.max_miles
+											)
 					if not valid == False:
 						if near == 0:
 							near = valid
@@ -338,7 +346,10 @@ def pre_checkout(request):
 					'type_of_sale': request.POST['type_of_sale'],
 					'label_for_type_of_sale': 'Delivery',
 					'batch': near_batch,
-					'address': RewriteAddress(request.POST['address'], load_vars('google.API.KEY'))
+					'address': RewriteAddress(
+											  request.POST['address'],
+											  load_vars('google.API.KEY')
+											  )
 				}
 				return HttpResponseRedirect(reverse('website:checkout'))
 			else:
@@ -350,7 +361,6 @@ def pre_checkout(request):
 		elif request.POST['type_of_sale'] == 'P':
 			data_client = PreCheckoutForm_PickItUp(request.POST)
 			if data_client.is_valid():
-				print request.POST['location']
 				location_desc =  PaymentBatch.objects.get(location_id=request.POST['location'], status='O')
 
 				request.session['data_client'] = {
@@ -408,13 +418,14 @@ def checkout(request):
 			desc = "Bullpen Arepas Order-"+str(context['order_number'])
 
 			pay = payment_try(
-				request.POST['name_on_card'],
-				request.POST['card_number'], 
-				exp, 
-				desc, 
-				value, 
-				request.POST['cvv']
-			)
+							  request.POST['name_on_card'],
+							  request.POST['card_number'],
+							  exp,
+							  desc,
+							  value,
+							  request.POST['cvv']
+							 )
+
 			if pay['status'] == False:
 				context['pay_form'] = PaymentForm(request.POST)
 				context['FailTrx'] = "Transaction Fail:"
@@ -458,7 +469,7 @@ def checkout(request):
 						total_amt=context['amounts']['total']
 					)
 				elif context['data_client']['type_of_sale'] == 'D':
-					from decimal import Decimal
+					
 					this_order = Order(
 						order_number=context['order_number'],
 						order_type=context['data_client']['type_of_sale'],
@@ -478,7 +489,7 @@ def checkout(request):
 
 				# Almacenar el detalle de la orden
 				the_session_cart = request.session['cart']
-				i=1
+				item_number=1
 				for item in the_session_cart:			
 					if item['type'] == 'Arepa':
 						arepa_type = item['arepa_type'] + ' ' + item['type']
@@ -486,7 +497,7 @@ def checkout(request):
 						arepa_type = item['type']
 					a = product.objects.get(pk=item['product_id'])
 					this_detail = OrderDetail(
-						item=i,
+						item=item_number,
 						arepa_type=arepa_type,
 						product_selected=a,
 						order_number=this_order,
@@ -497,23 +508,24 @@ def checkout(request):
 					if not a.extras == 0:
 						for extra in item['extras']:
 							extras_detail = OrderDetail(
-								item=this_detail.item,
-								arepa_type='With',
-								product_selected=product.objects.get(pk=extra),
-								order_number=Order.objects.get(pk=this_order.id)
-							)
+														item=this_detail.item,
+														arepa_type='With',
+														product_selected=product.objects.get(pk=extra),
+														order_number=Order.objects.get(pk=this_order.id)
+														)
 							extras_detail.save()
 					
 					try:
 						if not item['paid_extras'] == None:
 							for paid_extra in item['paid_extras']:
 								paid_extras_detail = OrderDetail(
-									item=this_detail.item,
-									arepa_type='Paid Extra',
-									product_selected=product.objects.get(pk=paid_extra),
-									order_number=Order.objects.get(pk=this_order.id)
-								)
+																 item=this_detail.item,
+																 arepa_type='Paid Extra',
+																 product_selected=product.objects.get(pk=paid_extra),
+																 order_number=Order.objects.get(pk=this_order.id)
+																)
 								paid_extras_detail.save()
+
 					except KeyError:
 						pass
 
@@ -521,24 +533,25 @@ def checkout(request):
 						if not item['sauces'] == None:
 							for sauce in item['sauces']:
 								sauce_detail = OrderDetail(
-									item=this_detail.item,
-									arepa_type='Sauces',
-									product_selected=product.objects.get(pk=sauce),
-									order_number=Order.objects.get(pk=this_order.id)
-								)
+														   item=this_detail.item,
+														   arepa_type='Sauces',
+														   product_selected=product.objects.get(pk=sauce),
+														   order_number=Order.objects.get(pk=this_order.id)
+														   )
 								sauce_detail.save()
 					except KeyError:
 						pass
 
 					if not item['soft_drinks'] == '':
 						drink = OrderDetail(
-							item=this_detail.item,
-							arepa_type='Drink',
-							product_selected=product.objects.get(pk=item['soft_drinks']),
-							order_number=Order.objects.get(pk=this_order.id)
-						)
+											item=this_detail.item,
+											arepa_type='Drink',
+											product_selected=product.objects.get(pk=item['soft_drinks']),
+											order_number=Order.objects.get(pk=this_order.id)
+											)
 						drink.save()
-					i+=1
+					
+					item_number+=1
 
 				# Almacenar el detalle del pago
 
@@ -593,7 +606,7 @@ def RewriteAddress(address, key):
 
 def ValidateAddress(key,origin,destination,max_miles):
     import googlemaps
-    from decimal import Decimal
+    
     gmaps = googlemaps.Client(key=key)
     dest = gmaps.geocode(destination)
     directions_result = gmaps.directions(
@@ -631,7 +644,7 @@ def payment_try(name,card,exp,desc, amt, cvv):
 
     payeezy.url = load_vars('pay.url')
 
-    payeezy.merchant_ref
+    #payeezy.merchant_ref
 
     responseAuthorize =  payeezy.transactions.authorize(amount=amt,
                                                         currency_code='usd',
@@ -655,6 +668,7 @@ def payment_try(name,card,exp,desc, amt, cvv):
         response['status'] = False
         response['object'] = Error
 
+    print responseAuthorize.json()
     return response
 
 def send_invoice_email():

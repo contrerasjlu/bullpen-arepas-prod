@@ -1,7 +1,7 @@
 from django.conf.urls import url
+from django.contrib.auth.decorators import login_required, permission_required
 from LocationManager import views
 from LocationManager.views import LocationsList, BatchesList, HandleOrders, HandleOrderDetail, orders, BatchesCreate, BatchesUpdate, LocationsAvailableCreateView, LocationsAvailableUpdateView
-from django.contrib.auth.decorators import login_required, permission_required
 
 urlpatterns = [
     # Vistas autogeneradas
@@ -9,7 +9,7 @@ urlpatterns = [
     url(r'^logout/$', views.logout_user, name='logout'),
 
     # Vistas del Location Manager
-    url(r'^home/$', views.index, name="index"),
+    url(r'^$', views.index, name="index"),
 
 ############ Locations Available ###############################
     # ListView para el Modelo LocationsAvailable
@@ -54,6 +54,9 @@ urlpatterns = [
     # Funcion generica para el reporte de un Batch Cerrado
     url(r'^batches/(?P<pk>[0-9]+)/report/$', 
         views.BatchesReport, name="batches-report"),
+
+    url(r'^batches/(?P<pk>[0-9]+)/report/download$', 
+        views.csv, name="batches-report-download"),
 
 ######################## Orders ##############################
     

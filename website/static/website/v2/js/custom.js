@@ -108,8 +108,8 @@ $('.collapse-link').click(function () {
 if ($("input.flat")[0]) {
     $(document).ready(function () {
         $('input.flat').iCheck({
-            checkboxClass: 'icheckbox_flat-green',
-            radioClass: 'iradio_flat-green'
+            checkboxClass: 'icheckbox_flat-orange',
+            radioClass: 'iradio_flat-orange'
         });
     });
 }
