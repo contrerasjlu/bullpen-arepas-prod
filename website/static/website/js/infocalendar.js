@@ -7,10 +7,10 @@
 			// THIS KEY WON'T WORK IN PRODUCTION!!!
 			// To make your own Google API key, follow the directions here:
 			// http://fullcalendar.io/docs/google_calendar/
-			googleCalendarApiKey: 'AIzaSyC8Q7U0x2aqOQl4OrCcXPxUxeNTwdHe_PM',
+			googleCalendarApiKey: 'AIzaSyAA_Qsbq75Gm_hm58xdCTeUg4PiuG21Yhs',
 		
 			// US Holidays
-			events: 'jocmyk@gmail.com',
+			events: 'bullpenarepas@gmail.com',
 			
 			eventClick: function(event) {
 				// opens events in a popup window

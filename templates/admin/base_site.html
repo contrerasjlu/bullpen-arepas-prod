@@ -1,0 +1,10 @@
+{% extends "admin/base.html" %}
+{% load static %}
+{% block extrahead %}<link rel="shortcut icon" href="{% static 'website/img/bullpen.ico' %}">{% endblock %}
+{% block title %}{{ title }} | Bullpen Arepas Administrator{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Bullpen Arepas Core Administrator</a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

@@ -84,9 +84,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'bullpen',
+        #'NAME':'contrerasjlu$bullpen'
         'USER': 'root',
+        #'USER':'contrerasjlu'
         'PASSWORD': '14657790',
+        #'PASSWORD':'123456789'
         'HOST': 'localhost',
+        #'HOST':'contrerasjlu.mysql.pythonanywhere-services.com'
         'PORT': '',
     }
 }
@@ -110,6 +114,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 MEDIA_URL = '/media/'
 
 EMAIL_HOST_USER = 'admin@bullpenarepas.com'

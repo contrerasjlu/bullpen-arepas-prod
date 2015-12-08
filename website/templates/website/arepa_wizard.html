@@ -15,7 +15,7 @@
                     </div>
                     <div class="x_content">
                         <a href="{% url 'website:menu' %}">
-                            <button type="button" class="btn btn-warning">Back to Menu</button>
+                            <button type="button" class="btn btn-warning"><i class="glyphicon glyphicon-chevron-left"></i>Back to Menu</button>
                         </a>
                         <div class="clearfix"></div>
                         <!-- Tabs -->
@@ -28,7 +28,7 @@
                                     <a href="#step-11">
                                         <span class="step_no">1</span>
                                         <span class="step_descr">Step 1<br /> 
-                                        <small>Baked or Fried?</small></span>
+                                        </span>
                                     </a>
                                 </li>
                                 {% if not product.extras == 0 %}
@@ -36,7 +36,7 @@
                                     <a href="#step-22">
                                         <span class="step_no">2</span>
                                         <span class="step_descr">Step 2<br /> 
-                                        <small>Choose the Players for your Arepa</small></span>
+                                        </span>
                                     </a>
                                 </li>
                                 {% endif %}
@@ -44,21 +44,21 @@
                                     <a href="#step-33">
                                         <span class="step_no">{% if product.extras == 0 %}2{% else %}3{% endif %}</span>
                                         <span class="step_descr">Step {% if product.extras == 0 %}2{% else %}3{% endif %}<br /> 
-                                        <small>We have some players on the Bench</small></span>
+                                        </span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="#step-44">
                                         <span class="step_no">{% if product.extras == 0 %}3{% else %}4{% endif %}</span>
                                         <span class="step_descr">Step {% if product.extras == 0 %}3{% else %}4{% endif %}<br /> 
-                                        <small>Do you want sauce on your Arepa?</small></span>
+                                        </span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="#step-55">
                                         <span class="step_no">{% if product.extras == 0 %}4{% else %}5{% endif %}</span>
                                         <span class="step_descr">Step {% if product.extras == 0 %}3{% else %}4{% endif %}<br /> 
-                                        <small>Do you want some drinks with your Arepa?</small></span>
+                                        </span>
                                     </a>
                                 </li>
                             </ul>
@@ -66,7 +66,7 @@
                                 <span class="section">We can Fry your Arepa or we can make it in the oven</span>
                                 {{ form.id_for_product }}
                                 <div class="form-inline">
-                                    <div class="col-md-3 col-sm-3">
+                                    <div class="col-md-3 col-sm-3 col-xs-6">
                                         {{ form.arepa_type }}
                                     </div>
                                     {% if form.arepa_type.errors %}
@@ -81,7 +81,7 @@
                                 <span class="section">You shuld choose {{ product.extras }} players for your Arepas</span>
                                 <div class="form-inline">
                                 {% for field in form.extras %}
-                                    <div class="col-md-3 col-sm-3">
+                                    <div class="col-md-3 col-sm-3  col-xs-6">
                                             {{ field }}
                                     </div>
                                 {% endfor %}
@@ -99,7 +99,7 @@
                                 <span class="section">Choose as much players as you want for $0.99 each</span>
                                 <div class="form-inline">
                                 {% for field in form.paid_extras %}
-                                    <div class="col-md-3 col-sm-3">
+                                    <div class="col-md-3 col-sm-3 col-xs-6">
                                         {{ field }}
                                     </div>
                                 {% endfor %}
@@ -114,7 +114,7 @@
                                 <span class="section">Choose as much as you want NO CHARGE!</span>
                                 <div class="form-inline">
                                 {% for field in form.sauces %}
-                                    <div class="col-md-3 col-sm-3">
+                                    <div class="col-md-3 col-sm-3 col-xs-6">
                                         {{ field }}
                                     </div>
                                 {% endfor %}

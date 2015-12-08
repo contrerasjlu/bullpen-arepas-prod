@@ -417,11 +417,10 @@ def checkout(request):
 			value = value.replace('.','')
 			desc = "Bullpen Arepas Order-"+str(context['order_number'])
 
-			pay = payment_try(
+			pay = PaymentRaw(
 							  request.POST['name_on_card'],
 							  request.POST['card_number'],
 							  exp,
-							  desc,
 							  value,
 							  request.POST['cvv']
 							 )
@@ -624,52 +623,82 @@ def ValidateAddress(key,origin,destination,max_miles):
 
     return result
 
-#Master: 5424180279791732
-def payment_try(name,card,exp,desc, amt, cvv):
-    import payeezy
-    import json
+# VISA: 4788250000028291
+def PaymentRaw(name,card,exp,amt,cvv):
+	#import required libs to generate HMAC
+	import os,hashlib,hmac,time,base64,json,requests
 
-    if card.startswith('3'):
-        cardT = 'American Express'
-    elif card.startswith('4'):
-        cardT = 'Visa'
-    elif card.startswith('5'):
-        cardT = 'Mastercard'
+	apiKey = str(load_vars('pay.apikey'))
+	apiSecret = str(load_vars('pay.secret'))
+	token = str(load_vars('pay.token'))
 
-    payeezy.apikey = str(load_vars('pay.apikey'))
+	if card.startswith('3'):
+		cardT = 'American Express'
+	elif card.startswith('4'):
+		cardT = 'Visa'
+	elif card.startswith('5'):
+		cardT = 'Mastercard'
 
-    payeezy.apisecret = str(load_vars('pay.secret'))
 
-    payeezy.token = str(load_vars('pay.token'))
+	payload = {
+			   "merchant_ref": "GODADDY",
+			   "transaction_type": "purchase",
+			   "method": "credit_card",
+			   "amount":amt,
+			   "partial_redemption":"false",
+			   "currency_code":"USD",
+			   "credit_card":{"type":cardT,
+			   				  "cardholder_name":name,
+			   				  "card_number":card,
+			   				  "exp_date":exp,
+			   				  "cvv":cvv
+			   				  }
+			   }
 
-    payeezy.url = load_vars('pay.url')
+	# Crypographically strong random number
+	nonce = str(int(os.urandom(16).encode('hex'),16)) 
 
-    #payeezy.merchant_ref
+	# Epoch timestamp in milli seconds
+	timestamp = str(int(round(time.time() * 1000)))
 
-    responseAuthorize =  payeezy.transactions.authorize(amount=amt,
-                                                        currency_code='usd',
-                                                        card_type=cardT,
-                                                        cardholder_name=name,
-                                                        card_number=card,
-                                                        card_expiry=exp,
-                                                        card_cvv=cvv,
-                                                        description=desc
-                                                        )
-    response = {}
-    try:
-        responseAuthorize.json()['Error']['messages']
+	data = apiKey + nonce + timestamp + token + str(payload)
+	
+	# Make sure the HMAC hash is in hex 
+	hmac = hmac.new(apiSecret, msg=data, digestmod=hashlib.sha256).hexdigest()
+	
+	# Authorization : base64 of hmac hash 
+	authorization = base64.b64encode(hmac);
 
-    except KeyError:
-        response['status'] = True
-        response['object'] = responseAuthorize
+	url = load_vars('pay.url')
 
-    else:
-        Error = responseAuthorize.json()['Error']['messages']
-        response['status'] = False
-        response['object'] = Error
+	headers = {
+			   'apikey':apiKey,
+			   'Authorization':authorization,
+			   'Content-type':'application/json',
+			   'nonce':nonce,
+			   'timestamp':timestamp,
+			   'token':token
+			   }
 
-    print responseAuthorize.json()
-    return response
+	print headers
+
+	payment = requests.post(url, data=json.dumps(payload), headers=headers)
+
+	response = {}
+	try:
+		payment.json()['Error']['messages']
+
+	except KeyError:
+		response['status'] = True
+		response['object'] = payment
+
+	else:
+		Error = payment.json()['Error']['messages']
+		response['status'] = False
+		response['object'] = Error
+
+	print payment.json()
+	return response
 
 def send_invoice_email():
 	from django.core.mail import send_mail, BadHeaderError

@@ -14,7 +14,7 @@
                     </div>
                     <div class="x_content">
                         <a href="{% url 'website:menu' %}">
-                            <button type="button" class="btn btn-warning">Back to Menu</button>
+                            <button type="button" class="btn btn-warning"><i class="glyphicon glyphicon-chevron-left"></i>Back to Menu</button>
                         </a>
                         <div class="clearfix"></div>
                         <!-- Tabs -->
@@ -27,14 +27,14 @@
                                     <a href="#step-11">
                                         <span class="step_no">1</span>
                                         <span class="step_descr">Step 1<br /> 
-                                        <small>Kids Meal - Description</small></span>
+                                        </span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="#step-22">
                                         <span class="step_no">2</span>
                                         <span class="step_descr">Step 2<br /> 
-                                        <small>Do you want some drinks with your Meal?</small></span>
+                                        </span>
                                     </a>
                                 </li>
                             </ul>
@@ -46,7 +46,7 @@
                                 <div class="form-group">
                                 {% for field in form.soft_drinks %}
                                     <label>{{ field.label }}</label>
-                                    <div class="col-md-3 col-sm-3">
+                                    <div class="col-md-3 col-sm-3 col-xs-6">
                                         {{ field }}
                                     </div>
                                     {% if form.soft_drinks.errors %}
