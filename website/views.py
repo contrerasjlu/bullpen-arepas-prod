@@ -3,6 +3,7 @@ from django.http import Http404,HttpResponseRedirect, HttpResponse, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout, user_logged_in
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.conf import settings
 from random import randint
 from datetime import *
 from decimal import Decimal
@@ -309,6 +310,7 @@ def userLogout(request):
 
 @login_required(login_url='website:login-auth')
 def pre_checkout(request):
+	SECURE_SSL_REDIRECT = True
 	context = cart(request)
 	if context['status']==False:
 		return HttpResponseRedirect(reverse('website:closed'))
@@ -386,6 +388,7 @@ def pre_checkout(request):
 
 @login_required(redirect_field_name='', login_url='website:login-auth')
 def checkout(request):
+	SECURE_SSL_REDIRECT = True
 	context = cart(request)
 	if context['status']==False:
 		return HttpResponseRedirect(reverse('website:closed'))
