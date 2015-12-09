@@ -14,7 +14,7 @@
                 <!-- Content -->
                 <div class="row">
                 {% for arepa in arepas %}
-                    <div class="col-md-3 col-xs-12 widget widget_tally_box">
+                    <div class="col-md-3 col-xs-3 widget widget_tally_box">
                         <div class="x_panel ui-ribbon-container fixed_height_390">
                             
                             <div class="ui-ribbon-wrapper">
@@ -28,9 +28,7 @@
                             
                             <div class="x_content">
                                 <div style="text-align: center; margin-bottom: 17px">
-                                    <span class="chart" data-percent="86">
-                                        <img src="/media/{{ arepa.image }}" class="img-responsive" alt="">
-                                    </span>
+                                    <img src="/media/{{ arepa.image }}" class="img-responsive" alt="">
                                 </div>
                                 <h3 class="name_title">{{ arepa.name }}</h3>
                                 <p>{{ arepa.description }}</p>
@@ -70,9 +68,7 @@
                             </div>
                             <div class="x_content">
                                 <div style="text-align: center; margin-bottom: 17px">
-                                    <span class="chart" data-percent="86">
-                                        <img src="{% static kid.image %}" class="img-responsive" alt="">
-                                    </span>
+                                    <img src="/media/{{ kid.image }}" class="img-responsive" alt="">
                                 </div>
                                 <h3 class="name_title">{{ kid.name }}</h3>
                                 <p>{{ kid.description }}</p>
