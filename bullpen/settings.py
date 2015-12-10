@@ -84,13 +84,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'bullpen',
-        #'NAME':'contrerasjlu$bullpen'
+        #'NAME':'contrerasjlu$bullpen',
         'USER': 'root',
-        #'USER':'contrerasjlu'
+        #'USER':'contrerasjlu',
         'PASSWORD': '14657790',
-        #'PASSWORD':'123456789'
+        #'PASSWORD':'123456789',
         'HOST': 'localhost',
-        #'HOST':'contrerasjlu.mysql.pythonanywhere-services.com'
+        #'HOST':'contrerasjlu.mysql.pythonanywhere-services.com',
         'PORT': '',
     }
 }
@@ -122,3 +122,5 @@ EMAIL_HOST_PASSWORD = '14657790'
 EMAIL_USE_TLS = False
 EMAIL_PORT = 465
 EMAIL_HOST = 'mail.bullpenarepas.com'
+
+#SECURE_SSL_REDIRECT = True
