@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+{% load static %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
     <title>Bullpen Arepas</title>
-    {% load staticfiles %}
     <link href="{% static 'website/css/fullcalendar.css' %}" rel="stylesheet" />
-    <link href="{% static 'website/css/fullcalendar.print.css' %}" rel='stylesheet' media='print' />
+	<link href="{% static 'website/css/fullcalendar.print.css' %}" rel='stylesheet' media='print' />
     <link href="{% static 'website/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'website/css/font-awesome.min.css' %}" rel="stylesheet">
     <link href="{% static 'website/css/animate.min.css' %}" rel="stylesheet"> 
     <link href="{% static 'website/css/lightbox.css' %}" rel="stylesheet"> 
-    <link href="{% static 'website/css/main.css' %}" rel="stylesheet">
-    <link href="{% static 'website/css/responsive.css' %}" rel="stylesheet">
-    <link href="{% static 'website/css/calendar.css' %}" rel="stylesheet">    
+	<link href="{% static 'website/css/main.css' %}" rel="stylesheet">
+	<link href="{% static 'website/css/responsive.css' %}" rel="stylesheet">
+	<link href="{% static 'website/css/calendar.css' %}" rel="stylesheet">    
     <script type="text/javascript" src="{% static 'website/js/jquery.js' %}"></script>
     <script type="text/javascript" src="{% static 'website/js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'website/js/lightbox.min.js' %}"></script>
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="{% static 'website/js/main.js' %}"></script>
     <script type="text/javascript" src="{% static 'website/js/audio.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'website/js/modal.js' %}"></script>
-    <script src="{% static 'website/js/moment.min.js' %}"></script>
+	<script src="{% static 'website/js/moment.min.js' %}"></script>
     <script src="{% static 'website/js/jquery.min.js' %}"></script>
     <script src="{% static 'website/js/fullcalendar.min.js' %}"></script>
     <script src="{% static 'website/js/gcal.js' %}"></script> 
@@ -73,11 +73,12 @@
                         	<a href="#info" aria-expanded="false" data-toggle="collapse" data-target=".navbar-collapse">Info</a>
                         </li> 
                     	<li>
-                        <a href="#info2" data-toggle="collapse" data-target=".navbar-collapse">Calendar</a></li>
+                        <a href="#calendar" data-toggle="collapse" data-target=".navbar-collapse">Calendar</a>
+                        </li>
                         {% if status %}
-                      <li>
+                        <li>
                         <a href="{% url 'website:menu' %}" data-toggle="collapse" data-target=".navbar-collapse">Order Now</a>
-                      </li>
+                        </li>
                       {% endif %}
                 	</ul>
                 	<p class="navbar-text pull-right">
@@ -97,16 +98,16 @@
                 	<div class="container">
             			<div class="row">
                 			<div class="single-features">
-                    			<div class="col-sm-5 wow fadeInLeft" data-wow-duration="500ms" data-wow-delay="300ms">
+                    			<div class="col-md-4 wow fadeInLeft" data-wow-duration="500ms" data-wow-delay="300ms">
                      				<h1><img src="{% static 'website/img/Logo_mini.png' %}" class="img-responsive" alt=""></h1>
                     			</div>
-                    			<div class="col-sm-6 wow fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
-                   					<div class="bgm_div">
-                                    	<h1>BULLPEN AREPAS</h1>
-                        				<P>Enjoy the best tasting Venezuelan food aboard our Food Truck Bullpen Arepas. As we travel all of Georgia with our Baseball inspired Food Truck we offer fans of Professional Baseball the possibility of tasting the most delicious Arepas with the best ingredients around. </br></br></br></P>
+                    			<div class="col-md-5 col-xs-12 col-md-offset-2 wow  bgm_div left fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
+                   					<div class="">
+                                    	<h1 class="center">Bullpen Arepas</h1>
+                        				<P>Enjoy the best tasting Venezuelan food aboard our Food Truck Bullpen Arepas. As we travel all of Georgia with our Baseball inspired Food Truck we offer fans of Professional Baseball the possibility of tasting the most delicious Arepas with the best ingredients around. </br></br></P>
                                  			<audio src="{% static 'website/audio/Bulpen_Jingle_mediana.m4a' %}" preload="auto" />
                                     </div>
-                                </div>
+                                </br><img src="{% static 'website/img/arepa1.jpg' %}" align="center" class="img-responsive" ></div>
                 			</div>
                 		</div>
             		</div>
@@ -115,15 +116,40 @@
 		</div>
         <div class="preloader"><i class="fa fa-sun-o fa-spin"></i></div>
 	</section>
-	<section id="features">
-        <div class="container">
+    <section id="features">
+    	<div class="container">
             <div class="row">
-                <div class="single-features">
-                    <div class="col-sm-6 col-sm-offset-1 align-right wow fadeInLeft" data-wow-duration="500ms" data-wow-delay="300ms">
-                        <h1>The Arepa</h1>
-                        <P>Many may ask, “What is an Arepa”? It’s simple. An Arepa is a circular shaped bread made of white corn flour. Arepas can either be served baked or fried depending on the liking of the person. The Arepa is native to Venezuelan culture although you can find arepas in Colombia, Panama, Puerto Rico, Dominican Republic and the Canary Islands. At Bullpen Arepa we prepare authentic Venezuelan Arepas that are gluten free, and that filled with the best fresh ingredients and best taste.</P>
-					</div>
-                    <div class="col-sm-5 wow fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms"><h1><img src="{% static 'website/img/the_arepa.jpg' %}" class="img-responsive" alt=""></h1></div>
+                <div >
+                    <div class="col-sm-12 col-sx-12 wow" data-wow-duration="500ms" data-wow-delay="300ms">
+                        </br></br></br></br><h1>The Arepa</h1>
+                        <P>Many may ask, “What is an Arepa”? It’s simple. An Arepa is a circular shaped bread made of white corn flour. Arepas can either be served baked or fried depending on the liking of the person. The Arepa is native to Venezuelan culture although you can find arepas in Colombia, Panama, Puerto Rico, Dominican Republic and the Canary Islands. At Bullpen Arepa we prepare authentic Venezuelan Arepas that are gluten free, and that filled with the best fresh ingredients and best taste.</br></br></br></P>
+					<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+                  <ol class="carousel-indicators">
+                    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                    <li data-target="#myCarousel" data-slide-to="1"></li>
+                  </ol>
+                    <!-- Wrapper for slides -->
+                  <div class="carousel-inner" role="listbox">
+                    <div class="item active">
+                      <img src="{% static 'website/img/c1.jpeg' %}">
+                    </div>
+                
+                    <div class="item">
+                      <img src="{% static 'website/img/c2.jpeg' %}">
+                    </div>
+                  
+                    <!-- Left and right controls -->
+                  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                  </a>
+                  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                  </a>
+                  </div></br></br>
+                </div>
 				</div>
             </div>
         </div>
@@ -142,27 +168,27 @@
                            	  </div>
 							</div>
 							<div class="clients-logo wow fadeIn" data-wow-duration="1000ms" data-wow-delay="600ms">
-								<div class="col-xs-3 col-sm-2" align="center" >
-                            		<a ><img src="{% static 'website/img/1.jpg' %}"  align="center" class="img-responsive img-circle circle" alt=""  data-toggle="modal"  data-target="#myModal1"></a>
+								<div class="col-xs-4 col-sm-2" align="center" >
+                            		<a ><img src="{% static 'website/img/1.jpg' %}"  align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal" data-target="#myModal1" a></a>
                             		<h3>Baked or Fried Arepas</h3>
                         		</div>
-                        		<div class="col-xs-3 col-sm-2" align="center" >
-                            		<a ><img src="{% static 'website/img/2.jpg' %}" align="center"  class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal2"></a>
+                        		<div class="col-xs-4 col-sm-2" align="center" >
+                            		<a ><img src="{% static 'website/img/2.jpg' %}"  align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal" data-target="#myModal2" ></a>
                             		<h3>Little League</h3>
                         		</div>
-                         		<div class="col-xs-3 col-sm-2" align="center" >
+                         		<div class="col-xs-4 col-sm-2" align="center" >
                             		<a ><img src="{% static 'website/img/3.jpg' %}"  align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal3"></a>
                             		<h3>Line Up Players</h3>
                         		</div>
-								<div class="col-xs-3 col-sm-2" align="center" >
+								<div class="col-xs-4 col-sm-2" align="center" >
                             		<a ><img src="{% static 'website/img/6.jpg' %}" align="center"  class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal4"></a>
 									<h3>On The Bench</h3>
                         		</div>
-                         		<div class="col-xs-3 col-sm-2" align="center" >
+                         		<div class="col-xs-4 col-sm-2" align="center" >
                             		<a ><img src="{% static 'website/img/4.jpg' %}" align="center"  class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal5"></a>
                             		<h3>Sauces</h3>
                         		</div>
-                         		<div class="col-xs-3 col-sm-2" align="center" >
+                         		<div class="col-xs-4 col-sm-2" align="center" >
                             		<a ><img src="{% static 'website/img/5.jpg' %}"  align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal6"></a>
                             		<h3>Soft Drinks</h3>
                         		</div>
@@ -174,15 +200,16 @@
 		</div>
 	</section>
      <!--/#features-->
+	<div class="inver-fondo inver-ico">	
 	<div id="info" class="container">
 		<div class="row">
     		<div class="single-features">
-        		<div style="visibility: visible; animation-duration: 500ms; animation-delay: 300ms; animation-name: fadeInRight;" class="col-md-offset-1 col-sm-5 wow fadeInRight animated" data-wow-duration="500ms" data-wow-delay="300ms">
+        		<div style="visibility: visible; animation-duration: 500ms; animation-delay: 300ms; animation-name: fadeInRight;" class="col-md-offset-1 col-sm-5 inver-ico wow fadeInRight animated" data-wow-duration="500ms" data-wow-delay="300ms">
             		<h1></br>Info</h1>
                 	<p>You can contact us  through our new webpage or follow us on   a number of social media pages for the latest updates from us.</p>
               		<div class="clients-logo" align="center">
                    		<div class="col-xs-2 col-sm-2 socialib" align="center" >
-                        	<a href="https://www.facebook.com/BullpenArepas/" target="_blank"><img src="{% static 'website/img/f.png' %}"  alt=""></a>
+                        	<a href="https://www.facebook.com/BullpenArepas/" target="_blank"><img src="{% static 'website/img/f.png' %}"  alt=""></a>	
                     	</div>
                         <div class="col-xs-2 col-sm-2 socialib" align="center" >
                         	<a href="https://twitter.com/bullpenarepas" target="_blank"><img src="{% static 'website/img/t.png' %}"  alt=""></a>
@@ -192,9 +219,9 @@
                       	</div>   
 					</div>
 				</div> 
-				<div class="col-md-5 col-sm-12">
+				<div class="col-xs-4 col-md-4 col-sm-12 fadeInRight">
                     <div class="contact-form bottom">
-                    <h1></br>Send a message</h1>
+                    <h1 ></br>Send a message</h1>
                        	<form id="main-contact-form" name="contact-form" method="post" action="sendemail.php">
                            	<div class="form-group">
                                	<input type="text" name="name" class="form-control" required="required" placeholder="Name">
@@ -212,12 +239,19 @@
                     </div>
                 </div>
 			</div>
-            <div class="col-md-12 col-md-offset-1" id="info2">
-        		<h1></br>Calendar/Events</h1>
-            	<P>Make sure to catch up with us on our calendar and follow us from place to place on our routes with Bullpen Arepa.</br></br></P>
-			</div>                                  
-			<div class="col-md-offset-1" id='loading'>loading...</div>
-			<div id='calendar'></div>
+    	</div>
+	</div>
+    </div>
+    
+    
+    
+    <div class="col-md-offset-2">
+    	</br>
+    	<h1>Calendar / Events</h1>
+        <P>Make sure to catch up with us on our calendar and follow us from place to place on our routes with Bullpen Arepa.</br></br></P>  
+	</div>
+          <div class="col-md-offset-1" id='loading'>loading...</div>
+			<div id='calendar'></div>        
 		</div>		
 	</div> 
     <div class="col-sm-12">
@@ -225,45 +259,306 @@
     		<p>© Bullpenarepas.com 2015. All Rights Reserved.</p>
         <div>
 	</div>
-<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">BAKED OR FRIED AREPAS</h4>
-      </div>
-      <div class="modal-body">
-        Hit: $ 4.90 with 1 player of your choice</br>
-        Double: $ 5.90 with 2 players of your choice</br>
-        Triple: $ 6.90 with 3 players of your choice</br>
-        Home Run: $ 7.50 with 4 players of your choice</br>
-        Home Run Pabellón: $ 8.70 with 4 venezuelan players</br>
-        Grand Slam: $ 8.50 with 5 venezuelan players
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
+<div class="modal fade" tabindex="-1" role="dialog" id="myModal1" >
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">BAKED OR FRIED AREPAS</h4>
+      		</div>
+      		<div class="modal-body">
+      			<div class="row">
+    				<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light1.jpg' %}" class="img-responsive">
+                    	</div>
+                        <div class="col-md-6"><h2>Hit</h2>with 1 player of your choice <h3>$ 4.90</h3>
+                        </div>
+	                </div>
+					<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light2.jpg' %}" class="img-responsive">
+                        </div>
+                    	<div class="col-md-6"><h2>Double</h2>with 2 players of your choice <h3>$ 5.90</h3>
+                        </div>
+                    </div>
+					<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light3.jpg' %}" class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>Triple</h2>with 3 players of your choice <h3>$ 6.90</h3>
+                        </div>
+                    </div>
+					<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light4.jpg' %}" class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>Home Run</h2>with 4 players of your choice <h3> $ 7.50</h3>
+                        </div>
+                    </div>
+					<div class="col-md-6">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light5.jpg' %}" class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>Home Run Pabellón</h2>with 4 venezuelan players <h3>$ 8.70</h3>
+                        </div>
+                    </div>
+					<div class="col-md-6">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light6.jpg' %}" class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>Grand Slam</h2>with 5 venezuelan players <h3>$ 8.50</h3>
+                        </div>
+                    </div>
+      			</div>
+                <div class="center"><h3>to know our players checkout line up players menu</h3></div>
+      			<div class="modal-footer">
+        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      			</div>
+    		</div>
+		</div>
+	</div>
 </div>
-<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">LITTLE LEAGUE (Kids meal $ 3.99 each)</h4>
-      </div>
-      <div class="modal-body">
-        Mini Ball (corn cheese balls)</br>
-        Mini Bat (cheese sticks)</br>
-        Swing Spread (ham spread arepas)
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="myModal2" >
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">LITTLE LEAGUE (Kids meal)</h4>
+      		</div>
+      		<div class="modal-body">
+      			<div class="row">
+    				<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light7.jpg' %}" class="img-responsive">
+                    	</div>
+                        <div class="col-md-6"><h2>Mini Ball</h2>Corn cheese balls <h3>$3.99</h3>
+                        </div>
+	                </div>
+					<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light8.jpg' %}" class="img-responsive">
+                        </div>
+                    	<div class="col-md-6"><h2>Mini Bat</h2>Cheese sticks <h3>$3.99</h3>
+                        </div>
+                    </div>
+					<div class="col-md-6 ligtc0 col-md-offset-3">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light9.jpg' %}" class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>Swing Spread</h2>Ham spread arepas<h3>$3.99</h3>
+                        </div>
+                    </div>
+      			</div>
+      			<div class="modal-footer">
+        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      			</div>
+    		</div>
+		</div>
+	</div>
 </div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="myModal3" >
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">LINE UP PLAYERS</h4>
+      		</div>
+      		<div class="modal-body">
+      			<div class="row">
+    				<div class="col-md-4 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light10.jpg' %}"  class="img-responsive">
+                    	</div>
+                        <div class="col-md-4"><h3>1B</h3>Shredded meat
+                        </div>
+	                </div>
+					<div class="col-md-4 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light11.jpg' %}"  class="img-responsive">
+                        </div>
+                    	<div class="col-md-6"><h3>2B</h3>Shredded chicken
+                        </div>
+                    </div>
+					<div class="col-md-4 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light12.jpg' %}" class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h3>SS</h3>Pulled pork
+                        </div>
+                    </div>
+					<div class="col-md-4 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light13.jpg' %}" class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>3B</h2>Fish
+                        </div>
+                    </div>
+					<div class="col-md-4 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light14.jpg' %}"  class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>LF</h2>Chicken salad
+                        </div>
+                    </div>
+					<div class="col-md-4 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light15.jpg' %}"  class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>CF</h2>Ham
+                        </div>
+                    </div>
+                    <div class="col-md-4 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light16.jpg' %}"  class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>RF</h2>Black beans
+                        </div>
+                    </div>
+                    <div class="col-md-4 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light17.jpg' %}"  class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>P</h2>Guayanes Cheese
+                        </div>
+                    </div>
+                    <div class="col-md-4 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light18.jpg' %}"  class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>C</h2>Mano Cheese 
+                        </div>
+                    </div>
+
+      			</div>
+      			<div class="modal-footer">
+        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      			</div>
+    		</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="myModal4" >
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">ON THE BENCH</h4>
+      		</div>
+      		<div class="modal-body">
+            <div class="col-md-12 ligtc0">Add as much players as you want for just $ 0.99 each</div>
+      			<div class="row">
+    				<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light19.jpg' %}" class="img-responsive">
+                    	</div>
+                        <div class="col-md-6"><h2>Avocado</h2>
+                        </div>
+	                </div>
+					<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light20.jpg' %}" class="img-responsive">
+                        </div>
+                    	<div class="col-md-6"><h2>Eggs</h2>
+                        </div>
+                    </div>
+					<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light21.jpg' %}" class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>Sweet fried plantains</h2>
+                        </div>
+                    </div>
+					<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light22.jpg' %}" class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>American cheese</h2>
+                        </div>
+                    </div>
+					<div class="col-md-6">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light23.jpg' %}" class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>Fresh cheese</h2>
+                        </div>
+                    </div>
+                    Addicional player from line up
+      			</div>
+      			<div class="modal-footer">
+        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      			</div>
+    		</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="myModal5" >
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">SAUCES</h4>
+      		</div>
+      		<div class="modal-body">
+      			<div class="row">
+    				<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light29.jpg' %}" class="img-responsive">
+                    	</div>
+                        <div class="col-md-6"><h2>Strike (guasacaca)</h2>
+                        </div>
+	                </div>
+					<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light30.jpg' %}" class="img-responsive">
+                        </div>
+                    	<div class="col-md-6"><h2>Rolling (tartar)</h2>
+                        </div>
+                    </div>
+					<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light28.jpg' %}" class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>Swing (pink)</h2>
+                        </div>
+                    </div>
+					<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light31.jpg' %}" class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>Wild Pitch (hot & spice)</h2>
+                        </div>
+                    </div>
+      			</div>
+      			<div class="modal-footer">
+        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      			</div>
+    		</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="myModal6" >
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">SOFT DRINKS </h4>
+      		</div>
+      		<div class="modal-body">
+      			<div class="row">
+    				<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light24.jpg' %}" class="img-responsive">
+                    	</div>
+                        <div class="col-md-6"><h2>Soda</h2>$ 1.00 
+                        </div>
+	                </div>
+					<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light25.jpg' %}" class="img-responsive">
+                        </div>
+                    	<div class="col-md-6"><h2>Juice</h2>$ 1.00 
+                        </div>
+                    </div>
+					<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light26.jpg' %}" class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>Water</h2>$ 1.00 
+                        </div>
+                    </div>
+					<div class="col-md-6 ligtc0">
+                    	<div class="col-md-6"><img src="{% static 'website/img/light27.jpg' %}" class="img-responsive">
+                        </div>
+                        <div class="col-md-6"><h2>Natural Juice</h2>$ 1.00 
+                        </div>
+                    </div>
+      			</div>
+      			<div class="modal-footer">
+        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      			</div>
+    		</div>
+		</div>
+	</div>
+</div>
+
+
 <div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -271,16 +566,16 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">LINE UP PLAYERS</h4>
       </div>
-      <div class="modal-body">
-        1B Shredded meat - carne mechada</br>
-        2B Shredded chicken - pollo mechado</br>
-        SS Pulled pork - pernil</br>
-        3B Fish - pescado</br>
-        LF Chicken salad - reina pepiada</br>
-        CF Ham - jamón</br>
-        RF Black beans - caraotas negras</br>
-        DH American cheese - queso americano</br>
-        C  Fresh cheese - queso fresco
+      <div class="modal-body mini3">
+        <strong>1B</strong> Shredded meat - carne mechada</br>
+        <strong>2B</strong> Shredded chicken - pollo mechado</br>
+        <strong>SS</strong> Pulled pork - pernil</br>
+        <strong>3B</strong> Fish - pescado</br>
+        <strong>LF</strong> Chicken salad - reina pepiada</br>
+        <strong>CF</strong> Ham - jamón</br>
+        <strong>RF</strong> Black beans - caraotas negras</br>
+        <strong>DH</strong> American cheese - queso americano</br>
+        <strong>C</strong>  Fresh cheese - queso fresco
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -295,7 +590,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">ON THE BENCH</h4>
       </div>
-      <div class="modal-body">
+      <div class="modal-body mini4">
         Add as much players as you want for just  $ 0.99 each</br>
         Avocado</br>
         Eggs</br>
@@ -315,7 +610,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">SAUCES</h4>
       </div>
-      <div class="modal-body">
+      <div class="modal-body mini5">
         Strike (guasacaca)</br>
         Rolling (tartar)</br>
         Swing (pink)</br>
@@ -334,10 +629,11 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">SOFT DRINKS ($ 1.00 each)</h4>
       </div>
-      <div class="modal-body">
+      <div class="modal-body mini6">
         Soda</br>
         Juice</br>
         Water</br>
+        Natural Juice</br>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
