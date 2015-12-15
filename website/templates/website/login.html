@@ -87,6 +87,13 @@
                         <div>
                             {{ field }}
                         </div>
+                        {% if field.errors %}
+                        <div>
+                            {% for error in field.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
                         {% endfor %}
                         <div>
                             <button class="btn btn-default submit" href="">Create Account</button>

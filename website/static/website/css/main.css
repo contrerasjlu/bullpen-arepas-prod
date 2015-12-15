@@ -2853,3 +2853,13 @@ padding:10px;border-bottom:1px solid #e5e5e5;
 .ligtc0{
 	padding-bottom:10px;
 }
+
+section#info{
+  background-color: #fff;
+  visibility: visible;
+  animation-duration: 500ms; 
+  animation-delay: 300ms; 
+  animation-name: fadeInRight;
+  min-height: 660px;
+  padding-top: 50px;
+}

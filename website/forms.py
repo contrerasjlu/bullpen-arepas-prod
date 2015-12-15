@@ -3,6 +3,7 @@
 # Fecha: 05/11/2015
 
 from django.forms import ModelForm, widgets, NumberInput
+from django.contrib.auth.models import User
 from django import forms
 from ordertogo.models import *
 
@@ -111,6 +112,27 @@ class CreateAccountForm(forms.Form):
         label="Password", 
         widget=forms.PasswordInput(attrs={'class': 'form-control','placeholder':'Password'})
     )
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+
+        try:
+            User.objects.get(username=username)
+        except User.DoesNotExist:
+            return username
+        else:
+            raise forms.ValidationError("User Taken")
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+
+        try:
+            User.objects.get(email=email)
+        except User.DoesNotExist:
+            return email
+        else:
+            raise forms.ValidationError("Email Taken")
+
 
 class PaymentForm(forms.Form):
     name_on_card = forms.CharField(

@@ -282,7 +282,9 @@ def create_account(request):
 			user = User.objects.create_user(
 				username = request.POST['username'],
 				password = request.POST['password'],
-				email = request.POST['email']
+				email = request.POST['email'],
+				first_name = request.POST['firstname'],
+				last_name = request.POST['lastname']
 				)
 			user.save()
 			username = request.POST['username']
