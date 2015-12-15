@@ -1,247 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-{% load static %}
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <title>Bullpen Arepas</title>
-    <link href="{% static 'website/css/fullcalendar.css' %}" rel="stylesheet" />
-	<link href="{% static 'website/css/fullcalendar.print.css' %}" rel='stylesheet' media='print' />
-    <link href="{% static 'website/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'website/css/font-awesome.min.css' %}" rel="stylesheet">
-    <link href="{% static 'website/css/animate.min.css' %}" rel="stylesheet"> 
-    <link href="{% static 'website/css/lightbox.css' %}" rel="stylesheet"> 
-	<link href="{% static 'website/css/main.css' %}" rel="stylesheet">
-	<link href="{% static 'website/css/responsive.css' %}" rel="stylesheet">
-	<link href="{% static 'website/css/calendar.css' %}" rel="stylesheet">    
-    <script type="text/javascript" src="{% static 'website/js/jquery.js' %}"></script>
-    <script type="text/javascript" src="{% static 'website/js/bootstrap.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'website/js/lightbox.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'website/js/wow.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'website/js/main.js' %}"></script>
-    <script type="text/javascript" src="{% static 'website/js/audio.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'website/js/modal.js' %}"></script>
-	<script src="{% static 'website/js/moment.min.js' %}"></script>
-    <script src="{% static 'website/js/jquery.min.js' %}"></script>
-    <script src="{% static 'website/js/fullcalendar.min.js' %}"></script>
-    <script src="{% static 'website/js/gcal.js' %}"></script> 
-    <script type="text/javascript" src="{% static 'website/js/infocalendar.js' %}"></script>    
-    <script type="text/javascript">
-	
-  audiojs.events.ready(function() {
-    var as = audiojs.createAll();
-  });
-</script> 
-    <!--[if lt IE 9]>
-	    <script src="js/html5shiv.js"></script>
-	    <script src="js/respond.min.js"></script>
-    <![endif]-->       
-    <link rel="shortcut icon" href="{% static 'website/img/bullpen.ico' %}">
+  {% load static %}
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="">
+      <meta name="author" content="">
+      <title>Bullpen Arepas</title>
+      <link href="{% static 'website/css/fullcalendar.css' %}" rel="stylesheet" />
+  <link href="{% static 'website/css/fullcalendar.print.css' %}" rel='stylesheet' media='print' />
+  <link href="{% static 'website/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'website/css/font-awesome.min.css' %}" rel="stylesheet">
+  <link href="{% static 'website/css/animate.min.css' %}" rel="stylesheet"> 
+  <link href="{% static 'website/css/lightbox.css' %}" rel="stylesheet"> 
+  <link href="{% static 'website/css/main.css' %}" rel="stylesheet">
+  <link href="{% static 'website/css/responsive.css' %}" rel="stylesheet">
+  <link href="{% static 'website/css/calendar.css' %}" rel="stylesheet">    
+  <script type="text/javascript" src="{% static 'website/js/jquery.js' %}"></script>
+  <script type="text/javascript" src="{% static 'website/js/bootstrap.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'website/js/lightbox.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'website/js/wow.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'website/js/main.js' %}"></script>
+  <script type="text/javascript" src="{% static 'website/js/audio.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'website/js/modal.js' %}"></script>
+  <script src="{% static 'website/js/moment.min.js' %}"></script>
+  <script src="{% static 'website/js/jquery.min.js' %}"></script>
+  <script src="{% static 'website/js/fullcalendar.min.js' %}"></script>
+  <script src="{% static 'website/js/gcal.js' %}"></script> 
+  <script type="text/javascript" src="{% static 'website/js/infocalendar.js' %}"></script>    
+  <script type="text/javascript">
+  	
+    audiojs.events.ready(function() {
+      var as = audiojs.createAll();
+    });
+  </script> 
+  <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <script src="js/respond.min.js"></script>
+  <![endif]-->       
+  <link rel="shortcut icon" href="{% static 'website/img/bullpen.ico' %}">
 </head><!--/head-->
 
 <body>
 	<header id="header" class="navbar-inverse navbar-fixed-top" role="navigation">      
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-12 overflow">
-                   <div class="social-icons pull-right">
-                    </div> 
-                </div>
-             </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12 overflow">
+          <div class="social-icons pull-right"></div> 
         </div>
-        <div class="navbar navbar-inverse" role="banner">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
+      </div>
+    </div>
+    <div class="navbar navbar-inverse" role="banner">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
 				</div>
-                <div class="collapse navbar-collapse">
+        <div class="collapse navbar-collapse">
 					<ul class="nav navbar-nav">
-                    	<li>
-                        	<a href="#home-slider" data-toggle="collapse" data-target=".navbar-collapse">Home</a>
-                        </li>
-                    	<li>
-                        	<a href="#home-slider2" data-toggle="collapse" data-target=".navbar-collapse">On The Game</a>
-                        </li>
-                    	<li>
-                        	<a href="#info" aria-expanded="false" data-toggle="collapse" data-target=".navbar-collapse">Info</a>
-                        </li> 
-                    	<li>
-                        <a href="#calendar" data-toggle="collapse" data-target=".navbar-collapse">Calendar</a>
-                        </li>
-                        {% if status %}
-                        <li>
-                        <a href="{% url 'website:menu' %}" data-toggle="collapse" data-target=".navbar-collapse">Order Now</a>
-                        </li>
-                      {% endif %}
-                	</ul>
-                	<p class="navbar-text pull-right">
-                    	<a class="pull-right socialia" href="https://instagram.com/bullpenarepas/" target="_blank"><img src="{% static 'website/img/i2.png' %}" hclass="img-responsive" alt=""></a>   
-                        <a class="pull-right socialia" href="https://twitter.com/bullpenarepas" target="_blank"><img src="{% static 'website/img/t2.png' %}" class="img-responsive" alt=""></a>
-                        <a class="pull-right socialia" href="https://www.facebook.com/BullpenArepas/" target="_blank"><img src="{% static 'website/img/f2.png' %}" hclass="img-responsive" alt=""></a>					
-                    </p>
-                </div>
-            </div>
+            <li>
+              <a href="#home-slider" data-toggle="collapse" data-target=".navbar-collapse">Home</a>
+            </li>
+            <li>
+              <a href="#home-slider2" data-toggle="collapse" data-target=".navbar-collapse">On The Game</a>
+            </li>
+            <li>
+              <a href="#info" data-toggle="collapse" data-target=".navbar-collapse">Info</a>
+            </li> 
+            <li>
+              <a href="#calendar" data-toggle="collapse" data-target=".navbar-collapse">Calendar</a>
+            </li>
+            {% if status %}
+            <li>
+              <a href="{% url 'website:menu' %}" data-toggle="collapse" data-target=".navbar-collapse">Order Now</a>
+            </li>
+            {% endif %}
+          </ul>
+          <p class="navbar-text pull-right">
+            <a class="pull-right socialia" href="https://instagram.com/bullpenarepas/" target="_blank"><img src="{% static 'website/img/i2.png' %}" hclass="img-responsive" alt=""></a>   
+            <a class="pull-right socialia" href="https://twitter.com/bullpenarepas" target="_blank"><img src="{% static 'website/img/t2.png' %}" class="img-responsive" alt=""></a>
+            <a class="pull-right socialia" href="https://www.facebook.com/BullpenArepas/" target="_blank"><img src="{% static 'website/img/f2.png' %}" hclass="img-responsive" alt=""></a>					
+          </p>
+        </div>
+      </div>
 		</div>
-    </header>
-    <!--/#header-->
-    <section id="home-slider">
-        <div class="container">
+  </header><!--/#header-->
+  <section id="home-slider">
+    <div class="container">
+      <div class="row">
+        <div class="main-slider">
+          <div class="container">
             <div class="row">
-                <div class="main-slider">
-                	<div class="container">
-            			<div class="row">
-                			<div class="single-features">
-                    			<div class="col-md-4 wow fadeInLeft" data-wow-duration="500ms" data-wow-delay="300ms">
-                     				<h1><img src="{% static 'website/img/Logo_mini.png' %}" class="img-responsive" alt=""></h1>
-                    			</div>
-                    			<div class="col-md-5 col-xs-12 col-md-offset-2 wow  bgm_div left fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
-                   					<div class="">
-                                    	<h1 class="center">Bullpen Arepas</h1>
-                        				<P>Enjoy the best tasting Venezuelan food aboard our Food Truck Bullpen Arepas. As we travel all of Georgia with our Baseball inspired Food Truck we offer fans of Professional Baseball the possibility of tasting the most delicious Arepas with the best ingredients around. </br></br></P>
-                                 			<audio src="{% static 'website/audio/Bulpen_Jingle_mediana.m4a' %}" preload="auto" />
-                                    </div>
-                                </br><img src="{% static 'website/img/arepa1.jpg' %}" align="center" class="img-responsive" ></div>
-                			</div>
-                		</div>
-            		</div>
-        		</div>
+              <div class="single-features">
+                <div class="col-md-4 wow fadeInLeft" data-wow-duration="500ms" data-wow-delay="300ms">
+                  <h1>
+                    <img src="{% static 'website/img/Logo_mini.png' %}" class="img-responsive" alt="Bullpen Arepas">
+                  </h1>
+                </div>
+                <div class="col-md-5 col-xs-12 col-md-offset-2 wow  bgm_div left fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
+                  <div class="">
+                    <h1 class="center">Bullpen Arepas</h1>
+                    <P>Enjoy the best tasting Venezuelan food aboard our Food Truck Bullpen Arepas. As we travel all of Georgia with our Baseball inspired Food Truck we offer fans of Professional Baseball the possibility of tasting the most delicious Arepas with the best ingredients around.</br></br>
+                    </P>
+                    <audio src="{% static 'website/audio/Bulpen_Jingle_mediana.m4a' %}" preload="auto" />
+                  </div>
+                  </br>
+                  <img src="{% static 'website/img/arepa1.jpg' %}" align="center" class="img-responsive">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 			</div>
 		</div>
-        <div class="preloader"><i class="fa fa-sun-o fa-spin"></i></div>
+    <div class="preloader"><i class="fa fa-sun-o fa-spin"></i></div>
 	</section>
-    <section id="features">
-    	<div class="container">
-            <div class="row">
-                <div >
-                    <div class="col-sm-12 col-sx-12 wow" data-wow-duration="500ms" data-wow-delay="300ms">
-                        </br></br></br></br><h1>The Arepa</h1>
-                        <P>Many may ask, “What is an Arepa”? It’s simple. An Arepa is a circular shaped bread made of white corn flour. Arepas can either be served baked or fried depending on the liking of the person. The Arepa is native to Venezuelan culture although you can find arepas in Colombia, Panama, Puerto Rico, Dominican Republic and the Canary Islands. At Bullpen Arepa we prepare authentic Venezuelan Arepas that are gluten free, and that filled with the best fresh ingredients and best taste.</br></br></br></P>
+  <section id="features">
+    <div class="container">
+      <div class="row">
+          <div class="col-sm-12 col-sx-12 wow" data-wow-duration="500ms" data-wow-delay="300ms">
+            </br></br></br></br>
+            <h1>The Arepa</h1>
+            <P>Many may ask, “What is an Arepa”? It’s simple. An Arepa is a circular shaped bread made of white corn flour. Arepas can either be served baked or fried depending on the liking of the person. The Arepa is native to Venezuelan culture although you can find arepas in Colombia, Panama, Puerto Rico, Dominican Republic and the Canary Islands. At Bullpen Arepa we prepare authentic Venezuelan Arepas that are gluten free, and that filled with the best fresh ingredients and best taste.
+            </br></br></br>
+            </P>
+          </div>
 					<div id="myCarousel" class="carousel slide" data-ride="carousel">
-  <!-- Indicators -->
-                  <ol class="carousel-indicators">
-                    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                    <li data-target="#myCarousel" data-slide-to="1"></li>
-                  </ol>
-                    <!-- Wrapper for slides -->
-                  <div class="carousel-inner" role="listbox">
-                    <div class="item active">
-                      <img src="{% static 'website/img/c1.jpeg' %}">
-                    </div>
-                
-                    <div class="item">
-                      <img src="{% static 'website/img/c2.jpeg' %}">
-                    </div>
-                  
-                    <!-- Left and right controls -->
-                  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                  </a>
-                  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                  </a>
-                  </div></br></br>
-                </div>
-				</div>
+            <ol class="carousel-indicators">
+              <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+              <li data-target="#myCarousel" data-slide-to="1"></li>
+            </ol>
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner" role="listbox">
+              <div class="item active">
+                <img src="{% static 'website/img/c1.jpeg' %}">
+              </div>
+              <div class="item">
+                <img src="{% static 'website/img/c2.jpeg' %}">
+              </div>
+              <!-- Left and right controls -->
+              <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+              </a>
+              <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+              </a>
             </div>
-        </div>
-    </section>
+            </br></br>
+          </div>
+				</div>
+      </div>
+    </div>
+  </section>
 	<section id="home-slider2">
 		<div class="container">
+      <div class="row">
+        <div class="main-slider2 animate-in">
+          <div class="container">
             <div class="row">
-                <div class="main-slider2 animate-in">
-                	<div class="container">
-                    	<div class="row">
-                        	<div class="single-features">
-                            	<div class="col-sm-12 wow fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
-                                	<h1>On The Game</h1>
-                                    <P></br>Choose between baked or fried to start with, then fill in the Arepas with your favorite players of choice, you can also add any player that is on the bench to go with your Arepa. To go along with your Arepa you can choose from a variety of delicious sauces. Make your own combinations and enjoy the taste of a Home Run. </P>
-                                    <h2 class="circle"  data-toggle="modal"  data-target="#myModal7">Suggested Plays</h2>
-                           	  </div>
+              <div class="single-features">
+                <div class="col-sm-12 wow fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
+                  <h1>On The Game</h1>
+                  <P></br>Choose between baked or fried to start with, then fill in the Arepas with your favorite players of choice, you can also add any player that is on the bench to go with your Arepa. To go along with your Arepa you can choose from a variety of delicious sauces. Make your own combinations and enjoy the taste of a Home Run. </P>
+                  <h2 class="circle"  data-toggle="modal"  data-target="#myModal7">Suggested Plays</h2>
+                </div>
 							</div>
 							<div class="clients-logo wow fadeIn" data-wow-duration="1000ms" data-wow-delay="600ms">
 								<div class="col-xs-4 col-sm-2" align="center" >
-                            		<a ><img src="{% static 'website/img/1.jpg' %}"  align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal" data-target="#myModal1" a></a>
-                            		<h3>Baked or Fried Arepas</h3>
-                        		</div>
-                        		<div class="col-xs-4 col-sm-2" align="center" >
-                            		<a ><img src="{% static 'website/img/2.jpg' %}"  align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal" data-target="#myModal2" ></a>
-                            		<h3>Little League</h3>
-                        		</div>
-                         		<div class="col-xs-4 col-sm-2" align="center" >
-                            		<a ><img src="{% static 'website/img/3.jpg' %}"  align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal3"></a>
-                            		<h3>Line Up Players</h3>
-                        		</div>
+                  <a>
+                    <img src="{% static 'website/img/1.jpg' %}" align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal" data-target="#myModal1">
+                  </a>
+                  <h3>Baked or Fried Arepas</h3>
+                </div>
+                <div class="col-xs-4 col-sm-2" align="center" >
+                  <a>
+                    <img src="{% static 'website/img/2.jpg' %}"  align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal" data-target="#myModal2">
+                  </a>
+                  <h3>Little League</h3>
+                </div>
+                <div class="col-xs-4 col-sm-2" align="center" >
+                  <a>
+                    <img src="{% static 'website/img/3.jpg' %}" align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal3">
+                  </a>
+                  <h3>Line Up Players</h3>
+                </div>
 								<div class="col-xs-4 col-sm-2" align="center" >
-                            		<a ><img src="{% static 'website/img/6.jpg' %}" align="center"  class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal4"></a>
+                  <a>
+                    <img src="{% static 'website/img/6.jpg' %}" align="center"  class="img-responsive img-circle circle" alt="" data-toggle="modal" data-target="#myModal4">
+                  </a>
 									<h3>On The Bench</h3>
-                        		</div>
-                         		<div class="col-xs-4 col-sm-2" align="center" >
-                            		<a ><img src="{% static 'website/img/4.jpg' %}" align="center"  class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal5"></a>
-                            		<h3>Sauces</h3>
-                        		</div>
-                         		<div class="col-xs-4 col-sm-2" align="center" >
-                            		<a ><img src="{% static 'website/img/5.jpg' %}"  align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal6"></a>
-                            		<h3>Soft Drinks</h3>
-                        		</div>
-                    		</div>
-                		</div>
-            		</div>
-        		</div> 
-    		</div>
+                </div>
+                <div class="col-xs-4 col-sm-2" align="center" >
+                  <a>
+                    <img src="{% static 'website/img/4.jpg' %}" align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal5">
+                  </a>
+                  <h3>Sauces</h3>
+                </div>
+                <div class="col-xs-4 col-sm-2" align="center" >
+                  <a>
+                    <img src="{% static 'website/img/5.jpg' %}"  align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal" data-target="#myModal6">
+                  </a>
+                  <h3>Soft Drinks</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> 
+    	</div>
 		</div>
 	</section>
-     <!--/#features-->
-	<div class="inver-fondo inver-ico">	
-	<div id="info" class="container">
+  <section id="info">
+  <div class="container inver-fondo inver-ico">	
 		<div class="row">
-    		<div class="single-features">
-        		<div style="visibility: visible; animation-duration: 500ms; animation-delay: 300ms; animation-name: fadeInRight;" class="col-md-offset-1 col-sm-5 inver-ico wow fadeInRight animated" data-wow-duration="500ms" data-wow-delay="300ms">
-            		<h1></br>Info</h1>
-                	<p>You can contact us  through our new webpage or follow us on   a number of social media pages for the latest updates from us.</p>
-              		<div class="clients-logo" align="center">
-                   		<div class="col-xs-2 col-sm-2 socialib" align="center" >
-                        	<a href="https://www.facebook.com/BullpenArepas/" target="_blank"><img src="{% static 'website/img/f.png' %}"  alt=""></a>	
-                    	</div>
-                        <div class="col-xs-2 col-sm-2 socialib" align="center" >
-                        	<a href="https://twitter.com/bullpenarepas" target="_blank"><img src="{% static 'website/img/t.png' %}"  alt=""></a>
-					  	</div>
-                        <div class="col-xs-2 col-sm-2 socialib" align="center" >
-                        	<a href="https://instagram.com/bullpenarepas/" target="_blank"><img src="{% static 'website/img/i.png' %}"  alt=""></a>
-                      	</div>   
-					</div>
-				</div> 
-				<div class="col-xs-4 col-md-4 col-sm-12 fadeInRight">
-                    <div class="contact-form bottom">
-                    <h1 ></br>Send a message</h1>
-                       	<form id="main-contact-form" name="contact-form" method="post" action="sendemail.php">
-                           	<div class="form-group">
-                               	<input type="text" name="name" class="form-control" required="required" placeholder="Name">
-                           	</div>
-                           	<div class="form-group">
-                               	<input type="email" name="email" class="form-control" required="required" placeholder="Email Id">
-                           	</div>
-                           	<div class="form-group">
-                               	<textarea name="message" id="message" required="required" class="form-control" rows="8" placeholder="Your text here"></textarea>
-                           	</div>                        
-                           	<div class="form-group">
-                               	<input type="submit" name="submit" class="btn btn-submit" value="Submit">
-                           	</div>
-                       	</form>
-                    </div>
-                </div>
+    	<div class="single-features">
+        <div class="col-xs-6 col-md-6 col-sm-6 wow fadeInRight animated" data-wow-duration="500ms" data-wow-delay="300ms" id="left-info">
+          <h1>Info</h1>
+          <p>You can contact us  through our new webpage or follow us on 
+          a number of social media pages for the latest updates from us.</p>
+          <div class="clients-logo" align="center">
+            <div class="col-xs-2 col-sm-2 socialib" align="center" >
+              <a href="https://www.facebook.com/BullpenArepas/" target="_blank">
+                <img src="{% static 'website/img/f.png' %}" alt="facebook.com/BullpenArepas/">
+              </a>
+            </div>
+            <div class="col-xs-2 col-sm-2 socialib" align="center" >
+              <a href="https://twitter.com/bullpenarepas" target="_blank">
+                <img src="{% static 'website/img/t.png' %}" alt="twitter.com/bullpenarepas">
+              </a>
+					  </div>
+            <div class="col-xs-2 col-sm-2 socialib" align="center" >
+              <a href="https://instagram.com/bullpenarepas/" target="_blank">
+                <img src="{% static 'website/img/i.png' %}" alt="instagram.com/bullpenarepas/">
+              </a>
+            </div>   
+				  </div>
+				</div>
+				<div class="col-xs-6 col-md-6 col-sm-6 fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms"id="right-info">
+          <div class="contact-form bottom">
+            <h1>Send a message</h1>
+            <form id="main-contact-form" name="contact-form" method="post" action="sendemail.php">
+              <div class="form-group">
+                <input type="text" name="name" class="form-control" required="required" placeholder="Name">
+              </div>
+              <div class="form-group">
+                <input type="email" name="email" class="form-control" required="required" placeholder="Email">
+              </div>
+              <div class="form-group">
+                <textarea name="message" id="message" required="required" class="form-control" rows="8" placeholder="Your text here"></textarea>
+              </div>
+              <div class="form-group">
+                <input type="submit" name="submit" class="btn btn-submit" value="Submit">
+              </div>
+            </form>
+          </div>
+        </div>
 			</div>
-    	</div>
-	</div>
     </div>
+	</section>
     
     
     
