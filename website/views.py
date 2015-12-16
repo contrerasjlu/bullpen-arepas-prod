@@ -72,6 +72,16 @@ def cart(request):
 				else:
 					the_extras = 0
 
+				if not item['vegetables'] == None:
+					the_vegetables = []
+					for vegetable in item['vegetables']:
+						v = product.objects.get(pk=vegetable)
+						the_vegetables.append(v.name + ' (' + v.description + ')')
+						price += v.price
+
+				else:
+					the_vegetables = 0
+
 				if not item['paid_extras'] == None:
 					the_paid_extras = []
 					for paid_extra in item['paid_extras']:
@@ -95,6 +105,7 @@ def cart(request):
 				the_item_type = item['type']
 				the_extras = 0
 				the_paid_extras = 0
+				the_vegetables = 0
 				the_sauces = 0
 
 			if not item['soft_drinks'] == '':
@@ -111,6 +122,7 @@ def cart(request):
 						'image' : a.image,
 						'type': the_item_type,
 						'extras' : the_extras,
+						'vegetables': the_vegetables,
 						'paid_extras' : the_paid_extras,
 						'sauces':the_sauces,
 						'soft_drinks':the_drink,
@@ -180,6 +192,13 @@ def ProductDetail(request,id_for_prod):
 
 			if arepa.is_valid():
 				
+				if 'vegetables' in request.POST:
+					vegetables = []
+					for i in request.POST.getlist('vegetables'):
+						vegetables.append(i)
+				else:
+					vegetables = None
+
 				if 'paid_extras' in request.POST:
 					paid_extras = []
 					for i in request.POST.getlist('paid_extras'):
@@ -205,6 +224,7 @@ def ProductDetail(request,id_for_prod):
 					'type' : 'Arepa',
 					'product_id':request.POST['id_for_product'],
 					'arepa_type':request.POST['arepa_type'],
+					'vegetables':vegetables,
 					'extras':extras,
 					'paid_extras': paid_extras,
 					'sauces':sauces,
@@ -300,6 +320,48 @@ def create_account(request):
 			context = {}
 			context['new_user'] = CreateAccountForm(request.POST)
 			return render(request, 'website/login.html', context)
+
+
+@login_required(login_url='website:login-auth')
+def ViewCart(request):
+	context = cart(request)
+	if context['status']==False:
+		return HttpResponseRedirect(reverse('website:closed'))
+
+	if context['cart_is_empty'] == True:
+		return HttpResponseRedirect(reverse('website:menu'))
+
+	context['tax'] = float(load_vars('tax.percent'))*100
+	
+	return render(request, 'website/cart-view.html', context)
+
+@login_required(login_url='website:login-auth')
+def DeleteItem(request, item):
+	context = cart(request)
+	if context['status']==False:
+		return HttpResponseRedirect(reverse('website:closed'))
+
+	if context['cart_is_empty'] == True:
+		return HttpResponseRedirect(reverse('website:menu'))
+
+	the_session_cart = context['cart']
+	item = int(item)
+	enumerate(the_session_cart)
+	the_session_cart.pop(item)
+	request.session['cart'] = the_session_cart
+
+	return HttpResponseRedirect(reverse('website:view-cart'))
+
+
+@login_required(login_url='website:login-auth')
+def OrderHistory(request):
+	context = cart(request)
+	if context['status']==False:
+		return HttpResponseRedirect(reverse('website:closed'))
+
+	context['orders'] = Order.objects.filter(user=request.user).order_by('-id')
+
+	return render(request, 'website/order-history.html', context)
 
 
 @login_required(login_url='website:login-auth')
@@ -517,6 +579,21 @@ def checkout(request):
 							extras_detail.save()
 					
 					try:
+						if not item['vegetables'] == None:
+							for vegetable in item['vegetables']:
+								vegetables_detail = OrderDetail(
+																item=this_detail.item,
+																arepa_type='Vegetables',
+																product_selected=product.objects.get(pk=vegetable),
+																order_number=Order.objects.get(pk=this_order.id)
+																)
+								vegetables_detail.save()
+
+					except KeyError:
+						pass
+
+
+					try:
 						if not item['paid_extras'] == None:
 							for paid_extra in item['paid_extras']:
 								paid_extras_detail = OrderDetail(
@@ -586,6 +663,8 @@ def checkout(request):
 				request.session['finish'] = True
 				#send_invoice_email()
 				return HttpResponseRedirect(reverse('website:thankyou'))
+		else:
+			context['pay_form'] = PaymentForm(request.POST)
 
 	return render(request, 'website/invoice.html', context)
 

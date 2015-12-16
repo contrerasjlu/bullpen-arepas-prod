@@ -22,7 +22,7 @@
                             <div class="row">
                                 <div class="col-xs-12 invoice-header">
                                     <h1>
-                                        <i class="fa fa-globe"></i> Bullpen Arepas.
+                                        Bullpen Arepas.
                                         <small class="pull-right">{% now "F jS Y" %}</small>
                                     </h1>
                                 </div>
@@ -74,16 +74,31 @@
                                                         <li>{{ item.type }}</li>
                                                         <div class="clearfix"></div>
                                                     {% if not item.extras == 0 %}
-                                                        <li>Extras:</li>
+                                                        <li>Players:</li>
                                                         <ul>
                                                     {% for extras in item.extras %}
                                                         <li>{{ extras }}</li>
                                                     {% empty %}
-                                                        <li>No Extras</li>
+                                                        <li>No Players</li>
                                                     {% endfor %}
                                                         </ul>
                                                     {% else %}
-                                                        <li>No Extras</li>
+                                                        <li>No Players</li>
+                                                    {% endif %}
+                                                    </ul>
+                                                    <div class="clearfix"></div>
+                                                    <ul>
+                                                    {% if not item.vegetables == 0 %}
+                                                        <li>Vegetables:</li>
+                                                        <ul>
+                                                    {% for vegetable in item.vegetables %}
+                                                        <li>{{ vegetable }}</li>
+                                                    {% empty %}
+                                                        <li>No Vegetables</li>
+                                                    {% endfor %}
+                                                        </ul>
+                                                    {% else %}
+                                                        <li>No Vegetables</li>
                                                     {% endif %}
                                                     </ul>
                                                     <div class="clearfix"></div>
@@ -94,7 +109,7 @@
                                                     {% for paid_extras in item.paid_extras %}
                                                         <li>{{ paid_extras }}</li>
                                                     {% empty %}
-                                                        <li>No Paid Extras</li>
+                                                        <li>No Bench Players</li>
                                                     {% endfor %}
                                                         </ul>
                                                     {% else %}
@@ -165,6 +180,7 @@
                                     <img src="{% static 'website/v2/images/visa.png' %}" alt="Visa">
                                     <img src="{% static 'website/v2/images/mastercard.png' %}" alt="Mastercard">
                                     <img src="{% static 'website/v2/images/american-express.png' %}" alt="American Express">
+                                    <hr>
                                     <form class="form-vertical form-label-left input_mask" method="post">
                                         {% if FailTrx %}
                                             <div class="form-control-static">
@@ -185,20 +201,26 @@
                                         {% endfor %}
                                         {% for field in pay_form %}
                                             {% if not field.is_hidden %}
-                                            <div class="col-md-9 col-sm-9 col-xs-12 form-group has-feedback">
-                                                <label class="control-label col-md-6 col-sm-6 col-xs-12">{{ field.label }}</label>
-                                                {{ field }}
-                                                <p><span class="fa fa-info-circle"> {{field.help_text}}</span></p>
-                                                {% if field.errors %}
-                                                <div class="alert">
-                                                {% for msj in field.errors %}
-                                                    {{ msj }}
-                                                {% endfor %}
+                                            <div class="row">
+                                                <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback">
+                                                    <label class="control-label">{{field.label}}</label>
                                                 </div>
-                                                {% endif %}
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    {{field}}
+                                                    <div class="clearfix"></div>
+                                                    <span class="fa fa-info-circle"> {{field.help_text}}</span>
+                                                    <div class="clearfix"></div>
+                                                    {% if field.errors %}
+                                                    {% for msj in field.errors %}
+                                                    <div class="col-md-3 col-sm-3 col-xs-12">
+                                                        <span class="label label-danger">{{ msj }}</span>
+                                                    </div>
+                                                    {% endfor %}
+                                                    {% endif %}
+                                                </div>
                                             </div>
-                                            <br>
                                             {% endif %}
+                                            <hr>
                                         {% endfor %}
                                         
                                     

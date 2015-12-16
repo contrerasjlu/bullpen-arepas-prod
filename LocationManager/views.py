@@ -262,6 +262,20 @@ class HandleOrderDetail(ListView):
 			else:
 				EXTRAS = 'Nothing'
 
+			this_vegetables = OrderDetail.objects.filter(
+				order_number_id=item.order_number_id,
+				item=item.item,
+				main_product=False,
+				arepa_type='Vegetables'
+				)
+
+			VEGETABLES = ''
+			if len(this_vegetables) > 0:
+				for vegetable in this_vegetables:
+					VEGETABLES = VEGETABLES + vegetable.product_selected.name + ', '
+			else:
+				VEGETABLES = 'No Vegetables'
+
 			this_paid_extras = OrderDetail.objects.filter(
 				order_number_id=item.order_number_id,
 				item=item.item,
@@ -315,7 +329,7 @@ class HandleOrderDetail(ListView):
 			'item': item.item,
 			'product':item.product_selected.name,
 			'code': item.product_selected.code,
-			'description': item.arepa_type + ' WITH: ' + EXTRAS + ' EXTRAS: ' + PAID_EXTRAS + ' SAUCES: ' + SAUCES + ' DRINK: ' + DRINK,
+			'description': item.arepa_type + ' WITH: ' + EXTRAS + ' VEGETABLES: ' + VEGETABLES + ' EXTRAS: ' + PAID_EXTRAS + ' SAUCES: ' + SAUCES + ' DRINK: ' + DRINK,
 			'subtotal' : sub
 			}
 			cart_for_context.append(this_item)

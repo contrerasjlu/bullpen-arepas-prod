@@ -23,6 +23,13 @@ class ArepaForm(forms.Form):
         initial='Baked'
     )
 
+    vegetables = forms.ModelMultipleChoiceField(
+        label='Vegetables',
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'flat'}),
+        queryset=product.objects.filter(Active=True,category=category.objects.get(code='vegetables')).order_by('order_in_menu')
+        )
+
     extras = forms.ModelMultipleChoiceField(
         label="Choose the Players with your Arepa...",
         required=True,
