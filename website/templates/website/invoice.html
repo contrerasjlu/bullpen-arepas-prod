@@ -31,6 +31,8 @@
                             <!-- info row -->
                             <div class="row invoice-info">
                                 <div class="col-sm-4 invoice-col">
+                                    <b>Client:</b> {{ user.first_name }} {{ user.last_name }}
+                                    <br>
                                     <b>Type of Sale:</b> {{ data_client.label_for_type_of_sale }}
                                     <br>
                                     <b>Order:</b> {{ order_number }}

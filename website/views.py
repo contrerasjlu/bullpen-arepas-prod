@@ -62,51 +62,45 @@ def cart(request):
 			a = product.objects.get(pk=item['product_id'])
 			price = a.price
 			
-			if item['type'] == 'Arepa':
-				the_item_type = item['arepa_type'] + ' ' + item['type']
-				if not a.extras == 0:
-					the_extras = []
-					for extra in item['extras']:
-						b = product.objects.get(pk=extra)
-						the_extras.append(b.name+ ' (' + b.description + ')')
-				else:
-					the_extras = 0
+			the_item_type = item['type']
 
-				if not item['vegetables'] == None:
-					the_vegetables = []
-					for vegetable in item['vegetables']:
-						v = product.objects.get(pk=vegetable)
-						the_vegetables.append(v.name + ' (' + v.description + ')')
-						price += v.price
+			if not a.extras == 0:
+				the_extras = []
+				for extra in item['extras']:
+					b = product.objects.get(pk=extra)
+					the_extras.append(b.name+ ' (' + b.description + ')')
+			else:
+				the_extras = 0
 
-				else:
-					the_vegetables = 0
-
-				if not item['paid_extras'] == None:
-					the_paid_extras = []
-					for paid_extra in item['paid_extras']:
-						c = product.objects.get(pk=paid_extra)
-						the_paid_extras.append(c.name+ ' (' + c.description + ')')
-						price += c.price
-
-				else:
-					the_paid_extras = 0
-
-				if not item['sauces'] == None:
-					the_sauces = []
-					for sauce in item['sauces']:
-						d = product.objects.get(pk=sauce)
-						the_sauces.append(d.name + ' (' + d.description + ')')
-
-				else:
-					the_sauces = 0
+			if not item['vegetables'] == None:
+				the_vegetables = []
+				for vegetable in item['vegetables']:
+					v = product.objects.get(pk=vegetable)
+					the_vegetables.append(v.name + ' (' + v.description + ')')
+					price += v.price
 
 			else:
-				the_item_type = item['type']
-				the_extras = 0
-				the_paid_extras = 0
 				the_vegetables = 0
+
+			if not item['paid_extras'] == None:
+				the_paid_extras = []
+				for paid_extra in item['paid_extras']:
+					c = product.objects.get(pk=paid_extra)
+					the_paid_extras.append(c.name+ ' (' + c.description + ')')
+					price += c.price
+
+			else:
+				the_paid_extras = 0
+
+			if not item['sauces'] == None:
+				the_sauces = []
+				for sauce in item['sauces']:
+					d = product.objects.get(pk=sauce)
+					the_sauces.append(d.name + ' (' + d.description + ')')
+
+			else:
 				the_sauces = 0
+
 
 			if not item['soft_drinks'] == '':
 				e = product.objects.get(pk=item['soft_drinks'])
@@ -164,14 +158,7 @@ def menu(request):
 	if context['status']==False:
 		return HttpResponseRedirect(reverse('website:closed'))
 
-	context['arepas'] = product.objects.filter(
-											   Active=True,
-											   category=category.objects.get(code='arepas')
-											   ).order_by('order_in_menu')
-	context['kids'] = product.objects.filter(
-								  			 Active=True,
-								  			 category=category.objects.get(code='kids')
-								  			 ).order_by('order_in_menu')
+	context['show_in'] = category.objects.filter(Active=True, show_in_menu=True).order_by('order')
 
 	try:
 		return render(request, 'website/plain_page.html', context)
@@ -186,104 +173,102 @@ def ProductDetail(request,id_for_prod):
 	context['product'] = get_object_or_404(product, pk=id_for_prod)
 
 	if request.POST:
-		if context['product'].category.code == 'arepas':
-			
-			arepa = ArepaForm(request.POST)
 
-			if arepa.is_valid():
-				
+		this_product = ArepaForm(request.POST)
+		if this_product.is_valid():
+			
+			# Si el producto permite Type
+			if context['product'].allow_type == True:
+				if 'arepa_type' in request.POST:
+					product_type = request.POST['arepa_type']
+				else:
+					product_type = None
+			else:
+				product_type = context['product'].category.name
+
+			# Si el producto permite Vegetales
+			if context['product'].allow_vegetables == True:
 				if 'vegetables' in request.POST:
 					vegetables = []
 					for i in request.POST.getlist('vegetables'):
 						vegetables.append(i)
 				else:
 					vegetables = None
+			else:
+				vegetables = None
 
+			# Si el producto permite Players
+			if context['product'].allow_extras == True:
+				if 'extras' in request.POST:
+					extras = []
+					for i in request.POST.getlist('extras'):
+						extras.append(i)
+				else:
+					extras = None
+			else:
+				extras = None
+
+			# Si el producto permite Bench Players
+			if context['product'].allow_paid_extras == True:
 				if 'paid_extras' in request.POST:
 					paid_extras = []
 					for i in request.POST.getlist('paid_extras'):
 						paid_extras.append(i)
 				else:
 					paid_extras = None
+			else:
+				paid_extras = None
 
+			
+			# Si el producto permite Sauces
+			if context['product'].allow_sauces == True:
 				if 'sauces' in request.POST:
 					sauces = []
 					for i in request.POST.getlist('sauces'):
 						sauces.append(i)
 				else:
 					sauces = None
+			else:
+				sauces = None
 
-				if context['product'].extras == 0:
-					extras = None
+			# Si el producto permite Drinks
+			if context['product'].allow_drinks == True:
+				if 'soft_drinks' in request.POST:
+					drinks = request.POST['soft_drinks']
 				else:
-					extras = []
-					for i in request.POST.getlist('extras'):
-						extras.append(i)
+					drinks = None
+			else:
+				drinks = None
 				
-				a = {
-					'type' : 'Arepa',
-					'product_id':request.POST['id_for_product'],
-					'arepa_type':request.POST['arepa_type'],
-					'vegetables':vegetables,
-					'extras':extras,
-					'paid_extras': paid_extras,
-					'sauces':sauces,
-					'soft_drinks':request.POST['soft_drinks']
-					}
+			a = {
+				'type' : product_type,
+				'product_id':request.POST['id_for_product'],
+				'arepa_type':product_type,
+				'vegetables':vegetables,
+				'extras':extras,
+				'paid_extras': paid_extras,
+				'sauces':sauces,
+				'soft_drinks':drinks
+				}
 
-				if 'cart' in request.session:
-					local_cart = request.session['cart']
-					local_cart.append(a)
-					request.session['cart'] = local_cart
+			if 'cart' in request.session:
+				local_cart = request.session['cart']
+				local_cart.append(a)
+				request.session['cart'] = local_cart
 
-				else:
-					local_cart = []
-					local_cart.append(a)
-					request.session['cart'] = local_cart
-
-				return HttpResponseRedirect(reverse('website:menu'))
 			else:
+				local_cart = []
+				local_cart.append(a)
+				request.session['cart'] = local_cart
 
-				html = 'website/arepa_wizard.html'
-				context['form'] = ArepaForm(request.POST)
+			return HttpResponseRedirect(reverse('website:menu'))
 		else:
-			kid_meal = KidForm(request.POST)
 
-			if kid_meal.is_valid():
-				a = {
-					'type': "Kid's Meal",
-					'product_id':request.POST['id_for_product'],
-					'soft_drinks':request.POST['soft_drinks']
-					}
-				if 'cart' in request.session:
-					local_cart = request.session['cart']
-					local_cart.append(a)
-					request.session['cart'] = local_cart
-
-				else:
-					local_cart = []
-					local_cart.append(a)
-					request.session['cart'] = local_cart
-
-				return HttpResponseRedirect(reverse('website:menu'))
-
-			else:
-				html = 'website/kid_wizard.html'
-				context['form'] = KidForm(request.POST)
-	else:
-		if context['product'].category.code == 'arepas':
 			html = 'website/arepa_wizard.html'
-			if context['product'].extras == 0:
-				context['pabellon'] = product.objects.get(code='RF')
-			context['form'] = ArepaForm(
-										initial={ 'id_for_product': id_for_prod }
-										)
-		else:
-			html = 'website/kid_wizard.html'
-			context['form'] = KidForm(
-									  initial={'id_for_product': id_for_prod}
-									 )
-
+			context['form'] = ArepaForm(request.POST)
+	else:
+		html = 'website/arepa_wizard.html'
+		context['form'] = ArepaForm(initial={ 'id_for_product': id_for_prod })
 	return render(request, html, context)
 
 def empty_cart(request):
@@ -344,10 +329,9 @@ def DeleteItem(request, item):
 	if context['cart_is_empty'] == True:
 		return HttpResponseRedirect(reverse('website:menu'))
 
-	the_session_cart = context['cart']
-	item = int(item)
-	enumerate(the_session_cart)
-	the_session_cart.pop(item)
+	the_session_cart = request.session['cart']
+	item = int(item) - 1
+	del the_session_cart[item]
 	request.session['cart'] = the_session_cart
 
 	return HttpResponseRedirect(reverse('website:view-cart'))

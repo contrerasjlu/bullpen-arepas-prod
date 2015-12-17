@@ -49,3 +49,9 @@ class OrderPaymentAdmin(admin.ModelAdmin):
 	search_fields = ['order_number','cardholder_name']
 
 admin.site.register(OrderPaymentDetail, OrderPaymentAdmin)
+
+class RelatedImagesAdmin(admin.ModelAdmin):
+	list_display = ['product','description']
+	search_fields = ['description']
+
+admin.site.register(RelatedImages, RelatedImagesAdmin)

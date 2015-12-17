@@ -17,10 +17,11 @@ class ArepaForm(forms.Form):
 
     arepa_type = forms.ChoiceField(
         label="Baked or Fried?",
-        required=True,
+        required=False,
         widget=forms.Select(attrs={'class': 'form-control'}),
         choices=(('Baked','Baked'),('Fried','Fried'),),
-        initial='Baked'
+        initial='Baked',
+        help_text="We can Fry your Arepa or make it in the Oven"
     )
 
     vegetables = forms.ModelMultipleChoiceField(
@@ -32,7 +33,7 @@ class ArepaForm(forms.Form):
 
     extras = forms.ModelMultipleChoiceField(
         label="Choose the Players with your Arepa...",
-        required=True,
+        required=False,
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'flat'}),
         queryset=product.objects.filter(Active=True,category=category.objects.get(code='extras')).order_by('order_in_menu')
     )
@@ -59,33 +60,22 @@ class ArepaForm(forms.Form):
         queryset=product.objects.filter(Active=True,category=category.objects.get(code='drinks')).order_by('order_in_menu'),
         empty_label="I don't want any Dirnk"
     )
-    '''
-    def clean_extras(self):
-        extras = self.cleaned_data.get('extras')
-        pk = self.cleaned_data.get('id_for_product')
 
-        info = product.objects.get(pk=pk)
+    def clean(self):
+        cleaned_data = super(ArepaForm, self).clean()
+        id_for_product = cleaned_data.get("id_for_product")
+        arepa_type = cleaned_data.get("arepa_type")
+        vegetables = cleaned_data.get("vegetables")
+        extras = cleaned_data.get("extras")
+        paid_extras = cleaned_data.get("paid_extras")
+        sauces = cleaned_data.get("sauces")
+        soft_drinks = cleaned_data.get("soft_drinks")
 
-        if not len(extras)==info.extras:
-            raise forms.ValidationError("return an error")
+        this_product = product.objects.get(pk=id_for_product)
 
-        return extras
-    '''
-
-class KidForm(forms.Form):
-
-    id_for_product = forms.IntegerField(
-        required=True,
-        widget=forms.HiddenInput()
-    )
-
-    soft_drinks = forms.ModelChoiceField(
-        label="Soft Drinks",
-        required=False,
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        queryset=product.objects.filter(Active=True,category=category.objects.get(code='drinks')).order_by('order_in_menu'),
-        empty_label="I don't want any Dirnk"
-    )
+        if (not this_product.extras == len(extras)) and this_product.allow_extras == True:
+            msg = "You must select %d Players for this product" % this_product.extras
+            self.add_error('extras', msg)
 
 class CreateAccountForm(forms.Form):
     firstname = forms.CharField(
