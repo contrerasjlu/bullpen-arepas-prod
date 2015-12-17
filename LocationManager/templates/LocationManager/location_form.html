@@ -27,10 +27,12 @@
                                             <small>{{ item.help_text }}</small>
                                             </div>
                                             {% if item.errors %}
-                                            <div class="alert">
+                                            <div class="clearfix"></div>
+                                            <div class="col-md-3 col-sm-3 col-xs-12">
                                             {% for error in item.errors %}
-                                                {{ error }}
+                                                <span class="label label-danger">{{ error }}</span>
                                             {% endfor %}
+                                            </div>
                                             {% endif %}
                                         </div>
                                 {% endfor %}

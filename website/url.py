@@ -26,6 +26,9 @@ urlpatterns = [
     url(r'^menu/checkout/type$', views.pre_checkout, name="pre_checkout"),
     url(r'^menu/checkout/payment$', views.checkout, name="checkout"),
     url(r'^menu/checkout/thankyou/$', views.thankyou, name="thankyou"),
-    url(r'^menu/empty-cart$', views.empty_cart, name="empty_cart"),
+    url(r'^menu/view-cart/$', views.ViewCart, name="view-cart"),
+    url(r'^menu/view-cart/delete-item/(?P<item>[0-9]+)/$', views.DeleteItem, name="delete-item"),
+    url(r'^menu/order-history/$', views.OrderHistory, name="order-history"),
+    url(r'^menu/empty-cart/$', views.empty_cart, name="empty_cart"),
     url(r'^menu/closed/$', views.closed, name="closed"),
 ]

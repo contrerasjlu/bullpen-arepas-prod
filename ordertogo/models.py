@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import User, Group
-from django.core.validators import MinValueValidator, MaxValueValidator, MinLengthValidator, MaxLengthValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, MinLengthValidator, MaxLengthValidator, ValidationError
 
 #Modelo para almacenar las categorias de las comidas ofrecidas
 class category(models.Model):
@@ -19,7 +19,11 @@ class category(models.Model):
 	#Indicador de estado
 	Active = models.BooleanField(default=True)
 
-	#Pudieramos necesitar una imagen para representar la categoria
+	#Indica si se muestra en el menu o no
+	show_in_menu = models.BooleanField(default=True)
+
+	#Indica el orden en el menu
+	order = models.IntegerField(default=0)
 
 	def __unicode__(self):
 		return self.name
@@ -27,7 +31,7 @@ class category(models.Model):
 #Modelo para almacenar los productos asociados a una categoria
 class product(models.Model):
 	#Clave foranea de la categoria -- Obligada
-	category = models.ForeignKey(category, related_name='product')
+	category = models.ForeignKey(category)
 
 	#Codigo --  Esta en veremos si tengo chance de catchar el ID adios al codigo
 	#           pudiera necesitar esto para algun parametro a tomar en cuenta
@@ -42,13 +46,24 @@ class product(models.Model):
 
 	#Extras, cantidad de extras permitidos por cada producto
 	#Cada extra debe estar en la capacidad de seleccionarse y no mas
-	extras = models.IntegerField(default=1)
+	extras = models.IntegerField(default=1, help_text='This item will not count if allow extras is not checked')
+
+	#Puede Seleccionar Tipo? True or False
+	allow_type = models.BooleanField(default=True)
+
+	allow_vegetables = models.BooleanField(default=True)
+
+	# Puede Tener Extras? True or False
+	allow_extras = models.BooleanField(default=True)
 
 	#Puede tener extras pagos? True or False
 	allow_paid_extras = models.BooleanField(default=True)
 
 	#Puede Tener Salsas? True or False
 	allow_sauces = models.BooleanField(default=True)
+
+	# Puede tener Bebidas? True or False
+	allow_drinks = models.BooleanField(default=True)
 
 	#Precio
 	price = models.DecimalField(max_digits=19, decimal_places=2)
@@ -64,6 +79,18 @@ class product(models.Model):
 
 	def __unicode__(self):
 		return self.name
+
+class RelatedImages(models.Model):
+    product = models.ForeignKey(product)
+    description = models.CharField(verbose_name='Image Description', max_length=50)
+    image = models.ImageField(upload_to='images')
+
+    class Meta:
+        verbose_name = "Related Image (For Products)"
+        verbose_name_plural = "Related Images (For Products)"
+
+    def __unicode__(self):
+        return self.description
 
 class LocationsAvailable(models.Model):
 	#Descripcion Huminizada
@@ -167,6 +194,16 @@ class PaymentBatch(models.Model):
 
 	def __unicode__(self):
 		return self.location.description + ' @ ' + self.address_for_truck
+
+	def clean(self, *args, **kwargs):
+		try:
+			valid = PaymentBatch.objects.get(location=self.location, status='O')
+		except PaymentBatch.DoesNotExist:
+			pass
+			#super(PaymentBatch, self).save(*args, **kwargs) # Call the "real" save() method.
+		else:
+			raise ValidationError({'location': "You can't save a Batch for this Location, already Open"})
+			#raise ValueError("You can't save a Batch for this Location, already Open")
 
 #Modelo de Ordenes Recibidas
 class Order(models.Model):

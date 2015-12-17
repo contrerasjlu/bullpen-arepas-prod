@@ -27,6 +27,7 @@
                                 <table id="orders-table" class="table table-striped responsive-utilities jambo_table dataTable">
                                     <thead>
                                         <tr class="headings">
+                                            <th>Date and Time</th>
                                             <th>Order Number</th>
                                             <th>Order Type</th>
                                             <th>Address to Delivery</th>
@@ -37,6 +38,7 @@
                                     <tbody>
                                     {% for order in Orders %}
                                         <tr>
+                                            <td>{{ order.date }}</td>
                                             <td>{{ order.order_number }}</td>
                                             <td>{{ order.order_type }}</td>
                                             <td>{{ order.address }}</td>

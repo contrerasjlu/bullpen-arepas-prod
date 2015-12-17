@@ -29,13 +29,12 @@
                                             {{ item | add_class:'form-control col-md-7 col-xs-12' }}
                                             {% endif %}
                                             <small>{{ item.help_text }}</small>
-                                            </div>
                                             {% if item.errors %}
-                                            <div class="alert">
                                             {% for error in item.errors %}
-                                                {{ error }}
+                                                <span class="label label-danger">{{ error }}</span>
                                             {% endfor %}
                                             {% endif %}
+                                            </div>
                                         </div>
                                 {% endfor %}
                                 <div class="col-md-9 col-sm-9 col-xs-12 pull-right">

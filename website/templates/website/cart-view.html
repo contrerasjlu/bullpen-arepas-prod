@@ -1,0 +1,148 @@
+{% extends 'website/template.html' %}
+{% block WindowTittle %}My Cart{% endblock %}
+{% block Content %}
+<div class="right_col" role="main">
+    <div class="">
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>My Cart</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                    <a href="{% url 'website:menu' %}">
+                        <button type="button" class="btn btn-warning">Back to Menu</button>
+                    </a>
+                    <a href="{% url 'website:pre_checkout' %}">
+                        <button type="button" class="btn btn-warning">Checkout</button>
+                    </a>
+
+                        <div class="clearfix"></div>
+                    <table class="table table-striped responsive-utilities jambo_table">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Product</th>
+                                    <th>Serial #</th>
+                                    <th style="width: 59%">Description</th>
+                                    <th>Subtotal</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ item.product }}</td>
+                                    <td>{{ item.product_code }}</td>
+                                    <td>
+                                        <ul>
+                                            <li>{{ item.type }}</li>
+                                            <div class="clearfix"></div>
+                                        {% if not item.extras == 0 %}
+                                            <li>Players:</li>
+                                            <ul>
+                                        {% for extras in item.extras %}
+                                            <li>{{ extras }}</li>
+                                        {% empty %}
+                                            <li>No Players</li>
+                                        {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            <li>No Players</li>
+                                        {% endif %}
+                                        </ul>
+                                        <div class="clearfix"></div>
+                                        <ul>
+                                        {% if not item.vegetables == 0 %}
+                                            <li>Vegetables:</li>
+                                            <ul>
+                                        {% for vegetable in item.vegetables %}
+                                            <li>{{ vegetable }}</li>
+                                        {% empty %}
+                                            <li>No Vegetables</li>
+                                        {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            <li>No Vegetables</li>
+                                        {% endif %}
+                                        </ul>
+                                        <div class="clearfix"></div>
+                                        <ul>
+                                        {% if not item.paid_extras == 0 %}
+                                            <li>Bench Players:</li>
+                                            <ul>
+                                        {% for paid_extras in item.paid_extras %}
+                                            <li>{{ paid_extras }}</li>
+                                        {% empty %}
+                                            <li>No Bench Players</li>
+                                        {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            <li>No Bench Players</li>
+                                        {% endif %}
+                                        </ul>
+                                        <div class="clearfix"></div>
+                                        <ul>
+                                        {% if not item.sauces == 0 %}
+                                            <li>Sauces:</li>
+                                            <ul>
+                                        {% for sauces in item.sauces %}
+                                            <li>{{ sauces }}</li>
+                                        {% empty %}
+                                            <li>No Sauces</li>
+                                        {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            <li>No Sauces</li>
+                                        {% endif %}
+                                        </ul>
+                                        <div class="clearfix"></div>
+                                        <ul>
+                                            <li>{% if item.soft_drinks %}{{ item.soft_drinks }}{% else %}No Drinks{% endif %}</li>
+                                        </ul>
+                                    </td>
+                                    <td>${{ item.price }}</td>
+                                    <td>
+                                        <a href="{% url 'website:delete-item' forloop.counter %}">Delete</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                </div>
+                <div class="row">
+                    <div class="col-xs-7">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <th style="width:50%">Subtotal:</th>
+                                        <td>${{ amounts.subtotal }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tax ({{ tax }}%)</th>
+                                        <td>${{ amounts.tax|floatformat:"2" }}</td>
+                                    </tr>
+                                    {% if data_client.type_of_sale == 'D' %}
+                                    <tr>
+                                        <th>Delivery:</th>
+                                        <td>${{ amounts.delivery }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <th>Total:</th>
+                                        <td>${{ amounts.total|floatformat:"2" }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
