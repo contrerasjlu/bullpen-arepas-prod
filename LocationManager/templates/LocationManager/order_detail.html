@@ -49,8 +49,13 @@
                                 <!-- info row -->
                                     <div class="row invoice-info">
                                         <div class="col-sm-4 invoice-col">
+                                        {% if guest %}
+                                            <b>Client:</b> GUEST - {{ guest.firstname }} {{ guest.lastname }}
+                                            <br>
+                                        {% else %}
                                             <b>Client:</b> {{ Order.user.first_name }} {{ Order.user.last_name }}
                                             <br>
+                                        {% endif %}
                                             <b>Type of Sale:</b> {% if Order.order_type == 'D' %}Delivery{% elif Order.order_type == 'P' %}Pick it Up{% endif %}
                                             <br>
                                             <b>Order:</b> {{ Order.order_number }}

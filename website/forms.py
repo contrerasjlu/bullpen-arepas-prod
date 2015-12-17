@@ -58,7 +58,7 @@ class ArepaForm(forms.Form):
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'}),
         queryset=product.objects.filter(Active=True,category=category.objects.get(code='drinks')).order_by('order_in_menu'),
-        empty_label="I don't want any Dirnk"
+        empty_label="I don't want any Drink"
     )
 
     def clean(self):
@@ -304,4 +304,3 @@ def ValidateAddress(key,origin,destination,max_miles):
         result = False
 
     return result
-

@@ -84,13 +84,12 @@
                                                         <li>No Players</li>
                                                     {% endfor %}
                                                         </ul>
-                                                    {% else %}
-                                                        <li>No Players</li>
                                                     {% endif %}
                                                     </ul>
+                                                    
+                                                    {% if not item.vegetables == 0 %}
                                                     <div class="clearfix"></div>
                                                     <ul>
-                                                    {% if not item.vegetables == 0 %}
                                                         <li>Vegetables:</li>
                                                         <ul>
                                                     {% for vegetable in item.vegetables %}
@@ -99,13 +98,13 @@
                                                         <li>No Vegetables</li>
                                                     {% endfor %}
                                                         </ul>
-                                                    {% else %}
-                                                        <li>No Vegetables</li>
-                                                    {% endif %}
                                                     </ul>
+                                                    {% endif %}
+                                                    
+
+                                                    {% if not item.paid_extras == 0 %}
                                                     <div class="clearfix"></div>
                                                     <ul>
-                                                    {% if not item.paid_extras == 0 %}
                                                         <li>Bench Players:</li>
                                                         <ul>
                                                     {% for paid_extras in item.paid_extras %}
@@ -114,13 +113,13 @@
                                                         <li>No Bench Players</li>
                                                     {% endfor %}
                                                         </ul>
-                                                    {% else %}
-                                                        <li>No Bench Players</li>
-                                                    {% endif %}
                                                     </ul>
+                                                    {% endif %}
+
+
+                                                    {% if not item.sauces == 0 %}
                                                     <div class="clearfix"></div>
                                                     <ul>
-                                                    {% if not item.sauces == 0 %}
                                                         <li>Sauces:</li>
                                                         <ul>
                                                     {% for sauces in item.sauces %}
@@ -129,14 +128,15 @@
                                                         <li>No Sauces</li>
                                                     {% endfor %}
                                                         </ul>
-                                                    {% else %}
-                                                        <li>No Sauces</li>
-                                                    {% endif %}
                                                     </ul>
+                                                    {% endif %}
+
+                                                    {% if not item.soft_drinks == 0 %}
                                                     <div class="clearfix"></div>
                                                     <ul>
-                                                        <li>{% if item.soft_drinks %}{{ item.soft_drinks }}{% else %}No Drinks{% endif %}</li>
+                                                        <li>{{ item.soft_drinks }}</li>
                                                     </ul>
+                                                    {% endif %}
                                                 </td>
                                                 <td>${{ item.price }}</td>
                                             </tr>

@@ -28,6 +28,10 @@ class category(models.Model):
 	def __unicode__(self):
 		return self.name
 
+	class Meta:
+		verbose_name = "Category"
+		verbose_name_plural = "Categories"
+
 #Modelo para almacenar los productos asociados a una categoria
 class product(models.Model):
 	#Clave foranea de la categoria -- Obligada
@@ -119,6 +123,10 @@ class LocationsAvailable(models.Model):
 
 	def __unicode__(self):
 		return self.description
+
+	class Meta:
+		verbose_name = "Location Available"
+		verbose_name_plural = "Locations Available"
 
 #Modelo para el Lote de Pago a crear
 class PaymentBatch(models.Model):
@@ -292,6 +300,21 @@ class Order(models.Model):
 
 	def __unicode__(self):
 		return str(self.order_number)
+
+class GuestDetail(models.Model):
+    firstname = models.CharField(verbose_name='First Name', max_length=50)
+    lastname = models.CharField(verbose_name='Last Name', max_length=50)
+    email = models.EmailField(verbose_name='E-mail')
+    phone = models.CharField(verbose_name='Telephone Number', max_length=50, blank=True)
+    order = models.ForeignKey(Order)
+
+    class Meta:
+        verbose_name = "Guest Detail"
+        verbose_name_plural = "Guest Details"
+
+    def __unicode__(self):
+        return self.firstname + ' ' + self.lastname
+  
 
 #Modelo de Detalle del la Orden (Productos seleccionados por el cliente)
 class OrderDetail(models.Model):

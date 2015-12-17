@@ -246,6 +246,9 @@ class HandleOrderDetail(ListView):
 				order_number_id=self.kwargs['pk'], main_product=True
 				).order_by('-order_number','item','-main_product')
 
+		if context['Order'].user.username == load_vars('guest.user'):
+			context['guest'] = get_object_or_404(GuestDetail, order=context['Order'])
+
 		cart_for_context = []
 
 		for item in cart:

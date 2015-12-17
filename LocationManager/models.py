@@ -11,3 +11,7 @@ class location_admin_menu(models.Model):
 	
 	def __unicode__(self):
 		return self.label
+
+	class Meta:
+		verbose_name = "Menu Option"
+		verbose_name_plural = "Menu Options"
