@@ -1,8 +1,9 @@
 from django.shortcuts import render, get_list_or_404, get_object_or_404
 from django.http import Http404,HttpResponseRedirect, HttpResponse, HttpResponseForbidden
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth import authenticate, login, logout, user_logged_in
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.generic import CreateView
 from random import randint
 from datetime import *
 from decimal import Decimal
@@ -52,6 +53,9 @@ def closed(request):
 def cart(request):
 	context = {}
 	context['status'] = is_open()
+
+	if 'guest' in request.session:
+		context['guest'] = request.session['guest']
 		
 	if 'cart' in request.session:
 		context['item_count'] = len(request.session['cart'])
@@ -64,51 +68,72 @@ def cart(request):
 			
 			the_item_type = item['type']
 
-			if not a.extras == 0:
-				the_extras = []
-				for extra in item['extras']:
-					b = product.objects.get(pk=extra)
-					the_extras.append(b.name+ ' (' + b.description + ')')
+			if a.allow_extras == True:
+				if not a.extras == 0:
+					the_extras = []
+					for extra in item['extras']:
+						b = product.objects.get(pk=extra)
+						the_extras.append(b.name+ ' (' + b.description + ')')
+				else:
+					the_extras = 'No Players Allowed'
 			else:
 				the_extras = 0
 
-			if not item['vegetables'] == None:
-				the_vegetables = []
-				for vegetable in item['vegetables']:
-					v = product.objects.get(pk=vegetable)
-					the_vegetables.append(v.name + ' (' + v.description + ')')
-					price += v.price
 
+			if a.allow_vegetables == True:
+				if not item['vegetables'] == None:
+					the_vegetables = []
+					for vegetable in item['vegetables']:
+						v = product.objects.get(pk=vegetable)
+						the_vegetables.append(v.name + ' (' + v.description + ')')
+						price += v.price
+
+				else:
+					the_vegetables = 'No Vegetables'
 			else:
 				the_vegetables = 0
 
-			if not item['paid_extras'] == None:
-				the_paid_extras = []
-				for paid_extra in item['paid_extras']:
-					c = product.objects.get(pk=paid_extra)
-					the_paid_extras.append(c.name+ ' (' + c.description + ')')
-					price += c.price
+			if a.allow_paid_extras == True:
+				if not item['paid_extras'] == None:
+					the_paid_extras = []
+					for paid_extra in item['paid_extras']:
+						c = product.objects.get(pk=paid_extra)
+						the_paid_extras.append(c.name+ ' (' + c.description + ')')
+						price += c.price
 
+				else:
+					the_paid_extras = 'No Bench Players'
 			else:
 				the_paid_extras = 0
 
-			if not item['sauces'] == None:
-				the_sauces = []
-				for sauce in item['sauces']:
-					d = product.objects.get(pk=sauce)
-					the_sauces.append(d.name + ' (' + d.description + ')')
+			if a.allow_sauces == True:
+				if not item['sauces'] == None:
+					the_sauces = []
+					for sauce in item['sauces']:
+						d = product.objects.get(pk=sauce)
+						the_sauces.append(d.name + ' (' + d.description + ')')
 
+				else:
+					the_sauces = 'No Sauces'
 			else:
 				the_sauces = 0
 
+			if a.allow_drinks == True:
+				if not item['soft_drinks'] == '':
+					try:
+						e = product.objects.get(pk=item['soft_drinks'])
+					
+					except product.DoesNotExist:
+						the_drink = 0
+					
+					else:						
+						the_drink = e.name
+						price += e.price
 
-			if not item['soft_drinks'] == '':
-				e = product.objects.get(pk=item['soft_drinks'])
-				the_drink = e.name
-				price += e.price
-
+				else:
+					the_drink = 'No Drink'
 			else:
-				the_drink = 'No Drink'
+				the_drink = 0
 
 			this_item = {
 						'product': a.name + ' (' + a.description + ')',
@@ -239,7 +264,12 @@ def ProductDetail(request,id_for_prod):
 					drinks = None
 			else:
 				drinks = None
-				
+			
+			if context['product'].category.show_in_menu == True:
+				main_product = True
+			else:
+				main_product = False
+
 			a = {
 				'type' : product_type,
 				'product_id':request.POST['id_for_product'],
@@ -248,7 +278,8 @@ def ProductDetail(request,id_for_prod):
 				'extras':extras,
 				'paid_extras': paid_extras,
 				'sauces':sauces,
-				'soft_drinks':drinks
+				'soft_drinks':drinks,
+				'main_product':main_product
 				}
 
 			if 'cart' in request.session:
@@ -343,6 +374,9 @@ def OrderHistory(request):
 	if context['status']==False:
 		return HttpResponseRedirect(reverse('website:closed'))
 
+	if 'guest' in request.session:
+		return HttpResponseRedirect(reverse('website:menu'))
+
 	context['orders'] = Order.objects.filter(user=request.user).order_by('-id')
 
 	return render(request, 'website/order-history.html', context)
@@ -351,8 +385,8 @@ def OrderHistory(request):
 @login_required(login_url='website:login-auth')
 def userLogout(request):
     logout(request)
-    if 'cart' in request.session:
-		del request.session['cart']
+    del request.session
+
     return HttpResponseRedirect(reverse('website:menu'))
 
 @login_required(login_url='website:login-auth')
@@ -515,6 +549,7 @@ def checkout(request):
 						delivery_amt=0,
 						total_amt=context['amounts']['total']
 					)
+
 				elif context['data_client']['type_of_sale'] == 'D':
 					
 					this_order = Order(
@@ -533,6 +568,16 @@ def checkout(request):
 					return HttpResponseRedirect(reverse('website:pre_checkout'))
 
 				this_order.save()
+				if request.user.username == load_vars('guest.user'):
+					guest = request.session['guest']
+					this_guest = GuestDetail(
+						firstname=guest['firstname'],
+						lastname=guest['lastname'],
+						email=guest['email'],
+						phone=guest['phone'],
+						order=this_order
+						)
+					this_guest.save()
 
 				# Almacenar el detalle de la orden
 				the_session_cart = request.session['cart']
@@ -604,14 +649,15 @@ def checkout(request):
 					except KeyError:
 						pass
 
-					if not item['soft_drinks'] == '':
-						drink = OrderDetail(
-											item=this_detail.item,
-											arepa_type='Drink',
-											product_selected=product.objects.get(pk=item['soft_drinks']),
-											order_number=Order.objects.get(pk=this_order.id)
-											)
-						drink.save()
+					if a.allow_drinks == True:
+						if not item['soft_drinks'] == '':
+							drink = OrderDetail(
+												item=this_detail.item,
+												arepa_type='Drink',
+												product_selected=product.objects.get(pk=item['soft_drinks']),
+												order_number=Order.objects.get(pk=this_order.id)
+												)
+							drink.save()
 					
 					item_number+=1
 
@@ -656,9 +702,39 @@ def checkout(request):
 def thankyou(request):
     try:
     	if request.session['finish'] == True:
+    		logout(request)
+    		del request.session
     		return render(request, 'website/thankyou.html')
     except KeyError:
-    	return HttpResponseRedirect(reverse('website:menu'))
+    	return HttpResponseRedirect(reverse('website:userlogout'))
+
+class GuestLogin(CreateView):
+	model = GuestDetail
+	fields = ('firstname','lastname','email','phone')
+	success_url = reverse_lazy('website:menu')
+	template_name = 'website/guest_login.html'
+	context_object_name = 'form'
+
+	def form_valid(self, form):
+		if 'phone' in self.request.POST:
+			phone = self.request.POST['phone']
+		else:
+			phone = ''
+
+		self.request.session['guest'] = {
+			'firstname' : self.request.POST['firstname'],
+			'lastname' : self.request.POST['lastname'],
+			'email' : self.request.POST['email'],
+			'phone' : phone
+		}
+
+		username = load_vars('guest.user')
+		password = load_vars('guest.password')
+
+		user = authenticate(username=username, password=password)
+		login(self.request, user)
+
+		return HttpResponseRedirect(reverse('website:menu'))
 
 
 def RewriteAddress(address, key):

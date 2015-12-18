@@ -47,25 +47,44 @@
                 
                 <div class="nav_menu">
                     <nav class="" role="navigation">
-                        <ul class="nav navbar-nav navbar-left">
-                            <li><a href="{% url 'website:index' %}">Back to bullpenarepas.com</a></li>
+                        <ul class="nav navbar-nav navbar-left col-xs-3">
+                            <li>
+                                <a href="{% url 'website:index' %}">Home</a>
+                            </li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
-                            {% if user.is_authenticated %}
+                            
                             <li class="">
                                 <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                    {{ user.email }}
+                                    <i class="fa fa-user visible-xs-block"></i> 
+                                    <span class="hidden-xs"> {% if guest %} Guest {% else %} {{ user.email }} {% endif %}</span>
                                     <span class=" fa fa-angle-down"></span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-usermenu animated fadeInDown pull-right">
+                                {% if user.is_authenticated %}
+                                    {% if guest %}
+                                    <li>
+                                        <a>{{ guest.firstname }} {{ guest.lastname}}</a>
+                                    </li>
+                                    <li>
+                                        <a>{{ guest.email }}</a>
+                                    </li>
+                                    {% endif %}
                                     <li>
                                         <a href="{% url 'website:userlogout' %}">
                                             <i class="fa fa-sign-out pull-right"></i> Log Out
                                         </a>
                                     </li>
+                                {% else %}
+                                    <li>
+                                        <a href="{% url 'website:login-auth' %}">
+                                            <i class="fa fa-sign-in pull-right"></i> Log in
+                                        </a>
+                                    </li>
+                                {% endif %}
                                 </ul>
                             </li>
-                            {% endif %}
+                                
                             <li role="presentation" class="dropdown">
                                 <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
                                     <i class="fa fa-shopping-cart"></i>
@@ -80,7 +99,7 @@
                                             	<span class="time">{{ item.type }}</span></br>
                                                 <span>{{ item.product }}</span>
                                             </span>
-                                            {% if item.extras %}
+                                            {% if not item.extras == 0 %}
                                             <span class="message">
                                             {% for extras in item.extras %}
                                                 {% if forloop.first %}Line Up Players: {% endif %}
@@ -96,8 +115,6 @@
                                                 {{ vegetable }}{% if not forloop.last %}, {% endif %}
                                             {% endfor %}
                                             </span>
-                                            {% else %}
-                                            <span class="message">No Vegetables</span>
                                             {% endif %}
 
                                             {% if not item.paid_extras == 0 %}
@@ -107,8 +124,6 @@
                                                 {{ paid_extras }}{% if not forloop.last %}, {% endif %}
                                             {% endfor %}
                                             </span>
-                                            {% else %}
-                                            <span class="message">No Bench Players</span>
                                             {% endif %}
 
                                             {% if not item.sauces = 0 %}
@@ -118,11 +133,11 @@
                                                 {{ sauces }}{% if not forloop.last %}, {% endif %}
                                             {% endfor %}
                                             </span>
-                                            {% else %}
-                                            <span class="message">No Sauces</span>
                                             {% endif %}
 
+                                            {% if not item.soft_drinks == 0 %}
                                             <span class="message">Drink: {{ item.soft_drinks }}</span>
+                                            {% endif %}
                                         </a>
                                     </li>
                                     {% endfor %}
@@ -143,6 +158,7 @@
                                             </a>
                                         </div>
                                     </li>
+                                    {% if not guest %}
                                     <li>
                                         <div class="col-md-6 col-xs-6">
                                             <a href="{% url 'website:order-history' %}" >
@@ -150,6 +166,7 @@
                                             </a>
                                         </div>
                                     </li>
+                                    {% endif %}
                                     {% else %}
                                     <li>No items in the Cart</li>
                                     {% endif %}

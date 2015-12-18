@@ -2,6 +2,7 @@ from django.conf.urls import url
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from website import views
+from website.views import GuestLogin
 from .forms import CreateAccountForm
 
 
@@ -17,6 +18,7 @@ urlpatterns = [
         'extra_context':{'new_user':CreateAccountForm()}
         }, name='login-auth'),
     
+    url(r'^login/guest/$', GuestLogin.as_view(), name="guest-login"),
     url(r'^signup/$', views.create_account, name="new_account"),
     url(r'^logout/$', views.userLogout, name="userlogout"),
 

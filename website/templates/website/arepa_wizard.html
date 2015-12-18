@@ -13,18 +13,20 @@
                         <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
-                        <div class="col-md-7 col-sm-7 col-xs-12">
-                            <div class="product-image">
-                                <img src="/media/{{ product.image }}" alt="{{ product.name }}" />
-                            </div>
-                            <div class="product_gallery">
-                            {% for thumbs in product.relatedimages_set.all %}
-                                <a><img src="/media/{{ thumbs.image }}" alt="{{ thumbs.description }}" /></a>
-                            {% endfor %}
+                        <div class="pull-left floating-div hidden-xs">
+                            <div class="col-md-7 col-sm-7 col-xs-12">
+                                <div class="product-image">
+                                    <img src="/media/{{ product.image }}" alt="{{ product.name }}" />
+                                </div>
+                                <div class="product_gallery">
+                                {% for thumbs in product.relatedimages_set.all %}
+                                    <a><img src="/media/{{ thumbs.image }}" alt="{{ thumbs.description }}" /></a>
+                                {% endfor %}
+                                </div>
                             </div>
                         </div>
 
-                        <div class="col-md-5 col-sm-5 col-xs-12" style="border:0px solid #e5e5e5;">
+                        <div class="col-md-5 col-sm-5 col-xs-12 pull-right" style="border:0px solid #e5e5e5;">
                             <h1 class="prod_title">{{ product.name }}</h1>
                             <p>{{ product.description }}</p>
                             <hr>

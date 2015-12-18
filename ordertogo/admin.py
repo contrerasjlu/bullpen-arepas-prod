@@ -55,3 +55,9 @@ class RelatedImagesAdmin(admin.ModelAdmin):
 	search_fields = ['description']
 
 admin.site.register(RelatedImages, RelatedImagesAdmin)
+
+class GuestDetailAdmin(admin.ModelAdmin):
+	list_display = ['firstname','lastname','email','phone']
+	search_fields = ['firstname','lastname','email','phone']
+
+admin.site.register(GuestDetail, GuestDetailAdmin)
