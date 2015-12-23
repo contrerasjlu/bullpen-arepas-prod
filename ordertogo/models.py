@@ -69,6 +69,9 @@ class product(models.Model):
 	# Puede tener Bebidas? True or False
 	allow_drinks = models.BooleanField(default=True)
 
+	#Puede tener Quantty
+	allow_qtty = models.BooleanField(default=False)
+
 	#Precio
 	price = models.DecimalField(max_digits=19, decimal_places=2)
 
@@ -111,7 +114,7 @@ class LocationsAvailable(models.Model):
 	#Código zip de la ubicación del truck
 	zip_code = models.CharField(
 		verbose_name="Zip Code",
-		max_length=4,
+		max_length=5,
 		help_text="Type the 4 digits zip code"
 		)
 
@@ -120,6 +123,13 @@ class LocationsAvailable(models.Model):
 
 	#Coordenadas generadas por Google de Longitud
 	y_coord = models.CharField(verbose_name="Longitud", max_length=50, blank=True)
+
+	merchant_ref = models.CharField(
+		verbose_name='Merchant Reference', 
+		max_length=50, 
+		help_text='This number is provided by Payeezy',
+		default='MyPOS'
+		)
 
 	def __unicode__(self):
 		return self.description
@@ -158,10 +168,16 @@ class PaymentBatch(models.Model):
 
 	zip_code_for_truck = models.CharField(
 		verbose_name="Zip Code",
-		max_length=4,
+		max_length=5,
 		help_text="If the Location selected is NOT mobile, please leave blank this field",
 		blank=True
 	)
+
+	tax_percent = models.IntegerField(
+		verbose_name='Tax Percent Value for Batch',
+		default=7,
+		help_text="You must enter the exac value, ex: 7 mean 7%"
+		)
 
 	#Maximo de millas a recorres por el delivery
 	max_miles = models.IntegerField(
@@ -208,10 +224,8 @@ class PaymentBatch(models.Model):
 			valid = PaymentBatch.objects.get(location=self.location, status='O')
 		except PaymentBatch.DoesNotExist:
 			pass
-			#super(PaymentBatch, self).save(*args, **kwargs) # Call the "real" save() method.
 		else:
 			raise ValidationError({'location': "You can't save a Batch for this Location, already Open"})
-			#raise ValueError("You can't save a Batch for this Location, already Open")
 
 #Modelo de Ordenes Recibidas
 class Order(models.Model):

@@ -20,6 +20,7 @@
                                             <th>Description</th>
                                             <th>Location</th>
                                             <th>Zip Code</th>
+                                            <th>Merchant Reference</th>
                                             <th>Common Tasks</th>
                                         </tr>
                                     </thead>
@@ -29,6 +30,7 @@
                                             <td>{{ location.description }}</td>
                                             <td>{{ location.location }}</td>
                                             <td>{{ location.zip_code }}</td>
+                                            <td>{{ location.merchant_ref }}</td>
                                             <td>
                                                 <a href="{% url 'LocationManager:locations-update' location.id %}">
                                                     <span class="label label-success">View Location</span>
