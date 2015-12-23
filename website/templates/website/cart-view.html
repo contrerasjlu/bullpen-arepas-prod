@@ -124,20 +124,6 @@
                                         <th style="width:50%">Subtotal:</th>
                                         <td>${{ amounts.subtotal }}</td>
                                     </tr>
-                                    <tr>
-                                        <th>Tax ({{ tax }}%)</th>
-                                        <td>${{ amounts.tax|floatformat:"2" }}</td>
-                                    </tr>
-                                    {% if data_client.type_of_sale == 'D' %}
-                                    <tr>
-                                        <th>Delivery:</th>
-                                        <td>${{ amounts.delivery }}</td>
-                                    </tr>
-                                    {% endif %}
-                                    <tr>
-                                        <th>Total:</th>
-                                        <td>${{ amounts.total|floatformat:"2" }}</td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </div>

@@ -4,6 +4,11 @@
     left: 45px;
 }
 
+img.logo-right{
+    width: 140px;
+    height: auto;
+}
+
 body.nav-sm .container.body .left_col {
     width: 70px;
     padding: 0;
@@ -196,9 +201,9 @@ body.nav-sm .menu_section h3 {
     /*background: #F4F6F9;
     border-bottom: 1px solid #E6E9ED;*/
     
-    background: #EDEDED;
     border-bottom: 1px solid #D9DEE4;
     margin-bottom: 10px;
+    height: 55px;
     width: 100%;
 }
 
@@ -221,9 +226,8 @@ body.nav-md .container.body .right_col {
 .nav_title {
     width: 230px;
     float: left;
-    background: #DF9745 ;
     border-radius: 0;
-    height: 57px;
+    height: 90px;
 }
 
 @media (max-width: 991px) {
@@ -772,7 +776,6 @@ li.current-page a {
 
 .site_title {
     text-overflow: ellipsis;
-    overflow: hidden;
     font-weight: 400;
     font-size: 22px;
     width: 100%;
@@ -780,7 +783,7 @@ li.current-page a {
     margin-left: 0 !important;
     line-height: 59px;
     display: block;
-    height: 55px;
+    height: 90px;
     margin: 0;
     padding-left: 10px;
 }
@@ -1728,7 +1731,7 @@ ul.msg_list li a .message {
     display: none;
     float: left;
     font-size: 12px;
-    left: 0;
+    left: -300px;
     list-style: none outside none;
     padding: 0;
     position: absolute;

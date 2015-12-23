@@ -61,6 +61,14 @@ class ArepaForm(forms.Form):
         empty_label="I don't want any Drink"
     )
 
+    qtty = forms.IntegerField(
+        label='Quantty',
+        required=False,
+        help_text='How many do you Want?',
+        initial=1,
+        widget=forms.NumberInput(attrs={'class':'form-control'})
+        )
+
     def clean(self):
         cleaned_data = super(ArepaForm, self).clean()
         id_for_product = cleaned_data.get("id_for_product")
@@ -70,12 +78,17 @@ class ArepaForm(forms.Form):
         paid_extras = cleaned_data.get("paid_extras")
         sauces = cleaned_data.get("sauces")
         soft_drinks = cleaned_data.get("soft_drinks")
+        qtty = cleaned_data.get("qtty")
 
         this_product = product.objects.get(pk=id_for_product)
 
         if (not this_product.extras == len(extras)) and this_product.allow_extras == True:
             msg = "You must select %d Players for this product" % this_product.extras
             self.add_error('extras', msg)
+
+        if this_product.allow_qtty == True and (qtty < 1):
+            msg = "You must enter a valid Quantty"
+            self.add_error('qtty', msg)
 
 class CreateAccountForm(forms.Form):
     firstname = forms.CharField(

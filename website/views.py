@@ -156,8 +156,6 @@ def cart(request):
 		amounts = {
 			'subtotal': subtotal,
 			'delivery' : load_vars('delivery.cost'),
-			'tax': subtotal * Decimal(load_vars('tax.percent')),
-			'total': subtotal+(subtotal* Decimal(load_vars('tax.percent')))
 		}
 
 		context['amounts'] = amounts
@@ -284,12 +282,20 @@ def ProductDetail(request,id_for_prod):
 
 			if 'cart' in request.session:
 				local_cart = request.session['cart']
-				local_cart.append(a)
+				if context['product'].allow_qtty == True:
+					for x in range(0,int(request.POST['qtty'])):
+						local_cart.append(a)
+				else:
+					local_cart.append(a)
 				request.session['cart'] = local_cart
 
 			else:
 				local_cart = []
-				local_cart.append(a)
+				if context['product'].allow_qtty == True:
+					for x in range(0,int(request.POST['qtty'])):
+						local_cart.append(a)
+				else:
+					local_cart.append(a)
 				request.session['cart'] = local_cart
 
 			return HttpResponseRedirect(reverse('website:menu'))
@@ -347,8 +353,6 @@ def ViewCart(request):
 	if context['cart_is_empty'] == True:
 		return HttpResponseRedirect(reverse('website:menu'))
 
-	context['tax'] = float(load_vars('tax.percent'))*100
-	
 	return render(request, 'website/cart-view.html', context)
 
 @login_required(login_url='website:login-auth')
@@ -365,7 +369,10 @@ def DeleteItem(request, item):
 	del the_session_cart[item]
 	request.session['cart'] = the_session_cart
 
-	return HttpResponseRedirect(reverse('website:view-cart'))
+	if len(the_session_cart) == 0:
+		return HttpResponseRedirect(reverse('website:menu'))
+	else:
+		return HttpResponseRedirect(reverse('website:view-cart'))
 
 
 @login_required(login_url='website:login-auth')
@@ -428,6 +435,7 @@ def pre_checkout(request):
 					'type_of_sale': request.POST['type_of_sale'],
 					'label_for_type_of_sale': 'Delivery',
 					'batch': near_batch,
+					'tax_percent':near_batch.tax_percent,
 					'address': RewriteAddress(
 											  request.POST['address'],
 											  load_vars('google.API.KEY')
@@ -450,6 +458,7 @@ def pre_checkout(request):
 					'label_for_type_of_sale': 'Pick it Up',
 					'location': request.POST['location'],
 					'location_desc' : location_desc.address_for_truck,
+					'tax_percent': location_desc.tax_percent,
 					'time': request.POST['time']
 				}
 				return HttpResponseRedirect(reverse('website:checkout'))
@@ -482,7 +491,9 @@ def checkout(request):
 	else:
 		return HttpResponseRedirect(reverse('website:pre_checkout'))
 
-	context['tax'] = float(load_vars('tax.percent'))*100
+	context['tax'] = context['data_client']['tax_percent']
+	context['amounts']['tax'] = Decimal(context['tax']*context['amounts']['subtotal']) / 100 
+	context['amounts']['total'] = context['amounts']['subtotal'] + context['amounts']['tax']
 
 	if not 'order_number' in request.session:
 		request.session['order_number'] = get_order_number()
@@ -497,14 +508,16 @@ def checkout(request):
 			exp = request.POST['expiry'].replace('/', '')
 			value = str(float("{0:.2f}".format(context['amounts']['total'])))
 			value = value.replace('.','')
-			desc = "Bullpen Arepas Order-"+str(context['order_number'])
+			location_ref = LocationsAvailable.objects.get(pk=context['data_client']['location'])
+			ref = location_ref.merchant_ref
 
 			pay = PaymentRaw(
 							 request.POST['name_on_card'],
 							 request.POST['card_number'],
 							 exp,
 							 value,
-							 request.POST['cvv']
+							 request.POST['cvv'],
+							 ref
 							)
 
 			if pay['status'] == False:
@@ -765,7 +778,7 @@ def ValidateAddress(key,origin,destination,max_miles):
     return result
 
 # VISA: 4788250000028291
-def PaymentRaw(name,card,exp,amt,cvv):
+def PaymentRaw(name,card,exp,amt,cvv,ref):
 	#import required libs to generate HMAC
 	import os,hashlib,hmac,time,base64,json,requests
 
@@ -782,7 +795,7 @@ def PaymentRaw(name,card,exp,amt,cvv):
 
 
 	payload = {
-			   "merchant_ref": "GODADDY",
+			   "merchant_ref": ref,
 			   "transaction_type": "purchase",
 			   "method": "credit_card",
 			   "amount":amt,

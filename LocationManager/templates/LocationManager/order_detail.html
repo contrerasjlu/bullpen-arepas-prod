@@ -114,7 +114,7 @@
                                                             <td>${{ OrderDetail.subtotal }}</td>
                                                         </tr>
                                                         <tr>
-                                                            <th>Tax ({{ tax_value }}%)</th>
+                                                            <th>Tax ({{ Order.batch.tax_percent }}%)</th>
                                                             <td>${{ OrderDetail.tax|floatformat:"2" }}</td>
                                                         </tr>
                                                         {% if Order.order_type == 'D' %}

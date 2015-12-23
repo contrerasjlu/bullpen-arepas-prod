@@ -91,7 +91,7 @@ class LocationsList(ListView):
 class LocationsAvailableCreateView(CreateView):
     model = LocationsAvailable
     template_name = "LocationManager/location_form.html"
-    fields = ['description','location','zip_code']
+    fields = ['description','location','zip_code','merchant_ref']
     success_url = reverse_lazy('LocationManager:locations-list')
 
     def get_context_data(self, **kwargs):
@@ -104,7 +104,7 @@ class LocationsAvailableCreateView(CreateView):
 class LocationsAvailableUpdateView(UpdateView):
     model = LocationsAvailable
     template_name = "LocationManager/location_form.html"
-    fields = ['description','location','zip_code']
+    fields = ['description','location','zip_code','merchant_ref']
     success_url = reverse_lazy('LocationManager:locations-list')
 
     def get_context_data(self, **kwargs):
@@ -138,7 +138,7 @@ class BatchesList(ListView):
 
 class BatchesCreate(CreateView):
 	model = PaymentBatch
-	fields = ['location', 'address_for_truck', 'zip_code_for_truck', 'max_miles', 'batch_code', 'open_for_delivery']
+	fields = ['location', 'address_for_truck', 'zip_code_for_truck', 'tax_percent', 'max_miles', 'batch_code', 'open_for_delivery']
 	success_url = reverse_lazy('LocationManager:batches-list')
 	template_name = 'LocationManager/paymentbatch_form.html'
 
@@ -151,7 +151,7 @@ class BatchesCreate(CreateView):
 
 class BatchesUpdate(UpdateView):
 	model = PaymentBatch
-	fields = ['status', 'location', 'address_for_truck', 'zip_code_for_truck', 'max_miles', 'batch_code', 'open_for_delivery', 'status']
+	fields = ['status', 'location', 'address_for_truck', 'zip_code_for_truck', 'tax_percent', 'max_miles', 'batch_code', 'open_for_delivery', 'status']
 	success_url = reverse_lazy('LocationManager:batches-list')
 	template_name = 'LocationManager/paymentbatch_form.html'
 
@@ -239,7 +239,6 @@ class HandleOrderDetail(ListView):
 		# Add Menu
 		context['menu'] = load_menu()
 		context['Order'] = get_object_or_404(Order, pk=self.kwargs['pk'])
-		context['tax_value'] = Decimal(load_vars('tax.percent')) * 100
 		context['delivery_cost'] = Decimal(load_vars('delivery.cost'))
 
 		cart = OrderDetail.objects.filter(

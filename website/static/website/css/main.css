@@ -4,7 +4,7 @@
     font-size: 14px;
     line-height: 22px;
     color: #fff;
-	padding-top:55px;
+    padding-top:55px;
   }
 
   html {
@@ -40,8 +40,8 @@
   }
   h1{
     font-family: 'Streetwear', sans-serif;
-    font-weight: 300;´
-	color: #fff;
+    font-weight: 300;
+    color: #fff;
 	}	
  h2, h3, h4, h5, h6 {
     font-family: 'Asap', sans-serif;
@@ -524,7 +524,7 @@ ul.sub-menu {
 **************************/
 #home-slider {
   height: 750px;
-  background: url(../img/Truk.jpg) 100% 100% repeat-x;
+  background: url(../img/Truk_pref.jpg) 50% 0% no-repeat;
   position: relative;
   padding:50px 0px
 }
