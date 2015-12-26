@@ -225,7 +225,8 @@ class PaymentBatch(models.Model):
 		except PaymentBatch.DoesNotExist:
 			pass
 		else:
-			raise ValidationError({'location': "You can't save a Batch for this Location, already Open"})
+			if not valid.id == self.id:
+				raise ValidationError({'location': "You can't save a Batch for this Location, already Open"})
 
 #Modelo de Ordenes Recibidas
 class Order(models.Model):
