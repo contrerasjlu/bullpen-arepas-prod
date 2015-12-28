@@ -101,7 +101,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'America/Caracas'
+TIME_ZONE = 'US/Eastern'
 
 USE_I18N = True
 
@@ -117,10 +117,10 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 MEDIA_URL = '/media/'
 
-EMAIL_HOST_USER = 'admin@bullpenarepas.com'
-EMAIL_HOST_PASSWORD = '14657790'
-EMAIL_USE_TLS = False
-EMAIL_PORT = 465
+EMAIL_HOST_USER = 'support@bullpenarepas.com'
+EMAIL_HOST_PASSWORD = 'hVDt?u7H'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
 EMAIL_HOST = 'mail.bullpenarepas.com'
 
 #SECURE_SSL_REDIRECT = True

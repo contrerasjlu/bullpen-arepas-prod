@@ -102,8 +102,7 @@
                                         </div>
                                 <!-- /.col -->
                                     </div>
-                            <!-- /.row -->
-
+                                <!-- /.row -->
                                     <div class="row">
                                         <div class="col-xs-6">
                                             <div class="table-responsive">
@@ -111,21 +110,21 @@
                                                     <tbody>
                                                         <tr>
                                                             <th style="width:50%">Subtotal Order:</th>
-                                                            <td>${{ OrderDetail.subtotal }}</td>
+                                                            <td>${{ Order.sub_amt }}</td>
                                                         </tr>
                                                         <tr>
                                                             <th>Tax ({{ Order.batch.tax_percent }}%)</th>
-                                                            <td>${{ OrderDetail.tax|floatformat:"2" }}</td>
+                                                            <td>${{ Order.tax_amt|floatformat:"2" }}</td>
                                                         </tr>
                                                         {% if Order.order_type == 'D' %}
                                                         <tr>
                                                             <th>Delivery:</th>
-                                                            <td>${{ delivery_cost }}</td>
+                                                            <td>${{ Order.delivery_amt }}</td>
                                                         </tr>
                                                         {% endif %}
                                                         <tr>
                                                             <th>Total:</th>
-                                                            <td>${{ OrderDetail.total|floatformat:"2" }}</td>
+                                                            <td>${{ Order.total_amt|floatformat:"2" }}</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
