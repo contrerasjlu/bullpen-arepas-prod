@@ -4,10 +4,12 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth import authenticate, login, logout, user_logged_in
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.generic import CreateView
+from django.core.mail import send_mail, BadHeaderError
 from random import randint
 from datetime import *
 from decimal import Decimal
 from ordertogo.models import *
+from website.models import *
 from .forms import *
 
 
@@ -40,6 +42,24 @@ def get_order_number():
 def index(request):
 	context = {}
 	context['status'] = is_open()
+	context['WebInfoForm'] = WebInfoForm()
+	texts = WebText.objects.filter(active=True)
+	for text in texts:
+		context[text.code] = text.text
+
+	context['categories'] = WebCategory.objects.all()
+	context['WebImages'] = WebCarrousel.objects.filter(active=True).order_by('order')
+	
+	if request.POST:
+		info = WebInfoForm(request.POST)
+		if info.is_valid():
+			info.save()
+			context['success'] = True
+			context['WebInfoForm'] = WebInfoForm()
+			send_info_email(request.POST['name'], request.POST['email'], request.POST['info'])
+		else:
+			context['WebInfoForm'] = WebInfoForm(request.POST)
+
 	return render(request, 'website/index.html', context)
 
 def closed(request):
@@ -581,6 +601,8 @@ def checkout(request):
 					return HttpResponseRedirect(reverse('website:pre_checkout'))
 
 				this_order.save()
+				AddressForEmail = this_order.user.email
+
 				if request.user.username == load_vars('guest.user'):
 					guest = request.session['guest']
 					this_guest = GuestDetail(
@@ -591,6 +613,7 @@ def checkout(request):
 						order=this_order
 						)
 					this_guest.save()
+					AddressForEmail = guest['email']
 
 				# Almacenar el detalle de la orden
 				the_session_cart = request.session['cart']
@@ -704,7 +727,7 @@ def checkout(request):
 				del request.session['order_number']
 				del request.session['cart']
 				request.session['finish'] = True
-				#send_invoice_email()
+				send_invoice_email(this_order,AddressForEmail)
 				return HttpResponseRedirect(reverse('website:thankyou'))
 		else:
 			context['pay_form'] = PaymentForm(request.POST)
@@ -779,7 +802,7 @@ def ValidateAddress(key,origin,destination,max_miles):
 
 # VISA: 4788250000028291
 def PaymentRaw(name,card,exp,amt,cvv,ref):
-	#import required libs to generate HMAC
+
 	import os,hashlib,hmac,time,base64,json,requests
 
 	apiKey = str(load_vars('pay.apikey'))
@@ -834,48 +857,70 @@ def PaymentRaw(name,card,exp,amt,cvv,ref):
 			   'token':token
 			   }
 
-	print headers
-
 	payment = requests.post(url, data=json.dumps(payload), headers=headers)
 
 	response = {}
+
 	try:
 		payment.json()['Error']['messages']
 
 	except KeyError:
 		response['status'] = True
 		response['object'] = payment
-
 	else:
 		Error = payment.json()['Error']['messages']
 		response['status'] = False
 		response['object'] = Error
 
-	print payment.json()
 	return response
 
-def send_invoice_email():
-	from django.core.mail import send_mail, BadHeaderError
-
-	text = "Hi!\nHow are you?\nHere is the link you wanted:\nhttps://www.python.org"
+def send_info_email(name,email,info):
+	text = "Name:\n"+name+"\nemail:\n"+email+"\ninfo:\n"+info
 	html = """\
 	<html>
 	  <head></head>
 	  <body>
-	    <p>Hi!<br>
-	       How are you?<br>
-	       Here is the <a href="https://www.python.org">link</a> you wanted.
-	    </p>
+	"""
+
+	html += "<p>Name:<br />"+name+"</p>"
+	html += "<p>Email:<br />"+email+"</p>"
+	html += "<p>Info:<br />"+info+"</p>"
+
+	html +="""\
 	  </body>
 	</html>
 	"""
 	try:
 		send_mail(
-			'Order From Bullpen Arepas', 
-			text, 
-			'ingjorgecontreras@gmail.com',
-			['ingjorgecontreras@gmail'], 
-			fail_silently=True,
+			'Info Request From bullpenarepas.com', 
+			text,
+			'support@bullpenarepas.com', #From Email
+			[load_vars('info.email')], #To Email
+			fail_silently=False,
+			html_message=html
+		)
+	except BadHeaderError:
+		return HttpResponse('Invalid header found.')
+
+def send_invoice_email(order,email):
+	text = "Your Order "+order.order_number+" have been recived\nThank you...\nAny Questions? write us at support@bullpenarepas.com"
+	html = """\
+	<html>
+		<head></head>
+		<body>
+			<p>Your Order #"""+order.order_number+""" have been recived</p>
+			<p>Thank you... </p>
+			<p>Any Questions? write us at support@bullpenarepas.com</p>
+		</body>
+	</html>
+	"""
+	try:
+		send_mail(
+			'Your Order #'+ order.order_number +' From bullpenarepas.com', 
+			text,
+			'do-not-reply@bullpenarepas.com', #From Email
+			[email], #To Email
+			fail_silently=False,
 			html_message=html
 		)
 	except BadHeaderError:

@@ -42,7 +42,8 @@
 </head><!--/head-->
 
 <body>
-	<header id="header" class="navbar-inverse navbar-fixed-top" role="navigation">      
+{# Header #}
+	<header id="header" class="navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
       <div class="row">
         <div class="col-sm-12 overflow">
@@ -88,7 +89,10 @@
         </div>
       </div>
 		</div>
-  </header><!--/#header-->
+  </header>
+{# Header #}
+
+{# Primer Carrousel #}
   <section id="home-slider">
     <div class="container">
       <div class="row">
@@ -104,8 +108,7 @@
                 <div class="col-md-5 col-xs-12 col-md-offset-2 wow  bgm_div left fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
                   <div class="">
                     <h1 class="center">Bullpen Arepas</h1>
-                    <P>Enjoy the best tasting Venezuelan food aboard our Food Truck Bullpen Arepas. As we travel all of Georgia with our Baseball inspired Food Truck we offer fans of Professional Baseball the possibility of tasting the most delicious Arepas with the best ingredients around.</br></br>
-                    </P>
+                    <P>{{ home_text }}</P>
                     <audio src="{% static 'website/audio/Bulpen_Jingle_mediana.m4a' %}" preload="auto" />
                   </div>
                 </div>
@@ -117,15 +120,16 @@
 		</div>
     <div class="preloader"><i class="fa fa-sun-o fa-spin"></i></div>
 	</section>
+{# Primer Carrousel #}
+
+{# Features #}
   <section id="features">
     <div class="container">
       <div class="row">
           <div class="col-sm-12 col-sx-12 wow" data-wow-duration="500ms" data-wow-delay="300ms">
             </br></br></br></br>
             <h1>The Arepa</h1>
-            <P>Many may ask, “What is an Arepa”? It’s simple. An Arepa is a circular shaped bread made of white corn flour. Arepas can either be served baked or fried depending on the liking of the person. The Arepa is native to Venezuelan culture although you can find arepas in Colombia, Panama, Puerto Rico, Dominican Republic and the Canary Islands. At Bullpen Arepa we prepare authentic Venezuelan Arepas that are gluten free, and that filled with the best fresh ingredients and best taste.
-            </br></br></br>
-            </P>
+            <P>{{ the_arepa_text }}</P>
           </div>
 					<div id="myCarousel" class="carousel slide" data-ride="carousel">
             <ol class="carousel-indicators">
@@ -134,12 +138,11 @@
             </ol>
             <!-- Wrapper for slides -->
             <div class="carousel-inner" role="listbox">
-              <div class="item active">
-                <img src="{% static 'website/img/c1.jpeg' %}">
+              {% for img in WebImages %}
+              <div class="item {% if forloop.first %}active{% endif %}">
+                <img src="/media/{{ img.image }}" alt="{{ img.alt }}">
               </div>
-              <div class="item">
-                <img src="{% static 'website/img/c2.jpeg' %}">
-              </div>
+              {% endfor %}
               <!-- Left and right controls -->
               <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
                 <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
@@ -156,6 +159,9 @@
       </div>
     </div>
   </section>
+{# Features #}
+
+{# Categorias #}
 	<section id="home-slider2">
 		<div class="container">
       <div class="row">
@@ -165,47 +171,25 @@
               <div class="single-features">
                 <div class="col-sm-12 wow fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
                   <h1>On The Game</h1>
-                  <P></br>Choose between baked or fried to start with, then fill in the Arepas with your favorite players of choice, you can also add any player that is on the bench to go with your Arepa. To go along with your Arepa you can choose from a variety of delicious sauces. Make your own combinations and enjoy the taste of a Home Run. </P>
+                  <P>{{ on_the_game_text }}</P>
                   <h2 class="circle"  data-toggle="modal"  data-target="#myModal7">Suggested Plays</h2>
                 </div>
 							</div>
 							<div class="clients-logo wow fadeIn" data-wow-duration="1000ms" data-wow-delay="600ms">
-								<div class="col-xs-4 col-sm-2" align="center" >
+								{% for category in categories %}
+                <div class="col-xs-4 col-sm-2" align="center">
                   <a>
-                    <img src="{% static 'website/img/1.jpg' %}" align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal" data-target="#myModal1">
+                    <img src="/media/{{ category.webImage }}" align="center" class="img-responsive img-circle circle" alt="{{ category.category.name }}" data-toggle="modal" data-target="#{{ category.category.code|cut:"." }}">
                   </a>
-                  <h3>Baked or Fried Arepas</h3>
+                  <h3>
+                  {% if category.override_desc == False %}
+                    {{ category.category.name }}
+                  {% else %}
+                    {{ category.description }}
+                  {% endif %}
+                  </h3>
                 </div>
-                <div class="col-xs-4 col-sm-2" align="center" >
-                  <a>
-                    <img src="{% static 'website/img/2.jpg' %}"  align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal" data-target="#myModal2">
-                  </a>
-                  <h3>Little League</h3>
-                </div>
-                <div class="col-xs-4 col-sm-2" align="center" >
-                  <a>
-                    <img src="{% static 'website/img/3.jpg' %}" align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal3">
-                  </a>
-                  <h3>Line Up Players</h3>
-                </div>
-								<div class="col-xs-4 col-sm-2" align="center" >
-                  <a>
-                    <img src="{% static 'website/img/6.jpg' %}" align="center"  class="img-responsive img-circle circle" alt="" data-toggle="modal" data-target="#myModal4">
-                  </a>
-									<h3>On The Bench</h3>
-                </div>
-                <div class="col-xs-4 col-sm-2" align="center" >
-                  <a>
-                    <img src="{% static 'website/img/4.jpg' %}" align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal"  data-target="#myModal5">
-                  </a>
-                  <h3>Sauces</h3>
-                </div>
-                <div class="col-xs-4 col-sm-2" align="center" >
-                  <a>
-                    <img src="{% static 'website/img/5.jpg' %}"  align="center" class="img-responsive img-circle circle" alt="" data-toggle="modal" data-target="#myModal6">
-                  </a>
-                  <h3>Soft Drinks</h3>
-                </div>
+                {% endfor %}
               </div>
             </div>
           </div>
@@ -213,485 +197,126 @@
     	</div>
 		</div>
 	</section>
+{# Categorias #}
+
+{# Info #}
   <section id="info">
-  <div class="container inver-fondo inver-ico">	
-		<div class="row">
-    	<div class="single-features">
-        <div class="col-xs-6 col-md-6 col-sm-6 wow fadeInRight animated" data-wow-duration="500ms" data-wow-delay="300ms" id="left-info">
-          <h1>Info</h1>
-          <p>You can contact us  through our new webpage or follow us on 
-          a number of social media pages for the latest updates from us.</p>
-          <div class="clients-logo" align="center">
-            <div class="col-xs-2 col-sm-2 socialib" align="center" >
-              <a href="https://www.facebook.com/BullpenArepas/" target="_blank">
-                <img src="{% static 'website/img/f.png' %}" alt="facebook.com/BullpenArepas/">
-              </a>
+    <div class="container inver-fondo inver-ico">	
+  		<div class="row">
+      	<div class="single-features">
+          <div class="col-xs-6 col-md-6 col-sm-6 wow fadeInRight animated" data-wow-duration="500ms" data-wow-delay="300ms" id="left-info">
+            <h1 class="inverColor">Info</h1>
+            <p>{{ info_text }}</p>
+            <div class="clients-logo" align="center">
+              <div class="col-xs-2 col-sm-2 socialib" align="center" >
+                <a href="https://www.facebook.com/BullpenArepas/" target="_blank">
+                  <img src="{% static 'website/img/f.png' %}" alt="facebook.com/BullpenArepas/">
+                </a>
+              </div>
+              <div class="col-xs-2 col-sm-2 socialib" align="center" >
+                <a href="https://twitter.com/bullpenarepas" target="_blank">
+                  <img src="{% static 'website/img/t.png' %}" alt="twitter.com/bullpenarepas">
+                </a>
+  					  </div>
+              <div class="col-xs-2 col-sm-2 socialib" align="center" >
+                <a href="https://instagram.com/bullpenarepas/" target="_blank">
+                  <img src="{% static 'website/img/i.png' %}" alt="instagram.com/bullpenarepas/">
+                </a>
+              </div>   
+  				  </div>
+  				</div>
+  				<div class="col-xs-6 col-md-6 col-sm-6 fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms"id="right-info">
+            <div class="contact-form bottom">
+              <h1 class="inverColor">Send a message</h1>
+              {% if success %}
+                <span class="label label-success">{{ success_info }}</span>
+              {% endif %}
+              <form id="main-contact-form" name="contact-form" method="post">
+              {% csrf_token %}
+
+              {% for field in WebInfoForm %}
+                <div class="form-group col-xs-12 col-md-12 col-sm-12">
+                  {{ field }}
+                </div>
+                {% if field.errors %}
+                  <div class="form-group has-error">
+                    {% for error in field.errors %}
+                    <span class="label label-danger">{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              {% endfor %}
+                <div class="form-group">
+                  <input type="submit" name="submit" class="btn btn-submit" value="Submit">
+                </div>
+              </form>
             </div>
-            <div class="col-xs-2 col-sm-2 socialib" align="center" >
-              <a href="https://twitter.com/bullpenarepas" target="_blank">
-                <img src="{% static 'website/img/t.png' %}" alt="twitter.com/bullpenarepas">
-              </a>
-					  </div>
-            <div class="col-xs-2 col-sm-2 socialib" align="center" >
-              <a href="https://instagram.com/bullpenarepas/" target="_blank">
-                <img src="{% static 'website/img/i.png' %}" alt="instagram.com/bullpenarepas/">
-              </a>
-            </div>   
-				  </div>
-				</div>
-				<div class="col-xs-6 col-md-6 col-sm-6 fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms"id="right-info">
-          <div class="contact-form bottom">
-            <h1>Send a message</h1>
-            <form id="main-contact-form" name="contact-form" method="post" action="sendemail.php">
-              <div class="form-group">
-                <input type="text" name="name" class="form-control" required="required" placeholder="Name">
-              </div>
-              <div class="form-group">
-                <input type="email" name="email" class="form-control" required="required" placeholder="Email">
-              </div>
-              <div class="form-group">
-                <textarea name="message" id="message" required="required" class="form-control" rows="8" placeholder="Your text here"></textarea>
-              </div>
-              <div class="form-group">
-                <input type="submit" name="submit" class="btn btn-submit" value="Submit">
-              </div>
-            </form>
           </div>
-        </div>
-			</div>
-    </div>
+  			</div>
+      </div>
 	</section>
-    
-    
-    
-    <div class="col-md-offset-2">
-    	</br>
-    	<h1>Calendar / Events</h1>
-        <P>Make sure to catch up with us on our calendar and follow us from place to place on our routes with Bullpen Arepa.</br></br></P>  
-	</div>
-          <div class="col-md-offset-1" id='loading'>loading...</div>
-			<div id='calendar'></div>        
-		</div>		
-	</div> 
+{# Info #}
+
+{# Calendario #}
+  <div class="col-md-offset-2">
+    <h1>Calendar / Events</h1>
+    <P>{{ calendar_text }}</P>  
+  </div>
+  <div class="col-md-offset-1" id='loading'>loading...</div>
+  <div id='calendar'></div>
+{# Calendario #}
+
+  <footer>
     <div class="col-sm-12">
-    	<div class="copyright-text text-center">
-    		<p>© Bullpenarepas.com 2015. All Rights Reserved.</p>
-        <div>
-	</div>
-<div class="modal fade" tabindex="-1" role="dialog" id="myModal1" >
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">BAKED OR FRIED AREPAS</h4>
-      		</div>
-      		<div class="modal-body">
-      			<div class="row">
-    				<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light1.jpg' %}" class="img-responsive">
-                    	</div>
-                        <div class="col-md-6"><h2>Hit</h2>with 1 player of your choice <h3>$ 4.90</h3>
-                        </div>
-	                </div>
-					<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light2.jpg' %}" class="img-responsive">
-                        </div>
-                    	<div class="col-md-6"><h2>Double</h2>with 2 players of your choice <h3>$ 5.90</h3>
-                        </div>
-                    </div>
-					<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light3.jpg' %}" class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>Triple</h2>with 3 players of your choice <h3>$ 6.90</h3>
-                        </div>
-                    </div>
-					<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light4.jpg' %}" class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>Home Run</h2>with 4 players of your choice <h3> $ 7.50</h3>
-                        </div>
-                    </div>
-					<div class="col-md-6">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light5.jpg' %}" class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>Home Run Pabellón</h2>with 4 venezuelan players <h3>$ 8.70</h3>
-                        </div>
-                    </div>
-					<div class="col-md-6">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light6.jpg' %}" class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>Grand Slam</h2>with 5 venezuelan players <h3>$ 8.50</h3>
-                        </div>
-                    </div>
-      			</div>
-                <div class="center"><h3>to know our players checkout line up players menu</h3></div>
-      			<div class="modal-footer">
-        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      			</div>
-    		</div>
-		</div>
-	</div>
-</div>
-
-<div class="modal fade" tabindex="-1" role="dialog" id="myModal2" >
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">LITTLE LEAGUE (Kids meal)</h4>
-      		</div>
-      		<div class="modal-body">
-      			<div class="row">
-    				<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light7.jpg' %}" class="img-responsive">
-                    	</div>
-                        <div class="col-md-6"><h2>Mini Ball</h2>Corn cheese balls <h3>$3.99</h3>
-                        </div>
-	                </div>
-					<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light8.jpg' %}" class="img-responsive">
-                        </div>
-                    	<div class="col-md-6"><h2>Mini Bat</h2>Cheese sticks <h3>$3.99</h3>
-                        </div>
-                    </div>
-					<div class="col-md-6 ligtc0 col-md-offset-3">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light9.jpg' %}" class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>Swing Spread</h2>Ham spread arepas<h3>$3.99</h3>
-                        </div>
-                    </div>
-      			</div>
-      			<div class="modal-footer">
-        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      			</div>
-    		</div>
-		</div>
-	</div>
-</div>
-
-<div class="modal fade" tabindex="-1" role="dialog" id="myModal3" >
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">LINE UP PLAYERS</h4>
-      		</div>
-      		<div class="modal-body">
-      			<div class="row">
-    				<div class="col-md-4 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light10.jpg' %}"  class="img-responsive">
-                    	</div>
-                        <div class="col-md-4"><h3>1B</h3>Shredded meat
-                        </div>
-	                </div>
-					<div class="col-md-4 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light11.jpg' %}"  class="img-responsive">
-                        </div>
-                    	<div class="col-md-6"><h3>2B</h3>Shredded chicken
-                        </div>
-                    </div>
-					<div class="col-md-4 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light12.jpg' %}" class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h3>SS</h3>Pulled pork
-                        </div>
-                    </div>
-					<div class="col-md-4 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light13.jpg' %}" class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>3B</h2>Fish
-                        </div>
-                    </div>
-					<div class="col-md-4 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light14.jpg' %}"  class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>LF</h2>Chicken salad
-                        </div>
-                    </div>
-					<div class="col-md-4 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light15.jpg' %}"  class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>CF</h2>Ham
-                        </div>
-                    </div>
-                    <div class="col-md-4 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light16.jpg' %}"  class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>RF</h2>Black beans
-                        </div>
-                    </div>
-                    <div class="col-md-4 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light17.jpg' %}"  class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>P</h2>Guayanes Cheese
-                        </div>
-                    </div>
-                    <div class="col-md-4 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light18.jpg' %}"  class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>C</h2>Mano Cheese 
-                        </div>
-                    </div>
-
-      			</div>
-      			<div class="modal-footer">
-        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      			</div>
-    		</div>
-		</div>
-	</div>
-</div>
-
-<div class="modal fade" tabindex="-1" role="dialog" id="myModal4" >
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">ON THE BENCH</h4>
-      		</div>
-      		<div class="modal-body">
-            <div class="col-md-12 ligtc0">Add as much players as you want for just $ 0.99 each</div>
-      			<div class="row">
-    				<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light19.jpg' %}" class="img-responsive">
-                    	</div>
-                        <div class="col-md-6"><h2>Avocado</h2>
-                        </div>
-	                </div>
-					<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light20.jpg' %}" class="img-responsive">
-                        </div>
-                    	<div class="col-md-6"><h2>Eggs</h2>
-                        </div>
-                    </div>
-					<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light21.jpg' %}" class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>Sweet fried plantains</h2>
-                        </div>
-                    </div>
-					<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light22.jpg' %}" class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>American cheese</h2>
-                        </div>
-                    </div>
-					<div class="col-md-6">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light23.jpg' %}" class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>Fresh cheese</h2>
-                        </div>
-                    </div>
-                    Addicional player from line up
-      			</div>
-      			<div class="modal-footer">
-        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      			</div>
-    		</div>
-		</div>
-	</div>
-</div>
-
-<div class="modal fade" tabindex="-1" role="dialog" id="myModal5" >
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">SAUCES</h4>
-      		</div>
-      		<div class="modal-body">
-      			<div class="row">
-    				<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light29.jpg' %}" class="img-responsive">
-                    	</div>
-                        <div class="col-md-6"><h2>Strike (guasacaca)</h2>
-                        </div>
-	                </div>
-					<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light30.jpg' %}" class="img-responsive">
-                        </div>
-                    	<div class="col-md-6"><h2>Rolling (tartar)</h2>
-                        </div>
-                    </div>
-					<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light28.jpg' %}" class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>Swing (pink)</h2>
-                        </div>
-                    </div>
-					<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light31.jpg' %}" class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>Wild Pitch (hot & spice)</h2>
-                        </div>
-                    </div>
-      			</div>
-      			<div class="modal-footer">
-        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      			</div>
-    		</div>
-		</div>
-	</div>
-</div>
-
-
-<div class="modal fade" tabindex="-1" role="dialog" id="myModal6" >
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">SOFT DRINKS </h4>
-      		</div>
-      		<div class="modal-body">
-      			<div class="row">
-    				<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light24.jpg' %}" class="img-responsive">
-                    	</div>
-                        <div class="col-md-6"><h2>Soda</h2>$ 1.00 
-                        </div>
-	                </div>
-					<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light25.jpg' %}" class="img-responsive">
-                        </div>
-                    	<div class="col-md-6"><h2>Juice</h2>$ 1.00 
-                        </div>
-                    </div>
-					<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light26.jpg' %}" class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>Water</h2>$ 1.00 
-                        </div>
-                    </div>
-					<div class="col-md-6 ligtc0">
-                    	<div class="col-md-6"><img src="{% static 'website/img/light27.jpg' %}" class="img-responsive">
-                        </div>
-                        <div class="col-md-6"><h2>Natural Juice</h2>$ 1.00 
-                        </div>
-                    </div>
-      			</div>
-      			<div class="modal-footer">
-        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      			</div>
-    		</div>
-		</div>
-	</div>
-</div>
-
-
-<div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">LINE UP PLAYERS</h4>
+      <div class="copyright-text text-center">
+        <p>© Bullpenarepas.com {% now "Y" %}. All Rights Reserved.</p>
       </div>
-      <div class="modal-body mini3">
-        <strong>1B</strong> Shredded meat - carne mechada</br>
-        <strong>2B</strong> Shredded chicken - pollo mechado</br>
-        <strong>SS</strong> Pulled pork - pernil</br>
-        <strong>3B</strong> Fish - pescado</br>
-        <strong>LF</strong> Chicken salad - reina pepiada</br>
-        <strong>CF</strong> Ham - jamón</br>
-        <strong>RF</strong> Black beans - caraotas negras</br>
-        <strong>DH</strong> American cheese - queso americano</br>
-        <strong>C</strong>  Fresh cheese - queso fresco
-      </div>
+    </div>
+  </footer>
+
+{# Modal For's #}
+{% for ModalCategory in categories %}
+<div class="modal fade" tabindex="-1" role="dialog" id="{{ ModalCategory.category.code|cut:"." }}" >
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h1>
+          {% if ModalCategory.override_desc == False %}
+            {{ ModalCategory.category.name }}
+          {% else %}
+            {{ ModalCategory.description }}
+          {% endif %}
+        </h1>
+  		</div>
+  		<div class="modal-body">
+  			<div class="row">
+  				{# un Product #}
+          {% for product in ModalCategory.webproduct_set.all %}
+          <div class="col-md-4 ligtc0">
+          	<div class="col-md-6">
+              <img src="/media/{{ product.webImage }}" class="img-responsive" alt="{{ product.product.name }}">
+          	</div>
+            <div class="col-md-6">
+              <h2>{{ product.product.name }}</h2>{{ product.product.description }}
+              {% if ModalCategory.show_price == True %}
+              <h3>$ {{ product.product.price }}</h3>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+          {# Fin de un Producto #}
+    		</div>
+  		</div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
-    </div>
+  	</div>
   </div>
 </div>
-<div class="modal fade" id="myModal4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">ON THE BENCH</h4>
-      </div>
-      <div class="modal-body mini4">
-        Add as much players as you want for just  $ 0.99 each</br>
-        Avocado</br>
-        Eggs</br>
-        Sweet fried plantains</br></br>
-        Addicional player from line up
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal fade" id="myModal5" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">SAUCES</h4>
-      </div>
-      <div class="modal-body mini5">
-        Strike (guasacaca)</br>
-        Rolling (tartar)</br>
-        Swing (pink)</br>
-        Wild Pitch (hot & spice)</br>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal fade" id="myModal6" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">SOFT DRINKS ($ 1.00 each)</h4>
-      </div>
-      <div class="modal-body mini6">
-        Soda</br>
-        Juice</br>
-        Water</br>
-        Natural Juice</br>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal fade" id="myModal7" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">SUGGESTED PLAYS</h4>
-      </div>
-      <div class="modal-body">
-		Double meat and ham: $ 7.40</br>
-        Double chicken and ham: $ 7.40</br>
-		Double pork and ham: $ 7.40</br>
-		Triple meat, ham and cheese: $ 7.90</br>
-		Triple chicken, ham and cheese: $ 7.90</br>
-		Triple pork, ham and cheese: $ 7.90</br>
-		Home run meat, ham, cheese and avocado: $ 8.50</br>
-		Home run chicken, ham, cheese and avocado: $ 8.50</br>
-		Home run pork, ham, cheese and avocado: $ 8.50</br>
-		Grand Slam meat, ham, cheese, egg and avocado: $ 9.00</br>
-		Grand Slam chicken, ham, cheese, egg and avocado: $ 9.00</br>
-		Grand Slam pork, ham, cheese, egg and avocado: $ 9.00</br>
-		Double meat and cheese: $ 7.40</br>
-		Double chicken and cheese: $ 7.40</br>
-		Double pork and cheese: $ 7.40</br>
-		Double ham and cheese: $ 7.40</br>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>   
 
- 
+{% endfor %}
 </body>
 </html>

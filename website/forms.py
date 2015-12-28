@@ -2,10 +2,11 @@
 # Powered by: Ing. Jorge Contreras
 # Fecha: 05/11/2015
 
-from django.forms import ModelForm, widgets, NumberInput
+from django.forms import ModelForm, widgets, NumberInput, TextInput, EmailInput
 from django.contrib.auth.models import User
 from django import forms
 from ordertogo.models import *
+from website.models import WebInfo, WebText
 
 
 class ArepaForm(forms.Form):
@@ -260,8 +261,6 @@ class PreCheckoutForm_Delivery(forms.Form):
         if len(origins) > 1:
             i = 0
             for location in origins:
-                print location.address_for_truck
-                print address
                 valid_address = ValidateAddress(
                     key.value,
                     location.address_for_truck,
@@ -275,7 +274,6 @@ class PreCheckoutForm_Delivery(forms.Form):
         if i == 0:
             raise forms.ValidationError("You must enter an address in the range")
 
-        print i
         return address
 
 class PreCheckoutForm_PickItUp(forms.Form):
@@ -317,3 +315,36 @@ def ValidateAddress(key,origin,destination,max_miles):
         result = False
 
     return result
+
+def load_text(code):
+    try:
+        a = WebText.objects.get(code=code)
+    
+    except WebText.DoesNotExist:
+        return 'None'
+    
+    else:
+        return a.text
+
+class WebInfoForm(forms.ModelForm):
+    class Meta:
+        model = WebInfo
+        fields = '__all__'
+        widgets = {
+            'name': TextInput(attrs={
+                'class':'form-control',
+                'placeholder':'Name'}
+            ),
+
+            'email': EmailInput(attrs={
+                'class':'form-control',
+                'placeholder':'Email'}
+            ),
+
+            'info': forms.Textarea(attrs={
+                'class':'form-control',
+                'placeholder':load_text('info_info'), 
+                'rows':8}
+            )
+        }
+    

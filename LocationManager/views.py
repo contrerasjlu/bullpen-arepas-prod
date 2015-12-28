@@ -218,16 +218,8 @@ class HandleOrderDetail(ListView):
 
 	def get_queryset(self):
 		try:
-			detail = OrderDetail.objects.filter(order_number_id=self.kwargs['pk']).aggregate(
-				subtotal=Sum('product_selected__price'),
-				tax=Sum('product_selected__price')*Decimal(load_vars('tax.percent')),
-				total=Case(
-					When(order_number__order_type='P', then=Sum('product_selected__price')+
-															(Sum('product_selected__price')*Decimal(load_vars('tax.percent')))),
-					When(order_number__order_type='D', then=Sum('product_selected__price')+
-															(Sum('product_selected__price')*Decimal(load_vars('tax.percent')))+
-															(Decimal(load_vars('delivery.cost')))))
-			)
+			detail = OrderDetail.objects.filter(order_number_id=self.kwargs['pk'])
+		
 		except OrderDetail.DoesNotExist:
 			return Http404('Wrong way')
 
