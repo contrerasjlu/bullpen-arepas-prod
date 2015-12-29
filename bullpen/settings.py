@@ -41,7 +41,6 @@ INSTALLED_APPS = (
     'rest_framework',
     'website',
     'LocationManager',
-    #'debug_toolbar',
     'widget_tweaks',
 )
 
@@ -83,15 +82,11 @@ WSGI_APPLICATION = 'bullpen.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bullpen',
-        #'NAME':'contrerasjlu$bullpen',
-        'USER': 'root',
-        #'USER':'contrerasjlu',
-        'PASSWORD': '14657790',
-        #'PASSWORD':'123456789',
-        'HOST': 'localhost',
-        #'HOST':'contrerasjlu.mysql.pythonanywhere-services.com',
-        'PORT': '',
+        'NAME': 'bullpenarepas',
+        'USER': 'bullpenarepas_db',
+        'PASSWORD': '$3dd3v1d@',
+        'HOST': 'db.bullpenarepas.com',
+        'PORT': '3306',
     }
 }
 
@@ -114,7 +109,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATIC_ROOT = os.path.dirname(BASE_DIR) + '/public/static/'
 MEDIA_URL = '/media/'
 
 EMAIL_HOST_USER = 'support@bullpenarepas.com'
@@ -123,4 +118,4 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST = 'mail.bullpenarepas.com'
 
-#SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = True
