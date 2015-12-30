@@ -380,6 +380,10 @@
     text-align: center;
   }
 
+  .single-features input, .single-features div.form-group, .single-features textarea{
+    text-align: left;
+  }
+
 
   /* about us */
 
