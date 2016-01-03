@@ -1,5 +1,5 @@
   body {
-    background: #DF9745;
+    background: #417240;
     font-weight: 300;
     font-size: 14px;
     line-height: 22px;
@@ -39,7 +39,7 @@
     list-style: none;
   }
   h1{
-    font-family: 'Streetwear', sans-serif;
+    font-family: 'Agency Bold', sans-serif;
     font-weight: 300;
     color: #fff;
 	}	
@@ -49,7 +49,7 @@
   }
 
   h1.inverColor{
-    color: #df9745;
+    color: #417240;
   }
 
   h2{
@@ -475,14 +475,14 @@ ul.sub-menu {
 
 .form-control:hover, 
 .form-control:focus{
-  border-color: #a77134;
+  border-color: #417240;
   outline: none;
   box-shadow: none;
 }
 
 .btn-submit {
   width: 100%;
-  background-color: #a77134;
+  background-color: #417240;
   color: #fff;
   font-size: 14px;
   font-weight: 300;
@@ -490,7 +490,7 @@ ul.sub-menu {
   text-transform: uppercase;
   border-radius: 3px;
   margin-top: 5px;
-  border-bottom: 3px solid #7d5527;
+  border-bottom: 3px solid #417240;
   box-shadow: none;
   padding: 10px;
 }
@@ -523,7 +523,7 @@ ul.sub-menu {
 **************************/
 #home-slider {
   height: 750px;
-  background: url(../img/Truk_pref.jpg) 50% 0% no-repeat;
+  background: url(../img/Truk___.jpg) 50% 0% no-repeat;
   position: relative;
   padding:50px 0px
 }
@@ -542,7 +542,7 @@ ul.sub-menu {
 
 /*************************************************************/
 #home-slider2 {
-  background: url(../img/Grill.jpg) 0 100% repeat-x;
+  background: url(../img/background_bullpenarepas_on_3.jpg) 0 100% repeat-x;
   position: relative;
   padding:100px 0px
 }
@@ -1771,7 +1771,7 @@ Blog with right sidebar
 /* Audio CSS */
 
 .audiojs{
-  background:#df9745;
+  background:#417240;
   height: 45px;
   width: 100%;
 }
@@ -1787,7 +1787,7 @@ Blog with right sidebar
 }
 
 .audiojs .play-pause{
-  background: #df9745;
+  background: #417240;
   width: 68px;
   height: 45px;
   padding: 0;
@@ -2325,7 +2325,7 @@ span.stButton_gradient,
   color: #686868;
   font-size: 18px;
   font-weight: 300;
-  padding: 100px 0;
+  padding: 0px 0;
 }
 
 #error-page .container-fluid {
@@ -2716,7 +2716,8 @@ span.stButton_gradient,
 
 .bgm_div{
   padding: 2% 2% 2% 2%;
-  background-color:rgba(0,0,0,.3);
+  background-color:rgba(0,0,0,.5);
+  margin-top: 45px;
   }
   
   
@@ -2809,7 +2810,30 @@ padding:10px;border-bottom:1px solid #e5e5e5;
   background-repeat:no-repeat;
   background-position: right;
 }
-@font-face{font-family:'Streetwear';src:url(../fonts/Streetwear.eot);src:url(../fonts/Streetwear.eot?#iefix) format('embedded-opentype'),url(../fonts/Streetwear.woff) format('woff'),url(../fonts/Streetwear.ttf) format('truetype'),url(../fonts/Streetwear.svg) format('svg')}
+@font-face{
+  font-family:'Streetwear';
+  src:url(../fonts/Streetwear.eot);
+  src:url(../fonts/Streetwear.eot?#iefix) 
+  format('embedded-opentype'), url(../fonts/Streetwear.woff) 
+  format('woff'), url(../fonts/Streetwear.ttf) 
+  format('truetype'),url(../fonts/Streetwear.svg) 
+  format('svg')
+}
+
+.agencia{
+  font-family: 'Agency Regular';
+  font-size: 35px;
+}
+
+@font-face{
+  font-family: 'Agency Bold';
+  src:url(../fonts/AGENCYB.TTF);
+}
+
+@font-face{
+  font-family: 'Agency Regular';
+  src:url(../fonts/AGENCYR.TTF);
+}
 
 /* NUEVOS ESTILOS */
 
@@ -2824,7 +2848,7 @@ padding:10px;border-bottom:1px solid #e5e5e5;
 }
 
 .inver-ico{
-	color:#DF9745;
+	color:#417240;
 }
 
 .ligtc0{
@@ -2839,4 +2863,71 @@ section#info{
   animation-name: fadeInRight;
   min-height: 660px;
   padding-top: 50px;
+}
+
+p.onthegame {
+  width: 85%;
+  font-family: 'Agency Regular';
+  font-size: 20px
+}
+
+.agenciaregular{
+  font-family: 'Agency Regular';
+  font-size: 20px 
+}
+
+.agenciabold{
+  font-family: 'Agency Bold';
+  font-size: 20px 
+}
+
+.fondorojo{
+  padding: 2% 2% 2% 2%;
+  background-color:rgba(210,44,38,.2);
+  margin-top: 1px;
+  min-height: 250px;
+}
+
+.modal-product-font{
+  font-family: 'Agency Bold';
+}
+
+.product-modal-image{
+  border: solid 5px;
+  border-color: #000;
+}
+
+.white{
+  font-size: 35px;
+  color: #fff;
+}
+
+.yellow{
+  font-size: 25px;
+  color: #feee00;
+}
+
+.batter{
+  width: 45px;
+}
+
+.modal-close-btn{
+  font-family: 'Agency Bold';
+  font-size: 25px;
+  background-color: #417240;
+  border-color: #417240;
+}
+
+.fondoblanco{
+  /*padding: 2% 2% 2% 2%;*/
+  background-color:rgba(255,255,255,.5);
+  margin-top: 1px;
+  line-height: 35px;
+}
+
+.modal-p{
+  padding-left: 10px;
+}
+span.yellow{
+  font-size: 35px;
 }

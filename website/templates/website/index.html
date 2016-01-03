@@ -107,8 +107,7 @@
                 </div>
                 <div class="col-md-5 col-xs-12 col-md-offset-2 wow  bgm_div left fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
                   <div class="">
-                    <h1 class="center">Bullpen Arepas</h1>
-                    <P>{{ home_text }}</P>
+                    <P class="agenciaregular">{{ home_text }}</P>
                     <audio src="{% static 'website/audio/Bulpen_Jingle_mediana.m4a' %}" preload="auto" />
                   </div>
                 </div>
@@ -129,12 +128,13 @@
           <div class="col-sm-12 col-sx-12 wow" data-wow-duration="500ms" data-wow-delay="300ms">
             </br></br></br></br>
             <h1>The Arepa</h1>
-            <P>{{ the_arepa_text }}</P>
+            <P class="agenciaregular">{{ the_arepa_text }}</P>
           </div>
 					<div id="myCarousel" class="carousel slide" data-ride="carousel">
             <ol class="carousel-indicators">
-              <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-              <li data-target="#myCarousel" data-slide-to="1"></li>
+            {% for img in WebImages %}
+              <li data-target="#myCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+            {% endfor %}
             </ol>
             <!-- Wrapper for slides -->
             <div class="carousel-inner" role="listbox">
@@ -171,17 +171,16 @@
               <div class="single-features">
                 <div class="col-sm-12 wow fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
                   <h1>On The Game</h1>
-                  <P>{{ on_the_game_text }}</P>
-                  <h2 class="circle"  data-toggle="modal"  data-target="#myModal7">Suggested Plays</h2>
+                  <P class="onthegame">{{ on_the_game_text }}</P>
                 </div>
 							</div>
 							<div class="clients-logo wow fadeIn" data-wow-duration="1000ms" data-wow-delay="600ms">
 								{% for category in categories %}
                 <div class="col-xs-4 col-sm-2" align="center">
                   <a>
-                    <img src="/media/{{ category.webImage }}" align="center" class="img-responsive img-circle circle" alt="{{ category.category.name }}" data-toggle="modal" data-target="#{{ category.category.code|cut:"." }}">
+                    <img src="/media/{{ category.webImage }}" align="center" class="img-responsive" alt="{{ category.category.name }}" data-toggle="modal" data-target="#{{ category.category.code|cut:"." }}">
                   </a>
-                  <h3>
+                  <h3 class="agencia">
                   {% if category.override_desc == False %}
                     {{ category.category.name }}
                   {% else %}
@@ -206,24 +205,7 @@
       	<div class="single-features">
           <div class="col-xs-12 col-md-6 col-sm-6 wow fadeInRight animated" data-wow-duration="500ms" data-wow-delay="300ms" id="left-info">
             <h1 class="inverColor">Info</h1>
-            <p>{{ info_text }}</p>
-            <div class="clients-logo" align="center">
-              <div class="col-xs-2 col-sm-2 socialib" align="center" >
-                <a href="https://www.facebook.com/BullpenArepas/" target="_blank">
-                  <img src="{% static 'website/img/f.png' %}" alt="facebook.com/BullpenArepas/">
-                </a>
-              </div>
-              <div class="col-xs-2 col-sm-2 socialib" align="center" >
-                <a href="https://twitter.com/bullpenarepas" target="_blank">
-                  <img src="{% static 'website/img/t.png' %}" alt="twitter.com/bullpenarepas">
-                </a>
-  					  </div>
-              <div class="col-xs-2 col-sm-2 socialib" align="center" >
-                <a href="https://instagram.com/bullpenarepas/" target="_blank">
-                  <img src="{% static 'website/img/i.png' %}" alt="instagram.com/bullpenarepas/">
-                </a>
-              </div>   
-  				  </div>
+            <p class="agenciaregular">{{ info_text }}</p>
   				</div>
   				<div class="col-xs-12 col-md-6 col-sm-6 fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms"id="right-info">
             <div class="contact-form bottom">
@@ -261,7 +243,7 @@
 {# Calendario #}
   <div class="col-md-offset-2">
     <h1>Calendar / Events</h1>
-    <P>{{ calendar_text }}</P>  
+    <P class="agenciaregular">{{ calendar_text }}</P>  
   </div>
   <div class="col-md-offset-1" id='loading'>loading...</div>
   <div id='calendar'></div>
@@ -282,7 +264,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span aria-hidden="true" class="white">&times;</span>
         </button>
         <h1>
           {% if ModalCategory.override_desc == False %}
@@ -294,30 +276,76 @@
   		</div>
   		<div class="modal-body">
   			<div class="row">
-  				{# un Product #}
+        {# un Product Image View #}
+        {% if ModalCategory.type_cat == 'I' %}
           {% for product in ModalCategory.webproduct_set.all %}
-          <div class="col-md-4 ligtc0">
-          	<div class="col-md-6">
-              <img src="/media/{{ product.webImage }}" class="img-responsive" alt="{{ product.product.name }}">
-          	</div>
-            <div class="col-md-6">
-              <h2>{{ product.product.name }}</h2>{{ product.product.description }}
-              {% if ModalCategory.show_price == True %}
-              <h3>$ {{ product.product.price }}</h3>
-              {% endif %}
+          <div class="col-md-12 ligtc0">
+            <div class="fondorojo">
+            {% if forloop.counter|divisibleby:'2' %}
+            	<div class="col-md-6">
+                <img src="/media/{{ product.webImage }}" class="img-responsive product-modal-image" alt="{{ product.product.name }}">
+            	</div>
+              <div class="col-md-6">
+                <h2 class="modal-product-font white">{{ product.product.name }}</h2>
+                <p class="modal-product-font yellow">{{ product.product.description }}</p>
+                {% if product.batter == True %}
+                  {% with ''|center:product.batter_num as range %}
+                  {% for _ in range %}
+                    <img src="{% static 'website/img/1_player.png' %}" class="batter">
+                  {% endfor %}
+                  {% endwith %}
+                {% endif %}
+                {% if ModalCategory.show_price == True %}
+                <h3 class="modal-product-font white">${{ product.product.price }}</h3>
+                {% endif %}
+              </div>
+            {% else %}
+              <div class="col-md-6">
+                <h2 class="modal-product-font white">{{ product.product.name }}</h2>
+                <p class="modal-product-font yellow">{{ product.product.description }}</p>
+                {% if product.batter == True %}
+                  {% with ''|center:product.batter_num as range %}
+                  {% for _ in range %}
+                    <img src="{% static 'website/img/1_player.png' %}" class="batter">
+                  {% endfor %}
+                  {% endwith %}
+                {% endif %}
+                {% if ModalCategory.show_price == True %}
+                <h3 class="modal-product-font white">${{ product.product.price }}</h3>
+                {% endif %}
+              </div>
+              <div class="col-md-6">
+                <img src="/media/{{ product.webImage }}" class="img-responsive product-modal-image" alt="{{ product.product.name }}">
+              </div>
+            {% endif %}
             </div>
           </div>
           {% endfor %}
           {# Fin de un Producto #}
-    		</div>
-  		</div>
+        {% endif %}
+        {# un Product List Product #}
+        {% if ModalCategory.type_cat == 'L' %}
+        <div class="col-md-12 ligtc0">
+          {% for product in ModalCategory.webproduct_set.all %}
+            <div class="fondoblanco">
+            <p class="modal-p">
+              <span class="modal-product-font yellow">{{ product.product.code }}</span>
+              <span class="modal-product-font white">{{ product.product.name }} ({{ product.product.description }})</span>
+            </p>
+            </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {# fin de un Product List product #}
+  		  </div>
+      </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-default modal-close-btn" data-dismiss="modal">Close</button>
       </div>
   	</div>
   </div>
 </div>
-
 {% endfor %}
+
 </body>
 </html>
