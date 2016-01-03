@@ -47,7 +47,7 @@ def index(request):
 	for text in texts:
 		context[text.code] = text.text
 
-	context['categories'] = WebCategory.objects.all()
+	context['categories'] = WebCategory.objects.filter(active=True).order_by('order')
 	context['WebImages'] = WebCarrousel.objects.filter(active=True).order_by('order')
 	
 	if request.POST:
@@ -67,6 +67,8 @@ def closed(request):
 	context['status'] = is_open()
 	if context['status']==True:
 		return HttpResponseRedirect(reverse('website:menu'))
+
+	context['text'] = WebText.objects.get(code='closed_text')
 
 	return render(request, 'website/closed.html', context)
 
