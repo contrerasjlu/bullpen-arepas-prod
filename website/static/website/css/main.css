@@ -2888,6 +2888,20 @@ p.onthegame {
   min-height: 250px;
 }
 
+.fondorojo-solid{
+  padding: 2% 2% 2% 2%;
+  background-color:rgba(210,44,38,1);
+  margin-top: 1px;
+  min-height: 250px;
+}
+
+.fondoamarillo-solid{
+  padding: 2% 2% 2% 2%;
+  background-color:rgba(254,238,0,1);
+  margin-top: 1px;
+  min-height: 250px;
+}
+
 .modal-product-font{
   font-family: 'Agency Bold';
 }
@@ -2897,10 +2911,30 @@ p.onthegame {
   border-color: #000;
 }
 
+.product-modal-image-white{
+  border: solid 5px;
+  border-color: #fff;
+}
+
 .white{
   font-size: 35px;
   color: #fff;
 }
+
+.red{
+  font-size: 35px;
+  color: #d22c26;
+}
+
+.black{
+  font-size: 35px;
+  color: #000;
+}
+
+.just-white{
+  color: #fff;
+}
+
 
 .yellow{
   font-size: 25px;
@@ -2930,4 +2964,14 @@ p.onthegame {
 }
 span.yellow{
   font-size: 35px;
+}
+
+.center-block{
+  float: none;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.to-bottom{
+  vertical-align: bottom;
 }
