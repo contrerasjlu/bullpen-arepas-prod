@@ -17,12 +17,19 @@ class WebText(models.Model):
 
 class WebCategory(models.Model):
 
-	Style_Options = (("L", "List Product"),("I", "Image View"),)
+	Style_Options = (
+		("L", "List Product"),
+		("I", "Image View - Stripped R&B "),
+		("C", "Image View - Stripped R&B "),
+	)
 
 	category = models.ForeignKey(category)
 	override_desc = models.BooleanField(verbose_name='Override Name?',default=False)
 	description = models.TextField(max_length=3000, blank=True)
-	show_price = models.BooleanField(default=False)
+	show_price = models.BooleanField(
+		default=False, 
+		help_text="Only For Image View and Image View - Centered"
+	)
 	webImage = models.ImageField(
 		verbose_name='Image to Show for Category',
 		upload_to='website/category/images/'
@@ -34,6 +41,13 @@ class WebCategory(models.Model):
 		default='I'
 	)
 	order = models.PositiveIntegerField(verbose_name='Order To Show in Page', default=0)
+	foot_image_check = models.BooleanField(verbose_name="Aditional Image?", default=False)
+	foot_image = models.ImageField(
+		verbose_name="Image for Footer", 
+		help_text="This Image will be on the Footer od the Modal Window Content",
+		upload_to='website/product/images/footer/',
+		blank=True
+	)
 	active = models.BooleanField(default=True)
 
 	class Meta:
@@ -51,9 +65,24 @@ class WebProduct(models.Model):
 		verbose_name='Image to Show for Product', 
 		upload_to='website/product/images/'
 	)
-	batter = models.BooleanField(verbose_name="Show Batter?", default=False)
-	batter_num = models.PositiveIntegerField(verbose_name="How Many Batters?", default="0")
-
+	batter = models.BooleanField(
+		verbose_name="Show Batter?", 
+		default=False, 
+		help_text="Only for Image View"
+	)
+	batter_num = models.PositiveIntegerField(
+		verbose_name="How Many Batters?", 
+		default="0",
+		help_text="Only for Image View"
+	)
+	override_desc = models.BooleanField(verbose_name="Override Description?", default=False)
+	description = models.TextField(verbose_name="Description", blank=True)
+	aditional_text = models.CharField(
+		verbose_name="Aditional Text to Show", 
+		max_length=10, 
+		blank=True,
+		help_text="Only for Image View - Centered"
+	)
 
 	class Meta:
 		verbose_name = "Web Product"

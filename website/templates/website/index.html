@@ -260,90 +260,195 @@
 {# Modal For's #}
 {% for ModalCategory in categories %}
 <div class="modal fade" tabindex="-1" role="dialog" id="{{ ModalCategory.category.code|cut:"." }}" >
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true" class="white">&times;</span>
-        </button>
-        <h1>
-          {% if ModalCategory.override_desc == False %}
-            {{ ModalCategory.category.name }}
-          {% else %}
-            {{ ModalCategory.description }}
-          {% endif %}
-        </h1>
-  		</div>
-  		<div class="modal-body">
-  			<div class="row">
-        {# un Product Image View #}
-        {% if ModalCategory.type_cat == 'I' %}
-          {% for product in ModalCategory.webproduct_set.all %}
-          <div class="col-md-12 ligtc0">
-            <div class="fondorojo">
-            {% if forloop.counter|divisibleby:'2' %}
-            	<div class="col-md-6">
-                <img src="/media/{{ product.webImage }}" class="img-responsive product-modal-image" alt="{{ product.product.name }}">
-            	</div>
-              <div class="col-md-6">
-                <h2 class="modal-product-font white">{{ product.product.name }}</h2>
-                <p class="modal-product-font yellow">{{ product.product.description }}</p>
-                {% if product.batter == True %}
-                  {% with ''|center:product.batter_num as range %}
-                  {% for _ in range %}
-                    <img src="{% static 'website/img/1_player.png' %}" class="batter">
-                  {% endfor %}
-                  {% endwith %}
-                {% endif %}
-                {% if ModalCategory.show_price == True %}
-                <h3 class="modal-product-font white">${{ product.product.price }}</h3>
-                {% endif %}
-              </div>
-            {% else %}
-              <div class="col-md-6">
-                <h2 class="modal-product-font white">{{ product.product.name }}</h2>
-                <p class="modal-product-font yellow">{{ product.product.description }}</p>
-                {% if product.batter == True %}
-                  {% with ''|center:product.batter_num as range %}
-                  {% for _ in range %}
-                    <img src="{% static 'website/img/1_player.png' %}" class="batter">
-                  {% endfor %}
-                  {% endwith %}
-                {% endif %}
-                {% if ModalCategory.show_price == True %}
-                <h3 class="modal-product-font white">${{ product.product.price }}</h3>
-                {% endif %}
-              </div>
-              <div class="col-md-6">
-                <img src="/media/{{ product.webImage }}" class="img-responsive product-modal-image" alt="{{ product.product.name }}">
-              </div>
-            {% endif %}
+                    <span aria-hidden="true" class="white">&times;</span>
+                </button>
+                <h1>
+                  {% if ModalCategory.override_desc == False %}
+                    {{ ModalCategory.category.name }}
+                  {% else %}
+                    {{ ModalCategory.description }}
+                  {% endif %}
+                </h1>
+  		    </div>
+      		<div class="modal-body">
+      			<div class="row">
+                    {# Start Product Image View - Stripped R&Y #}
+                    {% if ModalCategory.type_cat == 'C' %}
+                        {% for product in ModalCategory.webproduct_set.all %}
+                            <div class="col-md-12 ligtc0">
+                                {% if forloop.counter|divisibleby:'2' %}
+                                <div class="fondoamarillo-solid">
+                                    <div class="col-md-6">
+                                        <img src="/media/{{ product.webImage }}" class="img-responsive product-modal-image" alt="{{ product.product.name }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h2 class="modal-product-font red">{{ product.product.name }}</h2>
+                                        <p class="modal-product-font red">
+                                            {% if product.override_desc == True %}
+                                                {{ product.description }}
+                                            {% else %}
+                                                {{ product.product.description }}
+                                            {% endif %}
+                                        </p>
+                                        {% if product.batter == True %}
+                                            {% with ''|center:product.batter_num as range %}
+                                                {% for _ in range %}
+                                                    <img src="{% static 'website/img/1_player.png' %}" class="batter">
+                                                {% endfor %}
+                                            {% endwith %}
+                                        {% endif %}
+                                        {% if ModalCategory.show_price == True %}
+                                            <h3 class="modal-product-font black">
+                                                ${{ product.product.price }}
+                                            </h3>
+                                        {% endif %}
+                                        {% if product.aditional_text %}
+                                            <h3 class="modal-product-font black">
+                                                {{ product.aditional_text }}
+                                            </h3>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="fondorojo-solid">
+                                    <div class="col-md-6">
+                                        <h2 class="modal-product-font white">{{ product.product.name }}</h2>
+                                        <p class="modal-product-font white">
+                                            {% if product.override_desc == True %}
+                                                {{ product.description }}
+                                            {% else %}
+                                                {{ product.product.description }}
+                                            {% endif %}
+                                        </p>
+                                        {% if product.batter == True %}
+                                            {% with ''|center:product.batter_num as range %}
+                                                {% for _ in range %}
+                                                    <img src="{% static 'website/img/1_player.png' %}" class="batter">
+                                                {% endfor %}
+                                            {% endwith %}
+                                        {% endif %}
+                                        {% if ModalCategory.show_price == True %}
+                                            <h3 class="modal-product-font black">
+                                                ${{ product.product.price }}
+                                            </h3>
+                                        {% endif %}
+                                        {% if product.aditional_text %}
+                                            <h3 class="modal-product-font black">
+                                                {{ product.aditional_text }}
+                                            </h3>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <img src="/media/{{ product.webImage }}" class="img-responsive product-modal-image" alt="{{ product.product.name }}">
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    {# End Product Image View - Stripped R&Y #}
+                    {# Start Product Image View - Stripped R&B #}
+                    {% if ModalCategory.type_cat == 'I' %}
+                        {% for product in ModalCategory.webproduct_set.all %}
+                            <div class="col-md-12 ligtc0">
+                                {% if forloop.counter|divisibleby:'2' %}
+                                    <div class="col-md-6">
+                                        <img src="/media/{{ product.webImage }}" class="img-responsive product-modal-image" alt="{{ product.product.name }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h2 class="modal-product-font white">{{ product.product.name }}</h2>
+                                        <p class="modal-product-font yellow">
+                                            {% if product.override_desc == True %}
+                                                {{ product.description }}
+                                            {% else %}
+                                                {{ product.product.description }}
+                                            {% endif %}
+                                        </p>
+                                        {% if product.batter == True %}
+                                            {% with ''|center:product.batter_num as range %}
+                                                {% for _ in range %}
+                                                    <img src="{% static 'website/img/1_player.png' %}" class="batter">
+                                                {% endfor %}
+                                            {% endwith %}
+                                        {% endif %}
+                                        {% if ModalCategory.show_price == True %}
+                                            <h3 class="modal-product-font white">
+                                                ${{ product.product.price }}
+                                            </h3>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                <div class="fondorojo">
+                                    <div class="col-md-6">
+                                        <h2 class="modal-product-font white">{{ product.product.name }}</h2>
+                                        <p class="modal-product-font yellow">
+                                            {% if product.override_desc == True %}
+                                                {{ product.description }}
+                                            {% else %}
+                                                {{ product.product.description }}
+                                            {% endif %}
+                                        </p>
+                                        {% if product.batter == True %}
+                                            {% with ''|center:product.batter_num as range %}
+                                                {% for _ in range %}
+                                                    <img src="{% static 'website/img/1_player.png' %}" class="batter">
+                                                {% endfor %}
+                                            {% endwith %}
+                                        {% endif %}
+                                        {% if ModalCategory.show_price == True %}
+                                            <h3 class="modal-product-font white">
+                                                ${{ product.product.price }}
+                                            </h3>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <img src="/media/{{ product.webImage }}" class="img-responsive product-modal-image" alt="{{ product.product.name }}">
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    {# End Product Image View - Stripped R&B #}
+                    {# Start Product List Product #}
+                    {% if ModalCategory.type_cat == 'L' %}
+                    <div class="col-md-12 ligtc0">
+                      {% for product in ModalCategory.webproduct_set.all %}
+                        <div class="fondoblanco">
+                            <p class="modal-p">
+                                <span class="modal-product-font yellow">{{ product.product.code }}</span>
+                                <span class="modal-product-font white">
+                                    {{ product.product.name }} 
+                                    {% if product.override_desc == True %}
+                                        ({{ product.description }})
+                                    {% else %}
+                                        ({{ product.product.description }})
+                                    {% endif %}
+                                </span>
+                            </p>
+                        </div>
+                      {% endfor %}
+                    </div>
+                    {% endif %}
+                    {# End Product List product #}
+                    
+                    {# Footer Image - Aditional #}
+                    {% if ModalCategory.foot_image_check == True %}
+                    <div class="col-md-12 ligtc0">
+                      <img src="/media/{{ ModalCategory.foot_image }}" alt="bullpenarepas.com" class="img-responsive" />
+                    </div>
+                    {% endif %}
+      		    </div>
             </div>
-          </div>
-          {% endfor %}
-          {# Fin de un Producto #}
-        {% endif %}
-        {# un Product List Product #}
-        {% if ModalCategory.type_cat == 'L' %}
-        <div class="col-md-12 ligtc0">
-          {% for product in ModalCategory.webproduct_set.all %}
-            <div class="fondoblanco">
-            <p class="modal-p">
-              <span class="modal-product-font yellow">{{ product.product.code }}</span>
-              <span class="modal-product-font white">{{ product.product.name }} ({{ product.product.description }})</span>
-            </p>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default modal-close-btn" data-dismiss="modal">Close</button>
             </div>
-          {% endfor %}
         </div>
-        {% endif %}
-        {# fin de un Product List product #}
-  		  </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default modal-close-btn" data-dismiss="modal">Close</button>
-      </div>
-  	</div>
-  </div>
+    </div>
 </div>
 {% endfor %}
 
