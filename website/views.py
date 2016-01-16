@@ -805,14 +805,13 @@ def ValidateAddress(key,origin,destination,max_miles):
 # VISA: 4788250000028291
 def PaymentRaw(name,card,exp,amt,cvv,ref):
 
-	import os,hashlib,hmac,time,base64,json,requests,datetime,pytz
+	import os,hashlib,hmac,time,base64,json,requests
 
 	apiKey = str(load_vars('pay.apikey')).strip()
-	apiKey = "b4y5s2MIuQVZQnndqauDsq6c6nVGdAlP"
+
 	apiSecret = str(load_vars('pay.secret')).strip()
-	apiSecret = "851924da2e81c21cf12f7d40f13a4719c8522014c2dd811aeb7449c87524f6fb"
+
 	token = str(load_vars('pay.token')).strip()
-	token = "fdoa-c14f9273f7cb6bec4564e0464fdf5bd3c14f9273f7cb6bec"
 
 	if card.startswith('3'):
 		cardT = 'American Express'
@@ -866,9 +865,6 @@ def PaymentRaw(name,card,exp,amt,cvv,ref):
 	payment = requests.post(url, data=payload, headers=headers)
 
 	response = {}
-	print payment.json()
-	print timestamp
-	print datetime.datetime.today()
 
 	try:
 		payment.json()['Error']['messages']
