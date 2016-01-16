@@ -807,9 +807,11 @@ def PaymentRaw(name,card,exp,amt,cvv,ref):
 
 	import os,hashlib,hmac,time,base64,json,requests
 
-	apiKey = str(load_vars('pay.apikey'))
-	apiSecret = str(load_vars('pay.secret'))
-	token = str(load_vars('pay.token'))
+	apiKey = str(load_vars('pay.apikey')).strip()
+
+	apiSecret = str(load_vars('pay.secret')).strip()
+
+	token = str(load_vars('pay.token')).strip()
 
 	if card.startswith('3'):
 		cardT = 'American Express'
@@ -833,6 +835,7 @@ def PaymentRaw(name,card,exp,amt,cvv,ref):
 			   				  "cvv":cvv
 			   				  }
 			   }
+	payload = json.dumps(payload)
 
 	# Crypographically strong random number
 	nonce = str(int(os.urandom(16).encode('hex'),16)) 
@@ -840,7 +843,7 @@ def PaymentRaw(name,card,exp,amt,cvv,ref):
 	# Epoch timestamp in milli seconds
 	timestamp = str(int(round(time.time() * 1000)))
 
-	data = apiKey + nonce + timestamp + token + str(payload)
+	data = apiKey + nonce + timestamp + token + payload
 	
 	# Make sure the HMAC hash is in hex 
 	hmac = hmac.new(apiSecret, msg=data, digestmod=hashlib.sha256).hexdigest()
@@ -859,7 +862,7 @@ def PaymentRaw(name,card,exp,amt,cvv,ref):
 			   'token':token
 			   }
 
-	payment = requests.post(url, data=json.dumps(payload), headers=headers)
+	payment = requests.post(url, data=payload, headers=headers)
 
 	response = {}
 
