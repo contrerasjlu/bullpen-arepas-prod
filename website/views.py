@@ -548,28 +548,107 @@ def checkout(request):
 				context['FailMsj'] = pay['object']
 				return render(request, 'website/invoice.html', context)
 			else:
-				PayEgg = {
-					'cardholder_name' : pay['object'].json()['card']['cardholder_name'],
-					'card_type' : pay['object'].json()['card']['type'],
-					'card_number' : pay['object'].json()['card']['card_number'],
-					'exp_date' : pay['object'].json()['card']['exp_date'],
-					'gateway_message' : pay['object'].json()['gateway_message'],
-					'bank_message' : pay['object'].json()['bank_message'],
-					'bank_resp_code' : pay['object'].json()['bank_resp_code'],
-					'gateway_resp_code' : pay['object'].json()['gateway_resp_code'],
-					'cvv2' : pay['object'].json()['cvv2'],
-					'amount' : pay['object'].json()['amount'],
-					'transaction_tag' : pay['object'].json()['transaction_tag'],
-					'transaction_type' : pay['object'].json()['transaction_type'],
-					'currency' : pay['object'].json()['currency'],
-					'correlation_id' : pay['object'].json()['correlation_id'],
-					'token_type' : pay['object'].json()['token']['token_type'],
-					'token_value' : pay['object'].json()['token']['token_data']['value'],
-					'transaction_status' : pay['object'].json()['transaction_status'],
-					'validation_status' : pay['object'].json()['validation_status'],
-					'method' : pay['object'].json()['method'],
-					'transaction_id' : pay['object'].json()['transaction_id']
-				}
+				PayEgg = {}
+
+				try:
+					PayEgg['cardholder_name'] = pay['object'].json()['card']['cardholder_name']
+				except KeyError:
+					PayEgg['cardholder_name'] = 'Not Available'
+
+				try:
+					PayEgg['card_type'] = pay['object'].json()['card']['type']
+				except KeyError:
+					PayEgg['card_type'] = 'Not Available'
+
+				try:
+					PayEgg['card_number'] = pay['object'].json()['card']['card_number']
+				except KeyError:
+					PayEgg['card_number'] = 'Not Available'
+
+				try:
+					PayEgg['exp_date'] = pay['object'].json()['card']['exp_date']
+				except KeyError:
+					PayEgg['exp_date'] = 'Not Available'
+
+				try:
+					PayEgg['gateway_message'] = pay['object'].json()['gateway_message']
+				except KeyError:
+					PayEgg['gateway_message'] = 'Not Available'
+
+				try:
+					PayEgg['bank_message'] = pay['object'].json()['bank_message']
+				except KeyError:
+					PayEgg['bank_message'] = 'Not Available'
+
+				try:
+					PayEgg['bank_resp_code'] = pay['object'].json()['bank_resp_code']
+				except KeyError:
+					PayEgg['bank_resp_code'] = 'Not Available'
+
+				try:
+					PayEgg['gateway_resp_code'] = pay['object'].json()['gateway_resp_code']
+				except KeyError:
+					PayEgg['gateway_resp_code'] = 'Not Available'
+
+				try:
+					PayEgg['cvv2'] = pay['object'].json()['cvv2']
+				except KeyError:
+					PayEgg['cvv2'] = 'Not Available'
+
+				try:
+					PayEgg['amount'] = pay['object'].json()['amount']
+				except KeyError:
+					PayEgg['amount'] = 'Not Available'
+				
+				try:
+					PayEgg['transaction_tag'] = pay['object'].json()['transaction_tag']
+				except KeyError:
+					PayEgg['transaction_tag'] = 'Not Available'
+
+				try:
+					PayEgg['transaction_type'] = pay['object'].json()['transaction_type']
+				except KeyError:
+					PayEgg['transaction_type'] = 'Not Available'
+				
+				try:
+					PayEgg['currency'] = pay['object'].json()['currency']
+				except KeyError:
+					PayEgg['currency'] = 'Not Available'
+
+				try:
+					PayEgg['correlation_id'] = pay['object'].json()['correlation_id']
+				except KeyError:
+					PayEgg['correlation_id'] = pay['object'].json()['correlation_id']
+
+				try:
+					PayEgg['token_type'] = pay['object'].json()['token']['token_type']
+				except KeyError:
+					PayEgg['token_type'] = 'Not Available'
+
+				try:
+					PayEgg['token_value'] = pay['object'].json()['token']['token_data']['value']
+				except KeyError:
+					PayEgg['token_value'] = 'Not Available'
+
+				try:
+					PayEgg['transaction_status'] = pay['object'].json()['transaction_status']
+				except KeyError:
+					PayEgg['transaction_status'] = 'Not Available'
+
+				try:
+					PayEgg['validation_status'] = pay['object'].json()['validation_status']
+				except KeyError:
+					PayEgg['validation_status'] = 'Not Available'
+
+				try:
+					PayEgg['method'] = pay['object'].json()['method']
+				except KeyError:
+					PayEgg['method'] = 'Not Available'
+
+				try:
+					PayEgg['transaction_id'] = pay['object'].json()['transaction_id']
+				except KeyError:
+					PayEgg['transaction_id'] = 'Not Available'
 
 				if context['data_client']['type_of_sale'] == 'P':
 					this_order = Order(
