@@ -531,7 +531,7 @@ def checkout(request):
 			value = str(float("{0:.2f}".format(context['amounts']['total'])))
 			value = value.replace('.','')
 			location_ref = LocationsAvailable.objects.get(pk=context['data_client']['location'])
-			ref = location_ref.merchant_ref
+			ref = 'Order #'+str(context['order_number'])
 
 			pay = PaymentRaw(
 							 request.POST['name_on_card'],
@@ -987,14 +987,16 @@ def send_info_email(name,email,info):
 		return HttpResponse('Invalid header found.')
 
 def send_invoice_email(order,email):
-	text = "Your Order "+order.order_number+" have been recived\nThank you...\nAny Questions? write us at support@bullpenarepas.com"
+	text = "Your Order "+order.order_number+" have been recived\nThank you...\nAny Questions?\nWrite us at support@bullpenarepas.com\nCall us at (404) 643 2568"
 	html = """\
 	<html>
 		<head></head>
 		<body>
 			<p>Your Order #"""+order.order_number+""" have been recived</p>
 			<p>Thank you... </p>
-			<p>Any Questions? write us at support@bullpenarepas.com</p>
+			<p>Any Questions?</p> 
+			<p>Write us at support@bullpenarepas.com</p>
+			<p>Call us at (404) 643 2568</p>
 		</body>
 	</html>
 	"""

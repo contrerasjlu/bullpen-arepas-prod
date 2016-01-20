@@ -177,7 +177,7 @@ class orders(ListView):
 	model = PaymentBatch
 
 	def get_queryset(self):
-		return PaymentBatch.objects.filter(status='O', open_for_delivery=True).annotate(
+		return PaymentBatch.objects.filter(status='O').annotate(
 			paid=Count(Case(When(order__order_status='P', then='order__order_status'))),
 			kitchen=Count(Case(When(order__order_status='K', then='order__order_status'))),
 			out_for_delivery=Count(Case(When(order__order_status='O', then='order__order_status'))),
