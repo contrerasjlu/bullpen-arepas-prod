@@ -1,8 +1,10 @@
 from ordertogo.models import category, product
-from ordertogo.serializers import CategorySerializer, ProductSerializer
-from rest_framework import generics, status
+from website.models import WebText, WebCategory
+from ordertogo.serializers import CategorySerializer, ProductSerializer, WebTextSerializer
+from rest_framework import generics, status, permissions
 from rest_framework.views import APIView
 from django.shortcuts import get_list_or_404
+from django.http import Http404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -10,7 +12,7 @@ class Category(generics.ListAPIView):
 	"""
 	List all Categories
 	"""
-	queryset = category.objects.filter(Active=True)
+	queryset = WebCategory.objects.filter(active=True).order_by('order')
 	serializer_class = CategorySerializer
 
 class Product(generics.ListAPIView):
@@ -19,6 +21,29 @@ class Product(generics.ListAPIView):
 	"""
 	queryset = product.objects.filter(Active=True).order_by('order_in_menu')
 	serializer_class = ProductSerializer
+
+class Texts(generics.ListAPIView):
+	"""
+	List all the texts for the App
+	"""
+	queryset = WebText.objects.filter(active=True)
+	serializer_class = WebTextSerializer
+
+class TextDetail(APIView):
+	"""
+	Return a Text from a given code
+	"""
+	def get_object(self, code):
+		try:
+			return WebText.objects.get(code=code)
+		except WebText.DoesNotExist:
+			raise Http404
+
+	def get(self, request, code, format=None):
+		text = self.get_object(code)
+		serializer = WebTextSerializer(text)
+		return Response(serializer.data)
+
 
 
 @api_view(['GET'])
