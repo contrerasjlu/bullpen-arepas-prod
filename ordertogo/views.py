@@ -1,6 +1,6 @@
 from ordertogo.models import category, product
-from website.models import WebText, WebCategory
-from ordertogo.serializers import CategorySerializer, ProductSerializer, WebTextSerializer
+from website.models import WebText, WebCategory, WebProduct
+from ordertogo.serializers import WebCategorySerializer, WebProductSerializer, WebTextSerializer, ProductSerializer
 from rest_framework import generics, status, permissions
 from rest_framework.views import APIView
 from django.shortcuts import get_list_or_404
@@ -8,19 +8,51 @@ from django.http import Http404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-class Category(generics.ListAPIView):
+class api_WebCategories(generics.ListAPIView):
 	"""
 	List all Categories
 	"""
 	queryset = WebCategory.objects.filter(active=True).order_by('order')
-	serializer_class = CategorySerializer
+	serializer_class = WebCategorySerializer
 
-class Product(generics.ListAPIView):
+class api_WebCategoryDetails(APIView):
 	"""
-	List all Product by Category
+	Return a single Category from an ID
 	"""
-	queryset = product.objects.filter(Active=True).order_by('order_in_menu')
-	serializer_class = ProductSerializer
+	def get_object(self, CatId):
+		try:
+			return WebCategory.objects.get(id=CatId)
+		except WebCategory.DoesNotExist:
+			raise Http404
+
+	def get(self, request, CatId, format=None):
+		cat = self.get_object(CatId)
+		serializer = WebCategorySerializer(cat)
+		return Response(serializer.data)
+
+class api_WebProducts(APIView):
+	"""
+	List all product for a given category
+	"""
+	def get(self, request, CatId, format=None):
+		queryset = WebProduct.objects.filter(webCat=CatId)
+		serializer = WebProductSerializer(queryset, many=True)
+		return Response(serializer.data)
+
+class api_WebProductsDetails(APIView):
+	"""
+	Return a single Category from an ID
+	"""
+	def get_object(self, ProdId):
+		try:
+			return product.objects.get(id=ProdId)
+		except product.DoesNotExist:
+			raise Http404
+
+	def get(self, request, CatId, ProdId, format=None):
+		prod = self.get_object(ProdId)
+		serializer = ProductSerializer(prod)
+		return Response(serializer.data)
 
 class Texts(generics.ListAPIView):
 	"""
@@ -43,34 +75,6 @@ class TextDetail(APIView):
 		text = self.get_object(code)
 		serializer = WebTextSerializer(text)
 		return Response(serializer.data)
-
-
-
-@api_view(['GET'])
-def Product_By_Category(request, CatId):
-	"""
-	List all product for a given category
-	"""
-	queryset = product.objects.filter(Active=True,category=CatId).order_by('order_in_menu')
-	serializer = ProductSerializer(queryset, many=True)
-	
-	if queryset.count()>0:
-		return Response(serializer.data)
-	
-	return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET'])
-def Product_Detail(request, CatId, ProdId):
-	"""
-	List a single product for a given category and a given product ID
-	"""
-	queryset = product.objects.filter(Active=True,category=CatId, pk=ProdId)
-	serializer = ProductSerializer(queryset, many=True)
-	
-	if queryset.count()>0:
-		return Response(serializer.data)
-	
-	return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
 		
