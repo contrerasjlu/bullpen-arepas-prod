@@ -30,3 +30,8 @@ class WebTextSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = WebText
 		fields = ('code','name','text','active')
+
+class AlbumSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Album
+		fields = '__all__'

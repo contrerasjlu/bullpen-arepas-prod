@@ -386,3 +386,12 @@ class GenericVariable(models.Model):
 	code = models.CharField(verbose_name='Code', max_length=45, unique=True)
 	value = models.CharField(verbose_name='Value', max_length=500)
 	description = models.TextField(verbose_name='Descripcion', max_length=45)
+
+#Modelo de Obtencion de Album
+class Album(models.Model):
+	name = models.CharField(verbose_name='Given Name', max_length=150)
+	email = models.EmailField(unique=True)
+	
+	class Meta:
+		verbose_name = "Album"
+		verbose_name_plural = "Albums"

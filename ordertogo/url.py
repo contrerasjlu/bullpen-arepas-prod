@@ -8,6 +8,8 @@ urlpatterns = [
     url(r'^onthegame/categories/(?P<CatId>[0-9]+)/products/$', views.api_WebProducts.as_view()),
     url(r'^onthegame/categories/(?P<CatId>[0-9]+)/products/(?P<ProdId>[0-9]+)/$', views.api_WebProductsDetails.as_view()),
 
+	url(r'^album/$', views.Album.as_view()),    
+
     url(r'^texts/$', views.Texts.as_view()),
     url(r'^texts/(?P<code>[\w]+)/$', views.TextDetail.as_view()),
 ]
