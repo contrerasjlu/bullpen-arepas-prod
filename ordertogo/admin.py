@@ -61,3 +61,5 @@ class GuestDetailAdmin(admin.ModelAdmin):
 	search_fields = ['firstname','lastname','email','phone']
 
 admin.site.register(GuestDetail, GuestDetailAdmin)
+
+admin.site.register(Album)

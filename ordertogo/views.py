@@ -1,6 +1,6 @@
 from ordertogo.models import category, product
 from website.models import WebText, WebCategory, WebProduct
-from ordertogo.serializers import WebCategorySerializer, WebProductSerializer, WebTextSerializer, ProductSerializer
+from ordertogo.serializers import WebCategorySerializer, WebProductSerializer, WebTextSerializer, ProductSerializer, AlbumSerializer
 from rest_framework import generics, status, permissions
 from rest_framework.views import APIView
 from django.shortcuts import get_list_or_404
@@ -75,6 +75,17 @@ class TextDetail(APIView):
 		text = self.get_object(code)
 		serializer = WebTextSerializer(text)
 		return Response(serializer.data)
+
+class Album(APIView):
+	'''
+	Save a Petition for an Sticker Album
+	'''
+	def post(self, request, format=None):
+		serializer = AlbumSerializer(data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 		
