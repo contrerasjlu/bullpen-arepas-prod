@@ -453,20 +453,23 @@ def pre_checkout(request):
 					else:
 						return HttpResponseRedirect(reverse('website:pre_checkout'))	
 
+				realOrigin = PaymentBatch.objects.get(pk=near_batch)
 				request.session['data_client'] = {
 					'type_of_sale': request.POST['type_of_sale'],
 					'label_for_type_of_sale': 'Delivery',
 					'batch': near_batch,
-					'tax_percent':near_batch.tax_percent,
+					'tax_percent':realOrigin.tax_percent,
 					'address': RewriteAddress(
 											  request.POST['address'],
 											  load_vars('google.API.KEY')
-											  )
+											  ),
+					'address2': request.POST['address2']
 				}
 				return HttpResponseRedirect(reverse('website:checkout'))
 			else:
 				context['form_delivery'] = PreCheckoutForm_Delivery(request.POST)
 				context['form_pickitup'] = PreCheckoutForm_PickItUp(initial={ 'type_of_sale': 'P' })
+				context['form_parkinglot'] = PreCheckoutForm_ParkingLot(initial={ 'type_of_sale': 'PL' })
 				context['default_type_of_sale'] = 'D'
 				return render(request, 'website/pre_checkout.html', context)
 
@@ -487,13 +490,39 @@ def pre_checkout(request):
 			else:
 				context['form_pickitup'] = PreCheckoutForm_PickItUp(request.POST)
 				context['form_delivery'] = PreCheckoutForm_Delivery(initial={ 'type_of_sale': 'D' })
+				context['form_parkinglot'] = PreCheckoutForm_ParkingLot(initial={ 'type_of_sale': 'PL' })
 				context['default_type_of_sale'] = 'P'
+				return render(request, 'website/pre_checkout.html', context)
+		
+		elif request.POST['type_of_sale'] == 'PL':
+			data_client = PreCheckoutForm_ParkingLot(request.POST)
+			if data_client.is_valid():
+				location_desc =  PaymentBatch.objects.get(location_id=request.POST['location'], status='O')
+
+				request.session['data_client'] = {
+					'type_of_sale': request.POST['type_of_sale'],
+					'label_for_type_of_sale': 'I\'m at the Parking Lot',
+					'location': request.POST['location'],
+					'location_desc' : location_desc.address_for_truck,
+					'tax_percent': location_desc.tax_percent,
+					'car_brand' : request.POST['car_brand'],
+					'car_model' : request.POST['car_model'],
+					'car_color' : request.POST['car_color'],
+					'car_license' : request.POST['car_license'],
+				}
+				return HttpResponseRedirect(reverse('website:checkout'))
+			else:
+				context['form_pickitup'] = PreCheckoutForm_PickItUp(initial={ 'type_of_sale': 'P' })
+				context['form_delivery'] = PreCheckoutForm_Delivery(initial={ 'type_of_sale': 'D' })
+				context['form_parkinglot'] = PreCheckoutForm_ParkingLot(request.POST)
+				context['default_type_of_sale'] = 'PL'
 				return render(request, 'website/pre_checkout.html', context)
 		else:
 			return Http404("Wrong Way, Bad Request")
 	else:
 		context['form_delivery'] = PreCheckoutForm_Delivery(initial={ 'type_of_sale': 'D' })
 		context['form_pickitup'] = PreCheckoutForm_PickItUp(initial={ 'type_of_sale': 'P' })
+		context['form_parkinglot'] = PreCheckoutForm_ParkingLot(initial={ 'type_of_sale': 'PL' })
 		context['default_type_of_sale'] = 'D'
 		return render(request, 'website/pre_checkout.html', context)
 
@@ -508,14 +537,14 @@ def checkout(request):
 
 	if 'data_client' in request.session:
 		context['data_client'] = request.session['data_client']
-		if context['data_client']['type_of_sale'] == 'D':
-			context['amounts']['total'] += int(load_vars('delivery.cost'))
 	else:
 		return HttpResponseRedirect(reverse('website:pre_checkout'))
 
 	context['tax'] = context['data_client']['tax_percent']
 	context['amounts']['tax'] = Decimal(context['tax']*context['amounts']['subtotal']) / 100 
 	context['amounts']['total'] = context['amounts']['subtotal'] + context['amounts']['tax']
+	if context['data_client']['type_of_sale'] == 'D':
+		context['amounts']['total'] += int(load_vars('delivery.cost'))
 
 	if not 'order_number' in request.session:
 		request.session['order_number'] = get_order_number()
@@ -530,7 +559,6 @@ def checkout(request):
 			exp = request.POST['expiry'].replace('/', '')
 			value = str(float("{0:.2f}".format(context['amounts']['total'])))
 			value = value.replace('.','')
-			location_ref = LocationsAvailable.objects.get(pk=context['data_client']['location'])
 			ref = 'Order #'+str(context['order_number'])
 
 			pay = PaymentRaw(
@@ -664,6 +692,24 @@ def checkout(request):
 						total_amt=context['amounts']['total']
 					)
 
+				elif context['data_client']['type_of_sale'] == 'PL':
+					Batching = PaymentBatch.objects.get(location=context['data_client']['location'], status='O')
+					this_order = Order(
+						order_number=context['order_number'],
+						order_type=context['data_client']['type_of_sale'],
+						user=request.user,
+						batch=Batching,
+						address=Batching.address_for_truck,
+						car_brand=context['data_client']['car_brand'],
+						car_model=context['data_client']['car_model'],
+						car_color=context['data_client']['car_color'],
+						car_license=context['data_client']['car_license'],
+						time='--',
+						sub_amt=context['amounts']['subtotal'],
+						tax_amt=context['amounts']['tax'],
+						delivery_amt=0,
+						total_amt=context['amounts']['total']
+					)
 				elif context['data_client']['type_of_sale'] == 'D':
 					
 					this_order = Order(
@@ -672,6 +718,7 @@ def checkout(request):
 						user=request.user,
 						batch=PaymentBatch.objects.get(pk=context['data_client']['batch']),
 						address=context['data_client']['address'],
+						adress2=context['data_client']['address2'],
 						time='--',
 						sub_amt=context['amounts']['subtotal'],
 						tax_amt=context['amounts']['tax'],
@@ -695,6 +742,7 @@ def checkout(request):
 						)
 					this_guest.save()
 					AddressForEmail = guest['email']
+					request.session['finish'] = True
 
 				# Almacenar el detalle de la orden
 				the_session_cart = request.session['cart']
@@ -807,7 +855,6 @@ def checkout(request):
 				del request.session['data_client']
 				del request.session['order_number']
 				del request.session['cart']
-				request.session['finish'] = True
 				send_invoice_email(this_order,AddressForEmail)
 				return HttpResponseRedirect(reverse('website:thankyou'))
 		else:
@@ -821,7 +868,10 @@ def thankyou(request):
     	if request.session['finish'] == True:
     		logout(request)
     		del request.session
-    		return render(request, 'website/thankyou.html')
+    	else:
+    		del request.session
+    	
+    	return render(request, 'website/thankyou.html')
     except KeyError:
     	return HttpResponseRedirect(reverse('website:userlogout'))
 

@@ -19,12 +19,13 @@
 
                         <div class="clearfix"></div>
                         <br>
-                        <div class="col-md-12">
-                            <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback" id="select-div">
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 form-group has-feedback" id="select-div">
                                 <label class="control-label" >How do you Want the Order?</label>
                                 <select class="form-control flat" id="id_type_of_sale_select">
                                     <option value="D" {%if default_type_of_sale == 'D' %}selected{% endif %}>Delivery to my Location</option>
                                     <option value="P" {%if default_type_of_sale == 'P' %}selected{% endif %}>I will Pick it Up</option>
+                                    <option value="PL" {%if default_type_of_sale == 'PL' %}selected{% endif %}>I'm at the Parking Lot</option>
                                 </select> 
                             </div>
                         </div>
@@ -35,71 +36,203 @@
                         <form class="form-vertical form-label-left input_mask" method="post">
                         {% csrf_token %}
                         {{ form_delivery.type_of_sale }}
-                        	<div <div class="col-md-12">
-                                <div class="has-feedback col-md-9 col-sm-9 col-xs-12">
-                                    <label class="control-label" >{{ form.address_delivery.label }}</label>
-                                    <div class="input-group">
-                                      <span class="input-group-addon"><i class="fa fa-home "></i></span>
-                                         {{ form_delivery.address }}
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                {# Adress #}
+                                <div class="input-group">
+                                  <span class="input-group-addon"><i class="fa fa-home "></i></span>
+                                     {{ form_delivery.address }}
+                                </div>
+                                <p>
+                                    <span class="fa fa-info-circle" style="top:4px;" aria-describedby="basic-addon1"> {{form_delivery.address.help_text}}</span>
+                                </p>
+                                {% if form_delivery.address.errors %}
+                                <p>
+                                    <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
+                                        {% for msj in form_delivery.address.errors %}
+                                            <span class="label label-danger">{{ msj }}</span>
+                                        {% endfor %}
                                     </div>
-                                    <p>
-                                        <span class="fa fa-info-circle" style="top:4px;" aria-describedby="basic-addon1"> {{form_delivery.address.help_text}}</span>
-                                    </p>
-                                    {% if form_delivery.address.errors %}
-                                    <br>
-                                    <div class="alert alert-danger" role="alert">
-                                    {% for msj in form_delivery.address.errors %}
-                                        {{ msj }}
-                                    {% endfor %}
+                                </p>
+                                {% endif %}
+                                </div>
+
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                {# Adress 2 #}
+                                <div class="input-group">
+                                  <span class="input-group-addon"><i class="fa fa-home"></i></span>
+                                     {{ form_delivery.address2 }}
+                                </div>
+                                <p>
+                                    <span class="fa fa-info-circle" style="top:4px;" aria-describedby="basic-addon1"> {{form_delivery.address2.help_text}}</span>
+                                </p>
+                                {% if form_delivery.address2.errors %}
+                                <p>
+                                    <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
+                                        {% for msj in form_delivery.address2.errors %}
+                                            <span class="label label-danger">{{ msj }}</span>
+                                        {% endfor %}
                                     </div>
-                                    {% endif %}
+                                </p>
+                                {% endif %}
                                 </div>
                             </div>
                             <br>
-                             <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+                            <div class="row">
+                                <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 form-group has-feedback">
                                     <button type="submit" class="btn btn-warning">Let's Pay</button>
-                             </div>
+                                </div>
+                            </div>
                         </form>
                         </div>
+
                         <!-- Form for Pick it Up -->
                         <div id="group-for-pick">
                         <form class="form-vertical form-label-left input_mask" method="post">
                         {% csrf_token %}
                         {{ form_pickitup.type_of_sale }}
-                            <div class="col-md-12">
-                                <div class="col-md-4 col-sm-4 col-xs-12 form-group has-feedback">
-                                    <label class="control-label">{{ form_pickitup.location.label }}</label>
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 form-group has-feedback">
                                     {{ form_pickitup.location }}
                                     {% if form_pickitup.location.errors %}
-                                    <br>
-                                    <div class="alert alert-danger" role="alert">
-                                    {% for msj in form_pickitup.location.errors %}
-                                        {{ msj }}
-                                    {% endfor %}
-                                    </div>
+                                    <p>
+                                        <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
+                                            {% for msj in form_pickitup.location.errors %}
+                                                <span class="label label-danger">{{ msj }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </p>
                                     {% endif %}
                                 </div>
-                             </div>
-                            <br>
-                            <div class="col-md-12">
-                                <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback">
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 form-group has-feedback">
                                     <label class="control-label">{{ form_pickitup.time.label }}</label>
                                     {{ form_pickitup.time }}
                                     {% if form_pickitup.time.errors %}
-                                    <br>
-                                    <div class="alert alert-danger" role="alert">
-                                    {% for msj in form_pickitup.time.errors %}
-                                        {{ msj }}
-                                    {% endfor %}
-                                    </div>
+                                    <p>
+                                        <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
+                                            {% for msj in form_pickitup.time.errors %}
+                                                <span class="label label-danger">{{ msj }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </p>
                                     {% endif %}
                                 </div>
                             </div>
                             <br>
-                            <div class="col-md-9 col-sm-9 col-xs-12 form-group has-feedback">
-                                <button type="submit" class="btn btn-warning">Let's Pay</button>
+                            <div class="row">
+                                <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 form-group has-feedback">
+                                    <button type="submit" class="btn btn-warning">Let's Pay</button>
+                                </div>
                             </div>
                         </form>
+                        </div>
+
+                        <!-- Form for Parking Lot -->
+                        <div id="group-for-parking-lot">
+                            <form class="form-vertical form-label-left input_mask" method="post">
+                            {% csrf_token %}
+                            {{ form_parkinglot.type_of_sale }}
+                                <div class="row">
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 form-group has-feedback">
+                                        {{ form_parkinglot.location }}
+                                        {% if form_parkinglot.location.errors %}
+                                        <p>
+                                            <div class="col-md-4 col-sm-12 col-xs-12 col-lg-4">
+                                            {% for msj in form_parkinglot.location.errors %}
+                                                <span class="label label-danger">{{ msj }}</span>
+                                            {% endfor %}
+                                            </div>
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+                                    {# Car Brand #}
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-car"></i></span>
+                                            {{ form_parkinglot.car_brand }}
+                                        </div>
+                                        <p>
+                                            <span class="fa fa-info-circle" style="top:4px;" aria-describedby="basic-addon1"> {{form_parkinglot.car_brand.help_text}}</span>
+                                        </p>
+                                        {% if form_parkinglot.car_brand.errors %}
+                                        <p>
+                                            <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
+                                            {% for msj in form_parkinglot.car_brand.errors %}
+                                                <span class="label label-danger">{{ msj }}</span>
+                                            {% endfor %}
+                                            </div>
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+                                    {# Car Model #}
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-car"></i></span>
+                                            {{ form_parkinglot.car_model }}
+                                        </div>
+                                        <p>
+                                            <span class="fa fa-info-circle" style="top:4px;" aria-describedby="basic-addon1"> {{form_parkinglot.car_model.help_text}}</span>
+                                        </p>
+                                        {% if form_parkinglot.car_model.errors %}
+                                        <p>
+                                            <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
+                                            {% for msj in form_parkinglot.car_model.errors %}
+                                                <span class="label label-danger">{{ msj }}</span>
+                                            {% endfor %}
+                                            </div>
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+                                    {# Car Color #}
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-car"></i></span>
+                                            {{ form_parkinglot.car_color }}
+                                        </div>
+                                        <p>
+                                            <span class="fa fa-info-circle" style="top:4px;" aria-describedby="basic-addon1"> {{form_parkinglot.car_color.help_text}}</span>
+                                        </p>
+                                        {% if form_parkinglot.car_color.errors %}
+                                        <p>
+                                            <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
+                                            {% for msj in form_parkinglot.car_color.errors %}
+                                                <span class="label label-danger">{{ msj }}</span>
+                                            {% endfor %}
+                                            </div>
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+                                    {# Car License #}
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-car"></i></span>
+                                            {{ form_parkinglot.car_license }}
+                                        </div>
+                                        <p>
+                                            <span class="fa fa-info-circle" style="top:4px;" aria-describedby="basic-addon1"> {{form_parkinglot.car_license.help_text}}</span>
+                                        </p>
+                                        {% if form_parkinglot.car_license.errors %}
+                                        <p>
+                                            <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
+                                            {% for msj in form_parkinglot.car_license.errors %}
+                                                <span class="label label-danger">{{ msj }}</span>
+                                            {% endfor %}
+                                            </div>
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 form-group has-feedback">
+                                        <button type="submit" class="btn btn-warning">Let's Pay</button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -111,20 +244,35 @@
 <script type="text/javascript">
     if ($("#id_type_of_sale_select").val()=='D'){
         $("#group-for-pick").hide();
+        $("#group-for-parking-lot").hide();
         $("#group-for-delivery").show();
     }
     if ($("#id_type_of_sale_select").val()=='P'){
         $("#group-for-pick").show();
         $("#group-for-delivery").hide();
+        $("#group-for-parking-lot").hide();
+    }
+
+    if ($("#id_type_of_sale_select").val()=='PL'){
+        $("#group-for-pick").hide();
+        $("#group-for-delivery").hide();
+        $("#group-for-parking-lot").show();
     }
 
     $("#id_type_of_sale_select").change(function(){
         if ($(this).val()=='D'){
             $("#group-for-pick").hide();
+            $("#group-for-parking-lot").hide();
             $("#group-for-delivery").show();
         }
         if ($(this).val()=='P'){
             $("#group-for-pick").show();
+            $("#group-for-parking-lot").hide();
+            $("#group-for-delivery").hide();
+        }
+        if ($(this).val()=='PL'){
+            $("#group-for-pick").hide();
+            $("#group-for-parking-lot").show();
             $("#group-for-delivery").hide();
         }
     })
