@@ -557,7 +557,11 @@ def checkout(request):
 
 		if payment.is_valid():
 			exp = request.POST['expiry'].replace('/', '')
-			value = str(float("{0:.2f}".format(context['amounts']['total'])))
+			value = round(context['amounts']['total'],2)
+			value = str(value)
+			valueTry = str(value).split(".")
+			if len(valueTry[1]) == 1:
+				value += "0"
 			value = value.replace('.','')
 			ref = 'Order #'+str(context['order_number'])
 
