@@ -2975,3 +2975,38 @@ span.yellow{
 .to-bottom{
   vertical-align: bottom;
 }
+
+article.media {
+    width: 100%;
+}
+
+.media .date {
+    background: #ccc;
+    width: 52px;
+    margin-right: 10px;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+.media .date .month {
+    margin: 0;
+    text-align: center;
+    color: #fff;
+}
+
+.media .date .day {
+    text-align: center;
+    color: #fff;
+    font-size: 27px;
+    margin: 0;
+    line-height: 27px;
+    font-weight: bold;
+}
+
+.event .media-body a.title {
+    font-weight: bold;
+}
+
+.event .media-body p {
+    margin-bottom: 0;
+}

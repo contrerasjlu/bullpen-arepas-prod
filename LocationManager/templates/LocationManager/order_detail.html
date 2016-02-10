@@ -63,11 +63,19 @@
                                             {% if Order.order_type == 'D' %}
                                             <b>Address:</b> {{ Order.address }}
                                             <br>
+                                            <b>Address Line 2:</b> {{ Order.adress2 }}
+                                            <br>
                                             {% endif %}
                                             {% if Order.order_type == 'P' %}
                                             <b>Location:</b> {{ Order.batch }}
                                             <br>
                                             <b>Time:</b> {{ Order.time }} min
+                                            <br>
+                                            {% endif %}
+                                            {% if Order.order_type == 'PL' %}
+                                            <b>Location:</b> {{ Order.batch }}
+                                            <br>
+                                            <b>Car Description:</b> {{ Order.car_brand }}, {{ Order.car_model }}, {{ Order.car_color }}, {{ Order.car_license }}
                                             <br>
                                             {% endif %}
                                         </div>

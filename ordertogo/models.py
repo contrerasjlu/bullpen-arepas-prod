@@ -231,7 +231,7 @@ class PaymentBatch(models.Model):
 #Modelo de Ordenes Recibidas
 class Order(models.Model):
 	#Matriz de Tipos de Ordenes
-	ORDER_TYPE = (('D','Delivery'),('P','Pick it Up'),)
+	ORDER_TYPE = (('D','Delivery'),('P','Pick it Up'),('PL','Parking Lot'),)
 
 	#Matriz de tiempos de pick it up
 	MAX_TIME = (('15','15 Minutes'),('20','20 Minutes'),('25','25 Minutes'),)
@@ -247,7 +247,7 @@ class Order(models.Model):
 	#Tipo de Ordenes
 	order_type = models.CharField(
 		verbose_name="Order Type",
-		max_length=1,
+		max_length=2,
 		choices=ORDER_TYPE,
 		help_text="Please Choose if you're going to pick it up o we're going to deliver the order"
 		)
@@ -265,6 +265,19 @@ class Order(models.Model):
 		help_text="Please enter the delivery adress",
 		blank=True
 		)
+
+	adress2 = models.CharField(verbose_name='Adress Line 2', 
+							   max_length=200,
+							   help_text='Ex: Suite 23, Floor 2',
+							   blank=True)
+
+	car_brand = models.CharField(verbose_name='Car Brand', max_length=50, blank=True)
+
+	car_model = models.CharField(verbose_name='Car Model', max_length=50, blank=True)
+
+	car_color = models.CharField(verbose_name='Car Color', max_length=50, blank=True)
+
+	car_license = models.CharField(verbose_name='Car License', max_length=50, blank=True)
 
 	#Tiempo en que el cliente buscara la comida en el truck
 	time = models.CharField(

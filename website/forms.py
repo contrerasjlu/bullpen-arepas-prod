@@ -252,13 +252,21 @@ class PreCheckoutForm_Delivery(forms.Form):
         help_text="We can only makes delivery in a certain range",
         widget=forms.TextInput(attrs={'class': 'form-control has-feedback-left','placeholder':'Address'})
     )
+
+    address2 = forms.CharField(
+        label="Suit and Floor",
+        required=False,
+        help_text="If you are in a Building",
+        widget=forms.TextInput(attrs={'class': 'form-control has-feedback-left','placeholder':'Suit and Floor'})
+    )
+
     # 750 South Perry Street, Suite 400. Lawrenceville, GA 30046
     def clean_address(self):
         address = self.cleaned_data.get('address')
         key = GenericVariable.objects.get(code='google.API.KEY')
         
         origins = PaymentBatch.objects.filter(status='O', open_for_delivery=True)
-        if len(origins) > 1:
+        if len(origins) > 0:
             i = 0
             for location in origins:
                 valid_address = ValidateAddress(
@@ -294,6 +302,39 @@ class PreCheckoutForm_PickItUp(forms.Form):
         initial='15',
     )
 
+class PreCheckoutForm_ParkingLot(forms.Form):
+    type_of_sale = forms.CharField(widget=forms.HiddenInput())
+
+    location = forms.ModelChoiceField(
+        label="Location",
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        queryset=PaymentBatch.objects.filter(status='O'),
+        to_field_name="location",
+        empty_label="Select the Location..."
+    )
+
+    car_model = forms.CharField(label='Car Model', 
+                                max_length=50,
+                                help_text='Ex: Mustang, Malibu',
+                                widget=forms.TextInput(attrs={'class': 'form-control has-feedback-left','placeholder':'Car Model'})
+    )
+
+    car_brand = forms.CharField(label='Car Brand', 
+                                 max_length=50, 
+                                 help_text='Ex: Ford, Chevrolet',
+                                 widget=forms.TextInput(attrs={'class': 'form-control has-feedback-left','placeholder':'Car Brand'}))
+
+    car_color = forms.CharField(label='Car Color', 
+                                 max_length=50, 
+                                 help_text='Ex: White, Black, Silver',
+                                 widget=forms.TextInput(attrs={'class': 'form-control has-feedback-left','placeholder':'Car Color'}))
+
+    car_license = forms.CharField(label='Car License', 
+                                 max_length=50, 
+                                 help_text='Ex: ...',
+                                 widget=forms.TextInput(attrs={'class': 'form-control has-feedback-left','placeholder':'Car License'}))
+
+
 def ValidateAddress(key,origin,destination,max_miles):
     import googlemaps
     from decimal import Decimal
@@ -305,7 +346,6 @@ def ValidateAddress(key,origin,destination,max_miles):
         origin,
         dest[0]['formatted_address']
     )
-    
     
     miles = directions_result[0]['legs'][0]['distance']['text'].split(' ')
     

@@ -40,11 +40,19 @@
                                     {% if data_client.type_of_sale == 'D' %}
                                         <b>Address:</b> {{ data_client.address }}
                                         <br>
+                                        <b>Address Line 2:</b> {{ data_client.address2 }}
+                                        <br>
                                     {% endif %}
                                     {% if data_client.type_of_sale == 'P' %}
                                         <b>Location:</b> {{ data_client.location_desc }}
                                         <br>
                                         <b>Time:</b> {{ data_client.time }} min
+                                        <br>
+                                    {% endif %}
+                                    {% if data_client.type_of_sale == 'PL' %}
+                                        <b>Location:</b> {{ data_client.location_desc }}
+                                        <br>
+                                        <b>Car Description:</b> {{ data_client.car_brand}}, {{ data_client.car_model}}, {{ data_client.car_color}}, {{ data_client.car_license}}
                                         <br>
                                     {% endif %}
                                 </div>

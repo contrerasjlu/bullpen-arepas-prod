@@ -20,7 +20,7 @@ class WebCategory(models.Model):
 	Style_Options = (
 		("L", "List Product"),
 		("I", "Image View - Stripped R&B "),
-		("C", "Image View - Stripped R&B "),
+		("C", "Image View - Stripped R&Y "),
 	)
 
 	category = models.ForeignKey(category)
