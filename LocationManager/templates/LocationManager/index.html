@@ -21,7 +21,6 @@
     <link href="{% static 'LocationManager/css/custom.css' %}" rel="stylesheet">
     <link href="{% static 'LocationManager/css/icheck/flat/green.css' %}" rel="stylesheet">
 
-
     <script src="{% static 'LocationManager/js/jquery.min.js' %}"></script>
 
     <!--[if lt IE 9]>
@@ -166,9 +165,9 @@
 
                 <!-- footer content -->
 {% endblock %}
-                <footer>
+                <footer class="no-print">
                     <div class="pull-right no-print">
-                        <p>©2015 All Rights Reserved. Bullpen Arepas</p>
+                        <p>©{% now "Y" %} All Rights Reserved. Bullpen Arepas</p>
                     </div>
                     <div class="clearfix"></div>
                 </footer>
