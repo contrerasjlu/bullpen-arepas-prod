@@ -75,7 +75,7 @@
             <li>
               <a href="#calendar" data-toggle="collapse" data-target=".navbar-collapse">Calendar</a>
             </li>
-            {% if status %}
+            {% if status == True %}
             <li>
               <a href="{% url 'website:menu' %}" data-toggle="collapse" data-target=".navbar-collapse">Order Now</a>
             </li>
@@ -216,7 +216,7 @@
               <form id="main-contact-form" name="contact-form" method="post">
               {% csrf_token %}
 
-              {% for field in WebInfoForm %}
+              {% for field in form %}
                 <div class="form-group col-xs-12 col-md-12 col-sm-12">
                   {{ field }}
                 </div>

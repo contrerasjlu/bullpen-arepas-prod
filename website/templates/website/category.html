@@ -1,0 +1,229 @@
+{% extends 'website/menu.html' %}
+{% block right-side %}
+<div class="panel panel-success">
+	<div class="panel-heading">
+		<h1 class="agencia-bold"><i class="fa fa-info-circle"></i> Instructions</h1>	
+	</div>
+	<div class="panel-body">
+		<h2 class="agencia-regular"><kbd>Step 2:</kbd> What product do you want?</h2>
+		<p class="agencia-regular">Please select a product below to cutomize</p>
+		{% for product in products %}
+		<div class="row menu-product">
+			<div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
+				<p data-toggle="modal" data-target="#product{{product.id}}">
+					<span class="agencia-bold">{{ product.name }}</span><br>
+					<span class="agencia-regular">{{ product.description }}</span>
+				</p>
+			</div>
+			<div class="col-lg-2 col-md-2 hidden-sm hidden-xs agencia-regular">
+				$ {{ product.price }}<br>
+				+ Tax
+			</div>
+		</div>
+		    {# Modal #}
+        <div id="product{{product.id}}" class="modal fade" role="dialog">
+				<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+  					<div class="modal-header">
+    					<button type="button" class="close" data-dismiss="modal">&times;</button>
+    					<h4 class="modal-title"><b>{{ product.name }}</b> - {{ product.description }} for $ {{ product.price }} + Tax</h4>
+  					</div>
+      				<div class="modal-body">
+        				<p>Please select the ingredients for your selected product</p>
+        				<hr>
+        				<form id="product-form{{product.id}}" method="post" action="">
+                        {% csrf_token %}
+        				<input id="id_id_for_product" name="id_for_product" type="hidden" value="{{ product.id}}" />
+        				{# Si el producto permite la seleccion de Type (Solo Para Arepas) #}
+                        {% if product.allow_type == True %}
+                        <div class="">
+                            <h2 class="agencia-bold">Baked or Fry?</h2>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                {{ form.arepa_type }}
+                            </div>
+                            {% if form.arepa_type.errors %}
+                            <div class="form-group has-error">
+                                <span class="label label-danger">{{ form.arepa_type.errors }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="row">
+                        	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        		<p>{{ form.arepa_type.help_text }}</p>
+                        	</div>
+                        </div>
+                        <hr>
+                        {% endif %}
+                        {# Si el producto permite la seleccion de Vegetales #}
+                        {% if product.allow_vegetables == True %}
+                        <div class="">
+                            <h2 class="agencia-bold">Vegetables?</h2>
+                            <div class="form-inline">
+                            {% for field in form.vegetables %}
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    {{ field }}
+                                </div>
+                                {{ field.field }}
+                            {% endfor %}
+                                <div class="form-group has-error">
+                                {% if form.vegetables.errors %}
+                                    {% for error in form.vegetables.errors %}
+                                    <span class="label label-danger">{{ error }}</span>
+                                    {% endfor %}
+                                {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                        	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        		<p>{{ form.vegetables.help_text }}</p>
+                        	</div>
+                        </div>
+                        <hr>
+                        {% endif %}
+
+                        {# Si el producto permite la seleccion Extras (Players) #}
+                        {% if product.allow_extras ==  True %}
+                        <div class="">
+                            <h2 class="agencia-bold">Players (Main Ingredients)</h2>
+                            <div class="form-inline">
+                            {% for field in form.extras %}
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    {{ field }}
+                                </div>
+                            {% endfor %}
+
+                                <div class="form-group has-error">
+                                {% if form.extras.errors %}
+                                    {% for error in form.extras.errors %}
+                                    <span class="label label-danger">{{ error }}</span>
+                                    {% endfor %}                                        
+                                {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                        	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        		<p>{{ form.extras.help_text }}</p>
+                        	</div>
+                        </div>
+                        <hr>
+                        {% endif %}
+                        {# Si el producto permite la seleccion de Paid Extras #}
+                        {% if product.allow_paid_extras ==  True %}
+                        <div class="">
+                            <h2 class="agencia-bold">Bench Players (Extras)</h2>
+                            <div class="form-inline">
+                            {% for field in form.paid_extras %}
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    {{ field }}
+                                </div>
+                            {% endfor %}
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                {% if form.paid_extras.errors %}
+                                    {% for error in form.paid_extras.errors %}
+                                    <span class="label label-danger">{{ error }}</span>
+                                    {% endfor %}
+                                {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                        	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        		<p>{{ form.paid_extras.help_text }}</p>
+                        	</div>
+                        </div>
+                        <hr>
+                        {% endif %}
+
+                        {# Si el producto permite la seleccion de Salsas #}
+                        {% if product.allow_sauces ==  True %}
+                        <div class="">
+                            <h2 class="agencia-bold">Sauces</h2>
+                            <div class="form-inline">
+                            {% for field in form.sauces %}
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    {{ field }}
+                                </div>
+                            {% endfor %}
+                            {% if form.sauces.errors %}
+                                <div class="form-group has-error">
+                                    {% for error in form.sauces.errors %}
+                                    <span class="label label-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                        	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        		<p>{{ form.sauces.help_text }}</p>
+                        	</div>
+                        </div>
+                        <hr>
+                        {% endif %}
+
+                        {# Si el producto permite la seleccion de Bebidas #}
+                        {% if product.allow_drinks ==  True %}
+                        <div class="">
+                            <h2 class="agencia-bold">Soft Drinks</h2>
+                            <div class="form-inline">
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    {{ form.soft_drinks }}
+                                </div>
+                            {% if form.soft_drinks.errors %}
+                                <div class="form-group has-error">
+                                    {% for error in form.soft_drinks.errors %}
+                                    <span class="label label-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                        	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        		<p>{{ form.soft_drinks.help_text }}</p>
+                        	</div>
+                        </div>
+                        <hr>
+                        {% endif %}
+                        {# Si el producto acepta cantidades #}
+                        {% if product.allow_qtty ==  True %}
+                        <div class="">
+                            <h2>Quantty</h2>
+                            <div class="form-inline">
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    {{ form.qtty }}
+                                </div>
+                            {% if form.qtty.errors %}
+                                <div class="form-group has-error">
+                                    {% for error in form.qtty.errors %}
+                                    <span class="label label-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                        	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        		<p>{{ form.qtty.help_text }}</p>
+                        	</div>
+                        </div>
+                        <hr>
+                        {% endif %}
+                        <div class="">
+                            <button type="submit" form="product-form{{product.id}}" class="btn btn-default btn-lg">Add to Cart</button>
+                        </div>
+                        </form>
+      				</div>
+      				<div class="modal-footer">
+        				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      				</div>
+				</div>
+				</div>
+		</div>
+    {% endfor %}
+	</div>
+</div>
+{% endblock %}
+        

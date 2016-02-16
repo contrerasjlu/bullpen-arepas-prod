@@ -8,6 +8,9 @@ from django import forms
 from ordertogo.models import *
 from website.models import WebInfo, WebText
 
+attr  = 'form-control has-feedback-left agencia-regular'
+attr2 = 'form-control agencia-regular'
+attr3 = 'flat agencia-regular'
 
 class ArepaForm(forms.Form):
 
@@ -16,26 +19,34 @@ class ArepaForm(forms.Form):
         widget=forms.HiddenInput()
     )
 
-    arepa_type = forms.ChoiceField(
-        label="Baked or Fried?",
-        required=False,
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        choices=(('Baked','Baked'),('Fried','Fried'),),
-        initial='Baked',
-        help_text="We can Fry your Arepa or make it in the Oven"
+    arepa_type = forms.ChoiceField(label="Baked or Fried?",
+                                   required=False,
+                                   widget=forms.Select(attrs={'class': attr2}),
+                                   choices=(('Baked','Baked'),('Fried','Fried'),),
+                                   initial='Baked',
+                                   help_text="We can Fry your Arepa or make it in the Oven"
     )
 
-    vegetables = forms.ModelMultipleChoiceField(
-        label='Vegetables',
-        required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'flat'}),
-        queryset=product.objects.filter(Active=True,category=category.objects.get(code='vegetables')).order_by('order_in_menu')
+    vegetables = forms.ModelMultipleChoiceField(label='Vegetables',
+                                                required=False,
+                                                widget=forms.CheckboxSelectMultiple(
+                                                    attrs={'class': attr3}
+                                                    ),
+                                                queryset=product.objects.filter(
+                                                    Active=True,category=category.objects.get(
+                                                        code='vegetables'
+                                                        )
+                                                    ).order_by('order_in_menu'),
+                                                help_text="Please select \
+                                                           wich vegetables do you \
+                                                           want with your selected \
+                                                           product"
         )
 
     extras = forms.ModelMultipleChoiceField(
         label="Choose the Players with your Arepa...",
         required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'flat'}),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': attr3}),
         queryset=product.objects.filter(Active=True,category=category.objects.get(code='extras')).order_by('order_in_menu')
     )
 
@@ -43,21 +54,21 @@ class ArepaForm(forms.Form):
         label="On The Bench",
         help_text="Choose as much players as you want for $0.99 each",
         required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'flat'}),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': attr3}),
         queryset=product.objects.filter(Active=True,category=category.objects.get(code='paid.extras')).order_by('order_in_menu')
     )
 
     sauces = forms.ModelMultipleChoiceField(
         label="Sauces",
         required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'flat'}),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': attr3}),
         queryset=product.objects.filter(Active=True,category=category.objects.get(code='sauces')).order_by('order_in_menu')
     )
 
     soft_drinks = forms.ModelChoiceField(
         label="Soft Drinks",
         required=False,
-        widget=forms.Select(attrs={'class': 'form-control'}),
+        widget=forms.Select(attrs={'class': attr2}),
         queryset=product.objects.filter(Active=True,category=category.objects.get(code='drinks')).order_by('order_in_menu'),
         empty_label="I don't want any Drink"
     )
@@ -67,7 +78,7 @@ class ArepaForm(forms.Form):
         required=False,
         help_text='How many do you Want?',
         initial=1,
-        widget=forms.NumberInput(attrs={'class':'form-control'})
+        widget=forms.NumberInput(attrs={'class':attr2})
         )
 
     def clean(self):
@@ -96,32 +107,32 @@ class CreateAccountForm(forms.Form):
         max_length=80,
         label=" First Name",
         help_text="Ex: Jhon Doe",
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder':'Fisrt Name'})
+        widget=forms.TextInput(attrs={'class': attr2, 'placeholder':'Fisrt Name'})
     )
 
     lastname = forms.CharField(
         max_length=80,
         label="Last Name",
         help_text="Ex: Jhon Doe",
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder':'Last Name'})
+        widget=forms.TextInput(attrs={'class': attr2, 'placeholder':'Last Name'})
     )
 
     username = forms.CharField(
         max_length=80,
         label="Username",
         help_text="Ex: jlopez",
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder':'Username'})
+        widget=forms.TextInput(attrs={'class': attr2, 'placeholder':'Username'})
     )
 
     email = forms.EmailField(
         label="Email", 
         help_text="Ex: somebody@mysite.com", 
-        widget=forms.TextInput(attrs={'class': 'form-control','placeholder':'Email'})
+        widget=forms.TextInput(attrs={'class': attr2,'placeholder':'Email'})
     )
 
     password = forms.CharField(
         label="Password", 
-        widget=forms.PasswordInput(attrs={'class': 'form-control','placeholder':'Password'})
+        widget=forms.PasswordInput(attrs={'class': attr2,'placeholder':'Password'})
     )
 
     def clean_username(self):
@@ -245,51 +256,63 @@ class PaymentForm(forms.Form):
         return expiry
 
 class PreCheckoutForm_Delivery(forms.Form):
+
     type_of_sale = forms.CharField(widget=forms.HiddenInput())
 
-    address = forms.CharField(
-        label="Address to deliver the order",
-        help_text="We can only makes delivery in a certain range",
-        widget=forms.TextInput(attrs={'class': 'form-control has-feedback-left','placeholder':'Address'})
-    )
+    address = forms.CharField(label="Address to deliver the order",
+                              help_text="We can only makes delivery \
+                                         in a certain range",
+                              widget=forms.TextInput(attrs={'class': attr,
+                                                            'placeholder':'Address'}))
 
-    address2 = forms.CharField(
-        label="Suit and Floor",
-        required=False,
-        help_text="If you are in a Building",
-        widget=forms.TextInput(attrs={'class': 'form-control has-feedback-left','placeholder':'Suit and Floor'})
-    )
+    address2 = forms.CharField(label="Suite and Floor",
+                               required=False,
+                               help_text="If you are in a Building",
+                               widget=forms.TextInput(attrs={'class': attr,
+                                                             'placeholder':'Suite and Floor'}))
+
+    city = forms.CharField(label='City', 
+                           required=True, 
+                           help_text='Ex: Roswell',
+                           widget=forms.TextInput(attrs={'class': attr,
+                                                         'placeholder':'City'}))
+
+    zip_code = forms.CharField(label='Zip Code', 
+                               required=True, 
+                               help_text='Ex: 30076',
+                               widget=forms.TextInput(attrs={'class': attr,
+                                                             'placeholder':'Zip Code'}))
 
     # 750 South Perry Street, Suite 400. Lawrenceville, GA 30046
-    def clean_address(self):
-        address = self.cleaned_data.get('address')
-        key = GenericVariable.objects.get(code='google.API.KEY')
+    def clean(self):
+        cleaned_data = super(PreCheckoutForm_Delivery, self).clean()
+        address = cleaned_data.get('address')
+        city = cleaned_data.get('city')
+        zip_code = cleaned_data.get('zip_code')
+
+        addr_composed = address +", "+city+", GA, "+str(zip_code)
+        
+        key = GenericVariable.objects.val(code='google.API.KEY')
         
         origins = PaymentBatch.objects.filter(status='O', open_for_delivery=True)
         if len(origins) > 0:
             i = 0
             for location in origins:
-                valid_address = ValidateAddress(
-                    key.value,
-                    location.address_for_truck,
-                    address,
-                    location.max_miles)
+                valid_address = ValidateAddress(key, location.address_for_truck,
+                                                addr_composed,location.max_miles)
                 if valid_address == True:
                     i+=1
         else:
-            raise forms.ValidationError("Sorry, we couldn't verify your address. Try it later")
-
+            self.add_error('address',"Sorry, we couldn't verify your address. Try it later")
+        
         if i == 0:
-            raise forms.ValidationError("You must enter an address in the range")
-
-        return address
+            self.add_error('address',"You must enter an address in the range")
 
 class PreCheckoutForm_PickItUp(forms.Form):
     type_of_sale = forms.CharField(widget=forms.HiddenInput())
 
-    location = forms.ModelChoiceField(
-        label="Location",
-        widget=forms.Select(attrs={'class': 'form-control'}),
+    location = forms.ModelChoiceField(label="Location",
+        widget=forms.Select(attrs={'class': attr2}),
         queryset=PaymentBatch.objects.filter(status='O'),
         to_field_name="location",
         empty_label="Select the Location..."
@@ -297,7 +320,7 @@ class PreCheckoutForm_PickItUp(forms.Form):
 
     time = forms.ChoiceField(
         label="Time to Pick it Up",
-        widget=forms.Select(attrs={'class': 'form-control'}),
+        widget=forms.Select(attrs={'class': attr2}),
         choices=(('15','15 Minutes'),('20','20 Minutes'),('25','25 Minutes'),),
         initial='15',
     )
@@ -305,35 +328,59 @@ class PreCheckoutForm_PickItUp(forms.Form):
 class PreCheckoutForm_ParkingLot(forms.Form):
     type_of_sale = forms.CharField(widget=forms.HiddenInput())
 
-    location = forms.ModelChoiceField(
-        label="Location",
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        queryset=PaymentBatch.objects.filter(status='O'),
-        to_field_name="location",
-        empty_label="Select the Location..."
-    )
+    location = forms.ModelChoiceField(label="Location",
+                                      widget=forms.Select(attrs={'class': attr2}),
+                                      queryset=PaymentBatch.objects.filter(status='O'),
+                                      to_field_name="location",
+                                      empty_label="Select the Location...")
 
     car_model = forms.CharField(label='Car Model', 
                                 max_length=50,
                                 help_text='Ex: Mustang, Malibu',
-                                widget=forms.TextInput(attrs={'class': 'form-control has-feedback-left','placeholder':'Car Model'})
+                                widget=forms.TextInput(attrs={'class': attr,
+                                                              'placeholder':'Car Model'})
     )
 
     car_brand = forms.CharField(label='Car Brand', 
                                  max_length=50, 
                                  help_text='Ex: Ford, Chevrolet',
-                                 widget=forms.TextInput(attrs={'class': 'form-control has-feedback-left','placeholder':'Car Brand'}))
+                                 widget=forms.TextInput(attrs={'class': attr,
+                                                               'placeholder':'Car Brand'}))
 
     car_color = forms.CharField(label='Car Color', 
                                  max_length=50, 
                                  help_text='Ex: White, Black, Silver',
-                                 widget=forms.TextInput(attrs={'class': 'form-control has-feedback-left','placeholder':'Car Color'}))
+                                 widget=forms.TextInput(attrs={'class': attr,
+                                                               'placeholder':'Car Color'}))
 
     car_license = forms.CharField(label='Car License', 
                                  max_length=50, 
                                  help_text='Ex: ...',
-                                 widget=forms.TextInput(attrs={'class': 'form-control has-feedback-left','placeholder':'Car License'}))
+                                 widget=forms.TextInput(attrs={'class': attr,
+                                                               'placeholder':'Car License'}))
 
+class WebInfoForm(forms.ModelForm):
+    class Meta:
+        model = WebInfo
+        fields = '__all__'
+        widgets = \
+        {
+            'name': TextInput(attrs={
+                'class':attr2,
+                'placeholder':'Name'}
+            ),
+
+            'email': EmailInput(attrs={
+                'class':attr2,
+                'placeholder':'Email'}
+            ),
+
+            'info': forms.Textarea(attrs={
+                'class':attr2,
+                'placeholder': WebText.objects.get_text('info_info'), 
+                'rows':8}
+            )
+        }
 
 def ValidateAddress(key,origin,destination,max_miles):
     import googlemaps
@@ -341,50 +388,20 @@ def ValidateAddress(key,origin,destination,max_miles):
     import json, pprint
 
     gmaps = googlemaps.Client(key=key)
+    print destination
     dest = gmaps.geocode(destination)
     directions_result = gmaps.directions(
         origin,
         dest[0]['formatted_address']
     )
-    
     miles = directions_result[0]['legs'][0]['distance']['text'].split(' ')
     
-    if  max_miles > Decimal(miles[0]):
+    if miles[1] == 'ft':
+        result = True
+    elif  Decimal(miles[0]) < max_miles:
         result = True
     else:
         result = False
 
     return result
-
-def load_text(code):
-    try:
-        a = WebText.objects.get(code=code)
-    
-    except WebText.DoesNotExist:
-        return 'None'
-    
-    else:
-        return a.text
-
-class WebInfoForm(forms.ModelForm):
-    class Meta:
-        model = WebInfo
-        fields = '__all__'
-        widgets = {
-            'name': TextInput(attrs={
-                'class':'form-control',
-                'placeholder':'Name'}
-            ),
-
-            'email': EmailInput(attrs={
-                'class':'form-control',
-                'placeholder':'Email'}
-            ),
-
-            'info': forms.Textarea(attrs={
-                'class':'form-control',
-                'placeholder':load_text('info_info'), 
-                'rows':8}
-            )
-        }
     

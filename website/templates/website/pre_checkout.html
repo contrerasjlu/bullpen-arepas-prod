@@ -33,51 +33,31 @@
 
                         <!-- Form for Delivery -->
                         <div id="group-for-delivery">
-                        <form class="form-vertical form-label-left input_mask" method="post">
-                        {% csrf_token %}
-                        {{ form_delivery.type_of_sale }}
+                        <form class="" method="post" role="form">
+                            {% csrf_token %}
+                            {% for hidden in form_delivery.hidden_fields %}
+                                {{ hidden }}
+                            {% endfor %}
+                            {% for formD in form_delivery.visible_fields %}
                             <div class="row">
-                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                {# Adress #}
-                                <div class="input-group">
-                                  <span class="input-group-addon"><i class="fa fa-home "></i></span>
-                                     {{ form_delivery.address }}
-                                </div>
-                                <p>
-                                    <span class="fa fa-info-circle" style="top:4px;" aria-describedby="basic-addon1"> {{form_delivery.address.help_text}}</span>
-                                </p>
-                                {% if form_delivery.address.errors %}
-                                <p>
-                                    <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
-                                        {% for msj in form_delivery.address.errors %}
-                                            <span class="label label-danger">{{ msj }}</span>
-                                        {% endfor %}
+                                <div class="form-group col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                {# Field #}
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-home "></i></span>{{ formD }}
                                     </div>
-                                </p>
-                                {% endif %}
-                                </div>
-
-                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                {# Adress 2 #}
-                                <div class="input-group">
-                                  <span class="input-group-addon"><i class="fa fa-home"></i></span>
-                                     {{ form_delivery.address2 }}
-                                </div>
-                                <p>
-                                    <span class="fa fa-info-circle" style="top:4px;" aria-describedby="basic-addon1"> {{form_delivery.address2.help_text}}</span>
-                                </p>
-                                {% if form_delivery.address2.errors %}
-                                <p>
-                                    <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
-                                        {% for msj in form_delivery.address2.errors %}
-                                            <span class="label label-danger">{{ msj }}</span>
-                                        {% endfor %}
+                                        <span class="fa fa-info-circle" style="top:4px;" aria-describedby="basic-addon1"> {{formD.help_text}}</span>
+                                    {% if formD.errors %}
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-6 col-xs-6 col-lg-6">
+                                            {% for msj in formD.errors %}
+                                                <span class="label label-danger">{{ msj }}</span>
+                                            {% endfor %}
+                                        </div>
                                     </div>
-                                </p>
-                                {% endif %}
+                                    {% endif %}
                                 </div>
                             </div>
-                            <br>
+                            {% endfor %}
                             <div class="row">
                                 <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 form-group has-feedback">
                                     <button type="submit" class="btn btn-warning">Let's Pay</button>

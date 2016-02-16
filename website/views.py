@@ -3,7 +3,7 @@ from django.http import Http404,HttpResponseRedirect, HttpResponse, HttpResponse
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth import authenticate, login, logout, user_logged_in
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView
 from django.core.mail import send_mail, BadHeaderError
 from random import randint
 from datetime import *
@@ -11,20 +11,6 @@ from decimal import Decimal
 from ordertogo.models import *
 from website.models import *
 from .forms import *
-
-
-def load_vars(code):
-	code = GenericVariable.objects.get(code=code)
-	return code.value
-
-#Funcion para saber si esta abierto el punto de venta.
-def is_open():
-	#Si esta Abierto y correctamente (No existen mas de un lote abierto)...
-	a = PaymentBatch.objects.filter(status="O")
-	if len(a) == 0:
-		return False
-	else:
-		return True
 
 #Generar un numero de orden aleatorio
 def get_order_number():
@@ -41,22 +27,36 @@ def get_order_number():
 
 def index(request):
 	context = {}
-	context['status'] = is_open()
-	context['WebInfoForm'] = WebInfoForm()
+
+	# Validate if there are stores open
+	context['status'] = PaymentBatch.objects.BullpenIsOpen()
+
+	# Initiates the Information Form
+	context['form'] = WebInfoForm()
+	
+	# Collecting Texts
 	texts = WebText.objects.filter(active=True)
+	
+	# Wrapping the text out
 	for text in texts:
 		context[text.code] = text.text
 
+	# Collecting Menu
 	context['categories'] = WebCategory.objects.filter(active=True).order_by('order')
-	context['WebImages'] = WebCarrousel.objects.filter(active=True).order_by('order')
 	
+	# Collecting Data for the carrousel
+	context['WebImages'] = WebCarrousel.objects.filter(active=True).order_by('order')
+
 	if request.POST:
 		info = WebInfoForm(request.POST)
 		if info.is_valid():
 			info.save()
+
+			# Indicator for the success of the Information Form
 			context['success'] = True
-			context['WebInfoForm'] = WebInfoForm()
-			send_info_email(request.POST['name'], request.POST['email'], request.POST['info'])
+
+			# Restore the Form, keeping the re-submitting out of bussiness
+			context['form'] = WebInfoForm()
 		else:
 			context['WebInfoForm'] = WebInfoForm(request.POST)
 
@@ -64,17 +64,15 @@ def index(request):
 
 def closed(request):
 	context = {}
-	context['status'] = is_open()
-	if context['status']==True:
+	if PaymentBatch.objects.BullpenIsOpen() == True:
 		return HttpResponseRedirect(reverse('website:menu'))
 
-	context['text'] = WebText.objects.get(code='closed_text')
-
+	context['text'] = WebText.objects.get_text('closed_text')
 	return render(request, 'website/closed.html', context)
 
 def cart(request):
 	context = {}
-	context['status'] = is_open()
+	context['status'] = PaymentBatch.objects.BullpenIsOpen()
 
 	if 'guest' in request.session:
 		context['guest'] = request.session['guest']
@@ -111,7 +109,7 @@ def cart(request):
 						price += v.price
 
 				else:
-					the_vegetables = 'No Vegetables'
+					the_vegetables = None
 			else:
 				the_vegetables = 0
 
@@ -124,7 +122,7 @@ def cart(request):
 						price += c.price
 
 				else:
-					the_paid_extras = 'No Bench Players'
+					the_paid_extras = None
 			else:
 				the_paid_extras = 0
 
@@ -136,7 +134,7 @@ def cart(request):
 						the_sauces.append(d.name + ' (' + d.description + ')')
 
 				else:
-					the_sauces = 'No Sauces'
+					the_sauces = None
 			else:
 				the_sauces = 0
 
@@ -177,7 +175,7 @@ def cart(request):
 
 		amounts = {
 			'subtotal': subtotal,
-			'delivery' : load_vars('delivery.cost'),
+			'delivery' : GenericVariable.objects.val('delivery.cost'),
 		}
 
 		context['amounts'] = amounts
@@ -189,8 +187,50 @@ def cart(request):
 		context['cart_is_empty'] = True
 
 	return context
+###############################################################################
+# NUEVO #
+###############################################################################
+class MenuHome(ListView):
+	model = category
+	template_name = 'website/menu.html'
+	context_object_name = 'categories'
 
+	def get_queryset(self):
+		return category.objects.filter(Active=True, show_in_menu=True).order_by('order')
 
+	def get_context_data(self, **kwargs):
+		# Call the base implementation first to get a context
+		context = super(MenuHome, self).get_context_data(**kwargs)
+		return context
+
+def CategoryProductsList2(request, pk):
+	context = {}
+	context['categories'] = get_list_or_404(category, Active=True, show_in_menu=True)
+	context['products'] = get_list_or_404(product, Active=True, category=pk)
+	context['selected'] = pk
+	context['form'] = ArepaForm()
+	return render(request, 'website/category.html', context)
+
+class CategoryProductsList(ListView):
+	model = category
+	template_name = 'website/category.html'
+	context_object_name = 'categories'
+
+	def get_queryset(self):
+		return category.objects.filter(Active=True, show_in_menu=True).order_by('order')
+
+	def get_context_data(self, **kwargs):
+		# Call the base implementation first to get a context
+		context = super(CategoryProductsList, self).get_context_data(**kwargs)
+		context['products'] = get_list_or_404(product, Active=True, category=self.kwargs['pk'])
+		context['selected'] = str(self.kwargs['pk'])
+		context['form'] = ArepaForm()
+		return context
+
+	def get_form(self):
+		return HttpResponseRedirect(reverse('website:menu'))
+
+###############################################################################
 def menu(request):
 	# Load the Cart to show the products already in cart
 	context = cart(request)
@@ -369,6 +409,7 @@ def create_account(request):
 @login_required(login_url='website:login-auth')
 def ViewCart(request):
 	context = cart(request)
+
 	if context['status']==False:
 		return HttpResponseRedirect(reverse('website:closed'))
 
@@ -435,12 +476,13 @@ def pre_checkout(request):
 			data_client = PreCheckoutForm_Delivery(request.POST)
 			if data_client.is_valid():
 				origins = PaymentBatch.objects.filter(status='O', open_for_delivery=True)
+				addr_compose = "%s, %s, GA, %s" % (request.POST['address'],request.POST['city'],request.POST['zip_code'])
 				near = 0
 				for location in origins:
 					valid = ValidateAddress(
-											load_vars('google.API.KEY'),
+											GenericVariable.objects.val('google.API.KEY'),
 											location.address_for_truck,
-											request.POST['address'],
+											addr_compose,
 											location.max_miles
 											)
 					if not valid == False:
@@ -460,8 +502,8 @@ def pre_checkout(request):
 					'batch': near_batch,
 					'tax_percent':realOrigin.tax_percent,
 					'address': RewriteAddress(
-											  request.POST['address'],
-											  load_vars('google.API.KEY')
+											  addr_compose,
+											  GenericVariable.objects.val('google.API.KEY')
 											  ),
 					'address2': request.POST['address2']
 				}
@@ -544,7 +586,7 @@ def checkout(request):
 	context['amounts']['tax'] = Decimal(context['tax']*context['amounts']['subtotal']) / 100 
 	context['amounts']['total'] = context['amounts']['subtotal'] + context['amounts']['tax']
 	if context['data_client']['type_of_sale'] == 'D':
-		context['amounts']['total'] += int(load_vars('delivery.cost'))
+		context['amounts']['total'] += int(GenericVariable.objects.val('delivery.cost'))
 
 	if not 'order_number' in request.session:
 		request.session['order_number'] = get_order_number()
@@ -726,7 +768,7 @@ def checkout(request):
 						time='--',
 						sub_amt=context['amounts']['subtotal'],
 						tax_amt=context['amounts']['tax'],
-						delivery_amt=Decimal(load_vars('delivery.cost')),
+						delivery_amt=Decimal(GenericVariable.objects.val('delivery.cost')),
 						total_amt=context['amounts']['total']
 					)
 				else:
@@ -735,7 +777,7 @@ def checkout(request):
 				this_order.save()
 				AddressForEmail = this_order.user.email
 
-				if request.user.username == load_vars('guest.user'):
+				if request.user.username == GenericVariable.objects.val('guest.user'):
 					guest = request.session['guest']
 					this_guest = GuestDetail(
 						firstname=guest['firstname'],
@@ -899,8 +941,8 @@ class GuestLogin(CreateView):
 			'phone' : phone
 		}
 
-		username = load_vars('guest.user')
-		password = load_vars('guest.password')
+		username = GenericVariable.objects.val('guest.user')
+		password = GenericVariable.objects.val('guest.password')
 
 		user = authenticate(username=username, password=password)
 		login(self.request, user)
@@ -928,7 +970,9 @@ def ValidateAddress(key,origin,destination,max_miles):
     
     miles = directions_result[0]['legs'][0]['distance']['text'].split(' ')
     
-    if  max_miles > Decimal(miles[0]):
+    if miles[1] == 'ft':
+    	result = Decimal(1)
+    elif  Decimal(miles[0]) < max_miles:
         result = Decimal(miles[0])
     else:
         result = False
@@ -940,11 +984,11 @@ def PaymentRaw(name,card,exp,amt,cvv,ref):
 
 	import os,hashlib,hmac,time,base64,json,requests
 
-	apiKey = str(load_vars('pay.apikey')).strip()
+	apiKey = str(GenericVariable.objects.val('pay.apikey')).strip()
 
-	apiSecret = str(load_vars('pay.secret')).strip()
+	apiSecret = str(GenericVariable.objects.val('pay.secret')).strip()
 
-	token = str(load_vars('pay.token')).strip()
+	token = str(GenericVariable.objects.val('pay.token')).strip()
 
 	if card.startswith('3'):
 		cardT = 'American Express'
@@ -984,7 +1028,7 @@ def PaymentRaw(name,card,exp,amt,cvv,ref):
 	# Authorization : base64 of hmac hash 
 	authorization = base64.b64encode(hmac);
 
-	url = load_vars('pay.url')
+	url = GenericVariable.objects.val('pay.url')
 
 	headers = {
 			   'apikey':apiKey,
@@ -1012,34 +1056,6 @@ def PaymentRaw(name,card,exp,amt,cvv,ref):
 
 	return response
 
-def send_info_email(name,email,info):
-	text = "Name:\n"+name+"\nemail:\n"+email+"\ninfo:\n"+info
-	html = """\
-	<html>
-	  <head></head>
-	  <body>
-	"""
-
-	html += "<p>Name:<br />"+name+"</p>"
-	html += "<p>Email:<br />"+email+"</p>"
-	html += "<p>Info:<br />"+info+"</p>"
-
-	html +="""\
-	  </body>
-	</html>
-	"""
-	try:
-		send_mail(
-			'Info Request From bullpenarepas.com', 
-			text,
-			'support@bullpenarepas.com', #From Email
-			[load_vars('info.email')], #To Email
-			fail_silently=False,
-			html_message=html
-		)
-	except BadHeaderError:
-		return HttpResponse('Invalid header found.')
-
 def send_invoice_email(order,email):
 	text = "Your Order "+order.order_number+" have been recived\nThank you...\nAny Questions?\nWrite us at support@bullpenarepas.com\nCall us at (404) 643 2568"
 	html = """\
@@ -1058,7 +1074,7 @@ def send_invoice_email(order,email):
 		send_mail(
 			'Your Order #'+ order.order_number +' From bullpenarepas.com', 
 			text,
-			'do-not-reply@bullpenarepas.com', #From Email
+			'Bullpen Arepas <do-not-reply@bullpenarepas.com>', #From Email
 			[email], #To Email
 			fail_silently=False,
 			html_message=html
