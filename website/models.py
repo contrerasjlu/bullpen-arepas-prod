@@ -1,5 +1,21 @@
 from django.db import models
-from ordertogo.models import category, product
+from django.core.mail import send_mail, BadHeaderError
+from ordertogo.models import category, product, GenericVariable
+
+class WebTextManager(models.Manager):
+	"""
+	Table-level functionality for the WebText Model
+	"""
+	def get_text(self, code):
+		"""
+		Return the value of text from a given code
+		"""
+		try:
+			text = WebText.objects.get(code=code)
+		except WebText.DoesNotExist:
+			return "404 Not Found"
+		else:
+			return text.text
 
 class WebText(models.Model):
 
@@ -7,6 +23,7 @@ class WebText(models.Model):
 	name = models.CharField(max_length=50)
 	text = models.TextField(max_length=3000)
 	active = models.BooleanField(default=True)
+	objects = WebTextManager()
 
 	class Meta:
 		verbose_name = "Text"
@@ -103,6 +120,39 @@ class WebInfo(models.Model):
 
 	def __unicode__(self):
 		return self.name + self.email
+
+	def save(self, *args, **kwargs):
+		super(WebInfo, self).save(*args, **kwargs)
+		send_info_email(self.name,self.email,self.info)
+
+def send_info_email(name,email,info):
+	text = "Name:\n"+name+"\nemail:\n"+email+"\ninfo:\n"+info
+	html = """\
+	<html>
+	  <head></head>
+	  <body>
+	"""
+
+	html += "<p>Name:<br />"+name+"</p>"
+	html += "<p>Email:<br />"+email+"</p>"
+	html += "<p>Info:<br />"+info+"</p>"
+
+	html +="""\
+	  </body>
+	</html>
+	"""
+	try:
+		send_mail(
+			'Info Request From bullpenarepas.com', 
+			text,
+			'Website Support <support@bullpenarepas.com>', #From Email
+			[GenericVariable.objects.val('info.email')], #To Email
+			fail_silently=False,
+			html_message=html
+		)
+	except BadHeaderError:
+		return HttpResponse('Invalid header found.')
+
 
 class WebCarrousel(models.Model):
 
