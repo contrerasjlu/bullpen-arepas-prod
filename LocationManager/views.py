@@ -12,16 +12,9 @@ from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from decimal import Decimal
 
 ################# Funciones Genericas #######################
-# 1. load_vars: Funcion Generica para la busqueda de parametros 
-#               generales del modelo de OrderToGo
-#
-# 2. load_menu: Funcion generica para cargar el menu del sitio 
+# 1. load_menu: Funcion generica para cargar el menu del sitio 
 #               de LocationManager
 ##############################################################
-
-def load_vars(code):
-	code = GenericVariable.objects.get(code=code)
-	return code.value
 
 # 
 def load_menu():
@@ -231,13 +224,13 @@ class HandleOrderDetail(ListView):
 		# Add Menu
 		context['menu'] = load_menu()
 		context['Order'] = get_object_or_404(Order, pk=self.kwargs['pk'])
-		context['delivery_cost'] = Decimal(load_vars('delivery.cost'))
+		context['delivery_cost'] = Decimal(GenericVariable.objects.val('delivery.cost'))
 
 		cart = OrderDetail.objects.filter(
 				order_number_id=self.kwargs['pk'], main_product=True
 				).order_by('-order_number','item','-main_product')
 
-		if context['Order'].user.username == load_vars('guest.user'):
+		if context['Order'].user.username == GenericVariable.objects.val('guest.user'):
 			context['guest'] = get_object_or_404(GuestDetail, order=context['Order'])
 
 		cart_for_context = []
