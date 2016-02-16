@@ -9,7 +9,7 @@
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
                     <div class="x_title">
-                        <h2>{{ product.category }}</h2>
+                        <h2 class="agencia-bold">{{ product.category }}</h2>
                         <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
@@ -27,9 +27,21 @@
                         </div>
 
                         <div class="col-md-5 col-sm-5 col-xs-12 pull-right" style="border:0px solid #e5e5e5;">
-                            <h1 class="prod_title">{{ product.name }}</h1>
-                            <p>{{ product.description }}</p>
+                            <h2 class="prod_title agencia-bold">{{ product.name }}</h2>
+                            <p class="agencia-regular">{{ product.description }}</p>
                             <hr>
+                            {% if product.productrestriction_set.all %}
+                            <div class="alert alert-warning alert-dismissible fade in">
+                                <span class="white">
+                                    Only Available in these selected Bullpen Arepas' stores:
+                                </span>
+                                <ul class="white">
+                                {% for location in product.productrestriction_set.all %}
+                                    <li>{{ location.location }} @ {{ location.location.location }}</li>
+                                {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
                             <form id="product-form" method="post">
                             {% csrf_token %}
                             {{ form.id_for_product }}
@@ -37,7 +49,7 @@
                             {# Si el producto permite la seleccion de Type (Solo Para Arepas) #}
                             {% if product.allow_type == True %}
                             <div class="">
-                                <h2>Baked or Fry?</h2>
+                                <h2 class="agencia-bold">Baked or Fry?</h2>
                                 <div class="col-md-6 col-sm-6 col-xs-6">
                                     {{ form.arepa_type }}
                                 </div>
@@ -56,7 +68,7 @@
                             {# Si el producto permite la seleccion de Vegetales #}
                             {% if product.allow_vegetables == True %}
                             <div class="">
-                                <h2>Vegetables?</h2>
+                                <h2 class="agencia-bold">Vegetables?</h2>
                                 <div class="form-inline">
                                 {% for field in form.vegetables %}
                                     <div class="col-md-6 col-sm-6 col-xs-6">
@@ -82,7 +94,7 @@
                             {# Si el producto permite la seleccion Extras (Players) #}
                             {% if product.allow_extras ==  True %}
                             <div class="">
-                                <h2>Players</h2>
+                                <h2 class="agencia-bold">Players</h2>
                                 <div class="form-inline">
                                 {% for field in form.extras %}
                                     <div class="col-md-6 col-sm-6 col-xs-6">
@@ -108,7 +120,7 @@
                             {# Si el producto permite la seleccion de Paid Extras #}
                             {% if product.allow_paid_extras ==  True %}
                             <div class="">
-                                <h2>Bench Players</h2>
+                                <h2 class="agencia-bold">Bench Players</h2>
                                 <div class="form-inline">
                                 {% for field in form.paid_extras %}
                                     <div class="col-md-6 col-sm-6 col-xs-6">
@@ -134,7 +146,7 @@
                             {# Si el producto permite la seleccion de Salsas #}
                             {% if product.allow_sauces ==  True %}
                             <div class="">
-                                <h2>Sauces</h2>
+                                <h2 class="agencia-bold">Sauces</h2>
                                 <div class="form-inline">
                                 {% for field in form.sauces %}
                                     <div class="col-md-6 col-sm-6 col-xs-6">
@@ -159,7 +171,7 @@
                             {# Si el producto permite la seleccion de Bebidas #}
                             {% if product.allow_drinks ==  True %}
                             <div class="">
-                                <h2>Soft Drinks</h2>
+                                <h2 class="agencia-bold">Soft Drinks</h2>
                                 <div class="form-inline">
                                     <div class="col-md-6 col-sm-6 col-xs-6">
                                         {{ form.soft_drinks }}

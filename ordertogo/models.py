@@ -31,6 +31,7 @@ class category(models.Model):
 	class Meta:
 		verbose_name = "Category"
 		verbose_name_plural = "Categories"
+		ordering = ['order']
 
 #Modelo para almacenar los productos asociados a una categoria
 class product(models.Model):
@@ -50,42 +51,64 @@ class product(models.Model):
 
 	#Extras, cantidad de extras permitidos por cada producto
 	#Cada extra debe estar en la capacidad de seleccionarse y no mas
-	extras = models.IntegerField(default=1, help_text='This item will not count if allow extras is not checked')
+	extras = models.IntegerField(default=1, 
+								 help_text='This item will not count if allow \
+								 extras is not checked')
 
 	#Puede Seleccionar Tipo? True or False
-	allow_type = models.BooleanField(default=True)
+	allow_type = models.BooleanField(default=True, verbose_name='Baked or Fries')
 
 	allow_vegetables = models.BooleanField(default=True)
 
 	# Puede Tener Extras? True or False
-	allow_extras = models.BooleanField(default=True)
+	allow_extras = models.BooleanField(default=True, 
+									   verbose_name='Allow Players?',
+									   help_text='This indicates that the item \
+									              will display the Players \
+									              Category')
 
 	#Puede tener extras pagos? True or False
-	allow_paid_extras = models.BooleanField(default=True)
+	allow_paid_extras = models.BooleanField(default=True,
+											verbose_name='Allow "On the Bench"?',
+											help_text='This indicates that the \
+											item will display the "On The Bench \
+											Category')
 
 	#Puede Tener Salsas? True or False
-	allow_sauces = models.BooleanField(default=True)
+	allow_sauces = models.BooleanField(default=True, 
+									   help_text='This indicates \
+									   that the item will display the "Sauces" \
+									   category')
 
 	# Puede tener Bebidas? True or False
-	allow_drinks = models.BooleanField(default=True)
+	allow_drinks = models.BooleanField(default=True, 
+									   help_text='This indicates that the item \
+									              will be a Meal with Soft Drinks\
+									              (Category "Soft Drinks")')
 
 	#Puede tener Quantty
-	allow_qtty = models.BooleanField(default=False)
+	allow_qtty = models.BooleanField(default=False, 
+									 verbose_name='Allow Quantty?', 
+									 help_text='This indicates that the item \
+									            will have a quantity field')
 
 	#Precio
-	price = models.DecimalField(max_digits=19, decimal_places=2)
+	price = models.DecimalField(max_digits=19, decimal_places=2,
+								help_text='Accepts only 19 digits including \
+								2 decimals')
 
 	#Ordenamiento por la categoria
-	order_in_menu = models.IntegerField()
+	order_in_menu = models.IntegerField(help_text='This is the order to present \
+										the item in the menu')
 
 	#Imagen de Referencia para el Producto.
 	image = models.ImageField(blank=True, upload_to='images')
 
 	#Indicador de estado
-	Active = models.BooleanField(default=True)
+	Active = models.BooleanField(default=True, verbose_name='Active?')
 
 	def __unicode__(self):
-		return self.name
+		return self.name + ' (' + self.description + ')'
 
 class RelatedImages(models.Model):
     product = models.ForeignKey(product)
@@ -137,6 +160,29 @@ class LocationsAvailable(models.Model):
 	class Meta:
 		verbose_name = "Location Available"
 		verbose_name_plural = "Locations Available"
+
+class ProductRestriction(models.Model):
+
+	product = models.ForeignKey(product)
+	location = models.ForeignKey(LocationsAvailable)
+
+	class Meta:
+		verbose_name = "Product Restriction"
+		verbose_name_plural = "Products Restrictions"
+
+	def __unicode__(self):
+		return self.product.name + " Only for " + self.location.description
+
+class PaymentBatchManager(models.Manager):
+	"""
+	Table-level functionality to manage Payment Batch Model
+	"""
+	def BullpenIsOpen(self):
+		count = PaymentBatch.objects.filter(status='O')
+		if len(count) > 0:
+			return True
+		else:
+			return False
 
 #Modelo para el Lote de Pago a crear
 class PaymentBatch(models.Model):
@@ -216,6 +262,12 @@ class PaymentBatch(models.Model):
 		choices=batch_status
 		)
 
+	objects = PaymentBatchManager()
+
+	class Meta:
+		verbose_name = "Batch"
+		verbose_name_plural = "Batches"
+
 	def __unicode__(self):
 		return self.location.description + ' @ ' + self.address_for_truck
 
@@ -228,15 +280,23 @@ class PaymentBatch(models.Model):
 			if not valid.id == self.id:
 				raise ValidationError({'location': "You can't save a Batch for this Location, already Open"})
 
+
 #Modelo de Ordenes Recibidas
 class Order(models.Model):
 	#Matriz de Tipos de Ordenes
-	ORDER_TYPE = (('D','Delivery'),('P','Pick it Up'),('PL','Parking Lot'),)
+	ORDER_TYPE = (('D','Delivery'),
+				  ('P','Pick it Up'),
+				  ('PL','Parking Lot'),)
 
 	#Matriz de tiempos de pick it up
-	MAX_TIME = (('15','15 Minutes'),('20','20 Minutes'),('25','25 Minutes'),)
+	MAX_TIME = (('15','15 Minutes'),
+				('20','20 Minutes'),
+				('25','25 Minutes'),)
 
-	ORDER_STATUS = (('P','Paid'),('K','Kitchen'),('O','Out for Delivery'),('D','Delivered'),)
+	ORDER_STATUS = (('P','Paid'),
+					('K','Kitchen'),
+					('O','Out for Delivery'),
+					('D','Delivered'),)
 
 	#Fecha y Hora de la Orden
 	date = models.DateTimeField(verbose_name="Order Date and Time", auto_now_add=True)
@@ -246,11 +306,11 @@ class Order(models.Model):
 
 	#Tipo de Ordenes
 	order_type = models.CharField(
-		verbose_name="Order Type",
-		max_length=2,
-		choices=ORDER_TYPE,
-		help_text="Please Choose if you're going to pick it up o we're going to deliver the order"
-		)
+								  verbose_name="Order Type",
+								  max_length=2,
+								  choices=ORDER_TYPE,
+								  help_text="Please Choose if you're going to \
+								  pick it up o we're going to deliver the order")
 
 	#Relacionado con el Usuario
 	user = models.ForeignKey(User)
@@ -259,81 +319,81 @@ class Order(models.Model):
 	batch = models.ForeignKey(PaymentBatch)
 	
 	#Direccion del Delivery, puede estar vacio si es tipo "P" la orden
-	address = models.CharField(
-		verbose_name="Adress",
-		max_length=1000,
-		help_text="Please enter the delivery adress",
-		blank=True
-		)
+	address = models.CharField(verbose_name="Adress",
+							   max_length=1000,
+							   help_text="Please enter the delivery adress",
+							   blank=True)
 
 	adress2 = models.CharField(verbose_name='Adress Line 2', 
 							   max_length=200,
 							   help_text='Ex: Suite 23, Floor 2',
 							   blank=True)
 
-	car_brand = models.CharField(verbose_name='Car Brand', max_length=50, blank=True)
+	car_brand = models.CharField(verbose_name='Car Brand', 
+								 max_length=50, 
+								 blank=True)
 
-	car_model = models.CharField(verbose_name='Car Model', max_length=50, blank=True)
+	car_model = models.CharField(verbose_name='Car Model', 
+								 max_length=50, 
+								 blank=True)
 
-	car_color = models.CharField(verbose_name='Car Color', max_length=50, blank=True)
+	car_color = models.CharField(verbose_name='Car Color', 
+								 max_length=50, 
+								 blank=True)
 
-	car_license = models.CharField(verbose_name='Car License', max_length=50, blank=True)
+	car_license = models.CharField(verbose_name='Car License', 
+								   max_length=50, 
+								   blank=True)
 
 	#Tiempo en que el cliente buscara la comida en el truck
-	time = models.CharField(
-		verbose_name="Time to Pick the order Up",
-		max_length=2,
-		blank=True,
-		choices=MAX_TIME,
-		help_text="Please select how many minutes you're going to pick the order up"
-		)
+	time = models.CharField(verbose_name="Time to Pick the order Up",
+							max_length=2,
+							blank=True,
+							choices=MAX_TIME,
+							help_text="Please select how many minutes you're \
+									   going to pick the order up")
 
 	#Monto del Pedido Sin Tax
-	sub_amt = models.DecimalField(
-		verbose_name='Subtotal',
-        max_digits=10,
-        decimal_places=2,
-        validators=[MinValueValidator(0.00)]
-        )
+	sub_amt = models.DecimalField(verbose_name='Subtotal',
+        						  max_digits=10,
+        						  decimal_places=2,
+        						  validators=[MinValueValidator(0.00)])
 
 	#Monto del Tax del pedido
-	tax_amt = models.DecimalField(
-		verbose_name='Tax',
-        max_digits=10,
-        decimal_places=2,
-        validators=[MinValueValidator(0.00)]
-        )
+	tax_amt = models.DecimalField(verbose_name='Tax',
+						          max_digits=10,
+						          decimal_places=2,
+						          validators=[MinValueValidator(0.00)])
 
-	delivery_amt = models.DecimalField(
-		verbose_name='Delivery',
-		max_digits=10,
-		decimal_places=2,
-		default=0
-	)
+	delivery_amt = models.DecimalField(verbose_name='Delivery',
+									   max_digits=10,
+									   decimal_places=2,
+									   default=0)
 
 	#Monto total del pedido (Tax + Delivery + Subtotal)
-	total_amt = models.DecimalField(
-		verbose_name='Total',
-        max_digits=10,
-        decimal_places=2,
-        validators=[MinValueValidator(0.00)]
-        )
+	total_amt = models.DecimalField(verbose_name='Total',
+        							max_digits=10,
+							        decimal_places=2,
+							        validators=[MinValueValidator(0.00)])
 
-	order_status = models.CharField(
-		verbose_name="Status",
-		max_length=1,
-		choices=ORDER_STATUS,
-		default='P'
-	)
+	order_status = models.CharField(verbose_name="Status",
+									max_length=1,
+									choices=ORDER_STATUS,
+									default='P')
 
 	def __unicode__(self):
 		return str(self.order_number)
 
 class GuestDetail(models.Model):
     firstname = models.CharField(verbose_name='First Name', max_length=50)
+    
     lastname = models.CharField(verbose_name='Last Name', max_length=50)
+    
     email = models.EmailField(verbose_name='E-mail')
-    phone = models.CharField(verbose_name='Telephone Number', max_length=50, blank=True)
+    
+    phone = models.CharField(verbose_name='Telephone Number', 
+    						 max_length=50, blank=True)
+    
     order = models.ForeignKey(Order)
 
     class Meta:
@@ -350,7 +410,10 @@ class OrderDetail(models.Model):
 	item = models.IntegerField(verbose_name="Item")
 
 	#Baked or Fried
-	arepa_type = models.CharField(verbose_name="Baked or Fried", default="Baked", max_length=15, blank=True)
+	arepa_type = models.CharField(verbose_name="Baked or Fried", 
+								  default="Baked", 
+								  max_length=15, 
+								  blank=True)
 
 	#Producto que solicito
 	product_selected = models.ForeignKey(product)
@@ -359,9 +422,11 @@ class OrderDetail(models.Model):
 	order_number = models.ForeignKey(Order)
 
 	# Producto Principal (Bool)
-	main_product = models.BooleanField(
-		verbose_name='Indica si es el producto principal del item',
-		default=False)
+	main_product = models.BooleanField(verbose_name='is the Main Product of the \
+									                 Order?',
+									   help_text='Indicates if the product is the \
+									              main Product',
+									   default=False)
 
 	def __unicode__(self):
 		return str(self.order_number.order_number)
@@ -393,12 +458,27 @@ class OrderPaymentDetail(models.Model):
 	def __unicode__(self):
 		return str(self.order_number.order_number)
 
+class GenericVariableManager(models.Manager):
+	"""
+	Table-level functionality for Generic Vars Model
+	"""
+	def val(self, code):
+		"""
+		Return the Value of the generic variable for a code given
+		"""
+		try:
+			GenVar = GenericVariable.objects.get(code=code)
+		except GenericVariable.DoesNotExist:
+			return "404 Not Found"
+		else:
+			return GenVar.value
 
 # Modelo Clasico de Variables Genericas
 class GenericVariable(models.Model):
 	code = models.CharField(verbose_name='Code', max_length=45, unique=True)
 	value = models.CharField(verbose_name='Value', max_length=500)
 	description = models.TextField(verbose_name='Descripcion', max_length=45)
+	objects = GenericVariableManager()
 
 #Modelo de Obtencion de Album
 class Album(models.Model):

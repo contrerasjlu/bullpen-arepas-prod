@@ -43,13 +43,13 @@
                 <a href="{% url 'website:index' %}" class="site_title" style="text-align:center">
                 <img src="{% static 'website\img\Logo_mini.png' %}" class="logo-right" alt="Bullpen Arepas" /></a>
             </div>
-           <!-- top navigation -->
+            <!-- top navigation -->
             <div class="top_nav">
                 <div class="nav_menu">
                     <nav class="" role="navigation">
                         <ul class="nav navbar-nav navbar-left col-xs-3">
                             <li>
-                                <a href="{% url 'website:index' %}">Home</a>
+                                <a href="{% url 'website:index' %}" class="agencia-bold">Home</a>
                             </li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
@@ -108,7 +108,7 @@
                                             </span>
                                             {% endif %}
 
-                                            {% if not item.vegetables == 0 %}
+                                            {% if not item.vegetables == 0 or not item.vegetales == 'No Vegetables' %}
                                             <span class="message">
                                             {% for vegetable in item.vegetables %}
                                                 {% if forloop.first %}Vegetables: {% endif %}
@@ -191,7 +191,7 @@
                                 <!-- Content -->
                                 <div class="row">
                                     {% for arepa in arepas %}
-                                    <div class="col-md-3 col-xs-12 widget widget_tally_box">
+                                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 widget widget_tally_box">
                                         <div class="x_panel ui-ribbon-container fixed_height_390">
                                             <div class="ui-ribbon-wrapper">
                                                 <div class="ui-ribbon">$ {{ arepa.price }}</div>
