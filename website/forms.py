@@ -26,6 +26,10 @@ class ArepaForm(forms.Form):
                                    initial='Baked',
                                    help_text="We can Fry your Arepa or make it in the Oven"
     )
+    NoVegetablesCheck = forms.BooleanField(initial=False, 
+                                           widget=forms.CheckboxInput(attrs={'class':attr3, 'id':'vgch'}),
+                                           required=False, 
+                                           label="No, I don't want Vegetables")
 
     vegetables = forms.ModelMultipleChoiceField(label='Vegetables',
                                                 required=False,
@@ -57,6 +61,11 @@ class ArepaForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(attrs={'class': attr3}),
         queryset=product.objects.filter(Active=True,category=category.objects.get(code='paid.extras')).order_by('order_in_menu')
     )
+
+    NoSaucesCheck = forms.BooleanField(initial=False, 
+                                       widget=forms.CheckboxInput(attrs={'class':attr3,'id':'sach'}),
+                                       required=False, 
+                                       label="No, I don't want Sauces")
 
     sauces = forms.ModelMultipleChoiceField(
         label="Sauces",

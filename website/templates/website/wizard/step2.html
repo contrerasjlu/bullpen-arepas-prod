@@ -1,4 +1,4 @@
-{% extends 'website/menu.html' %}
+{% extends 'website/wizard/step1.html' %}
 {% block right-side %}
 <div class="panel panel-success">
 	<div class="panel-heading">
@@ -10,10 +10,12 @@
 		{% for product in products %}
 		<div class="row menu-product">
 			<div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
+				<a class="plain" href="{% url 'website:MealForm' product.category_id product.id %}">
 				<p>
 					<span class="agencia-bold">{{ product.name }}</span><br>
 					<span class="agencia-regular">{{ product.description }}</span>
 				</p>
+				</a>
 			</div>
 			<div class="col-lg-2 col-md-2 hidden-sm hidden-xs agencia-regular">
 				$ {{ product.price }}<br>

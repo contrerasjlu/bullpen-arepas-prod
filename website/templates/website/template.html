@@ -108,7 +108,7 @@
                                             </span>
                                             {% endif %}
 
-                                            {% if not item.vegetables == 0 or not item.vegetales == 'No Vegetables' %}
+                                            {% if not item.vegetables == 0 or not item.vegetales == None %}
                                             <span class="message">
                                             {% for vegetable in item.vegetables %}
                                                 {% if forloop.first %}Vegetables: {% endif %}
