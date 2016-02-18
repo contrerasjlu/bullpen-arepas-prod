@@ -1,0 +1,16 @@
+<div class="form-group">
+	<h2 class="agencia-bold">Baked or Fry?</h2>
+	<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+		{{ form.arepa_type }}
+	</div>
+	{% if form.arepa_type.errors %}
+	<div class="form-group has-error">
+		<span class="label label-danger">{{ form.arepa_type.errors }}</span>
+	</div>
+	{% endif %}
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<p>{{ form.arepa_type.help_text }}</p>
+		</div>
+	</div>
+</div>

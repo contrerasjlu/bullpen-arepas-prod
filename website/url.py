@@ -2,7 +2,7 @@ from django.conf.urls import url
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from website import views
-from website.views import GuestLogin, MenuHome, CategoryProductsList
+from website.views import GuestLogin, MenuHome, CategoryProductsList, MealForm
 from .forms import CreateAccountForm
 
 
@@ -25,7 +25,8 @@ urlpatterns = [
     # Vistas del Menu
     #url(r'^menu/$', views.MenuHome.as_view(), name="menu"),
     url(r'^menu/$', views.menu, name="menu"),
-    #url(r'^menu/category/(?P<pk>[0-9]+)/$', views.CategoryProductsList2, name="ProductList"),
+    url(r'^menu/category/(?P<pk>[0-9]+)/$', views.CategoryProductsList.as_view(), name="ProductList"),
+    url(r'^menu/category/(?P<pk_cat>[0-9]+)/product/(?P<pk_prod>[0-9]+)/$', views.MealForm.as_view(), name="MealForm"),
     url(r'^menu/product/(?P<id_for_prod>[0-9]+)/$', views.ProductDetail, name="product_detail"),
     url(r'^menu/checkout/type$', views.pre_checkout, name="pre_checkout"),
     url(r'^menu/checkout/payment$', views.checkout, name="checkout"),

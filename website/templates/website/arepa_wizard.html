@@ -68,8 +68,13 @@
                             {# Si el producto permite la seleccion de Vegetales #}
                             {% if product.allow_vegetables == True %}
                             <div class="">
-                                <h2 class="agencia-bold">Vegetables?</h2>
                                 <div class="form-inline">
+                                    <h2 class="agencia-bold">Vegetables?
+                                    <label for="{{ form.NoVegetablesCheck.id_for_label }}" id="{{ form.NoVegetablesCheck.id_for_label }}">{{ form.NoVegetablesCheck }} {{ form.NoVegetablesCheck.label }}</label>
+                                    </h2>
+                                </div>
+                                
+                                <div class="form-inline" id="vegetables-div">
                                 {% for field in form.vegetables %}
                                     <div class="col-md-6 col-sm-6 col-xs-6">
                                         {{ field }}
@@ -87,14 +92,14 @@
                             </div>
                             <div class="clearfix"></div>
                             <br />
-                            <p>{{ form.vegetables.help_text }}</p>
+                            <p id="vegetables-p">{{ form.vegetables.help_text }}</p>
                             <hr>
                             {% endif %}
 
                             {# Si el producto permite la seleccion Extras (Players) #}
                             {% if product.allow_extras ==  True %}
                             <div class="">
-                                <h2 class="agencia-bold">Players</h2>
+                                <h2 class="agencia-bold">Players (Main Ingredients)</h2>
                                 <div class="form-inline">
                                 {% for field in form.extras %}
                                     <div class="col-md-6 col-sm-6 col-xs-6">
@@ -120,7 +125,7 @@
                             {# Si el producto permite la seleccion de Paid Extras #}
                             {% if product.allow_paid_extras ==  True %}
                             <div class="">
-                                <h2 class="agencia-bold">Bench Players</h2>
+                                <h2 class="agencia-bold">Bench Players (Extras)</h2>
                                 <div class="form-inline">
                                 {% for field in form.paid_extras %}
                                     <div class="col-md-6 col-sm-6 col-xs-6">
@@ -146,8 +151,10 @@
                             {# Si el producto permite la seleccion de Salsas #}
                             {% if product.allow_sauces ==  True %}
                             <div class="">
-                                <h2 class="agencia-bold">Sauces</h2>
-                                <div class="form-inline">
+                                <h2 class="agencia-bold">Sauces?
+                                <label for="{{ form.NoSaucesCheck.id_for_label }}" id="{{ form.NoSaucesCheck.id_for_label }}">{{ form.NoSaucesCheck }} {{ form.NoSaucesCheck.label }}</label>
+                                </h2>
+                                <div class="form-inline" id="sauces-div">
                                 {% for field in form.sauces %}
                                     <div class="col-md-6 col-sm-6 col-xs-6">
                                         {{ field }}
@@ -164,7 +171,7 @@
                             </div>
                             <div class="clearfix"></div>
                             <br />
-                            <p>{{ form.sauces.help_text }}</p>
+                            <p id="sauces-p">{{ form.sauces.help_text }}</p>
                             <hr>
                             {% endif %}
 
@@ -226,4 +233,29 @@
         </div>
     </div>
 </div>
+{% endblock %}
+{% block FooterDeclarations %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $("#vgch").click(function(){
+        if ($("input[name=NoVegetablesCheck]").prop('checked')){
+            $("div[id=vegetables-div]").hide();
+            $("p[id=vegetables-p]").hide();
+        }else{
+            $("div[id=vegetables-div]").show();
+            $("p[id=vegetables-p]").show();
+        }
+    });
+    $("#sach").click(function(){
+        if ($("input[name=NoSaucesCheck]").prop('checked')){
+            $("div[id=sauces-div]").hide();
+            $("p[id=sauces-p]").hide();
+        }else{
+            $("div[id=sauces-div]").show();
+            $("p[id=sauces-p]").show();
+        }
+    });
+})
+</script>
+
 {% endblock %}

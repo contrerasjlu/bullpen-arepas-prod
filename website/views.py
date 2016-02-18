@@ -3,6 +3,7 @@ from django.http import Http404,HttpResponseRedirect, HttpResponse, HttpResponse
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth import authenticate, login, logout, user_logged_in
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.generic.edit import FormView
 from django.views.generic import CreateView, ListView
 from django.core.mail import send_mail, BadHeaderError
 from random import randint
@@ -192,43 +193,161 @@ def cart(request):
 ###############################################################################
 class MenuHome(ListView):
 	model = category
-	template_name = 'website/menu.html'
+	template_name = 'website/wizard/step1.html'
 	context_object_name = 'categories'
 
 	def get_queryset(self):
-		return category.objects.filter(Active=True, show_in_menu=True).order_by('order')
+		return category.objects.filter(Active=True, show_in_menu=True)
 
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
 		context = super(MenuHome, self).get_context_data(**kwargs)
+		context['cart'] = cart(self.request)
 		return context
-
-def CategoryProductsList2(request, pk):
-	context = {}
-	context['categories'] = get_list_or_404(category, Active=True, show_in_menu=True)
-	context['products'] = get_list_or_404(product, Active=True, category=pk)
-	context['selected'] = pk
-	context['form'] = ArepaForm()
-	return render(request, 'website/category.html', context)
 
 class CategoryProductsList(ListView):
 	model = category
-	template_name = 'website/category.html'
+	template_name = 'website/wizard/step2.html'
 	context_object_name = 'categories'
 
 	def get_queryset(self):
-		return category.objects.filter(Active=True, show_in_menu=True).order_by('order')
+		return get_list_or_404(category, Active=True, show_in_menu=True)
 
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
 		context = super(CategoryProductsList, self).get_context_data(**kwargs)
 		context['products'] = get_list_or_404(product, Active=True, category=self.kwargs['pk'])
 		context['selected'] = str(self.kwargs['pk'])
-		context['form'] = ArepaForm()
+		context['cart'] = cart(self.request)
 		return context
 
-	def get_form(self):
-		return HttpResponseRedirect(reverse('website:menu'))
+class MealForm(FormView):
+	template_name = 'website/wizard/step3.html'
+	form_class = ArepaForm
+	success_url = '/menu/'
+
+	def get_context_data(self, **kwargs):
+		# Call the base implementation first to get a context
+		context = super(MealForm, self).get_context_data(**kwargs)
+		
+		context['product'] = get_object_or_404(product, Active=True, 
+											   category=self.kwargs['pk_cat'], 
+											   pk=self.kwargs['pk_prod'])
+		
+		context['categories'] = get_list_or_404(category, Active=True, 
+											    show_in_menu=True)
+		
+		context['selected'] = str(self.kwargs['pk_cat'])
+		context['wizard'] = product.NeedWizard(self.kwargs['pk_prod'])
+		context['cart'] = cart(self.request)
+		return context
+
+	def form_valid(self, form, **kwargs):
+		# This method is called when valid form data has been POSTed.
+		# It should return an HttpResponse.
+		
+		# Si el producto permite Type
+		this_product = product.objects.get(pk=self.kwargs['pk_prod'])
+		
+		if this_product.allow_type == True:
+			if 'arepa_type' in self.request.POST:
+				product_type = self.request.POST['arepa_type']
+			else:
+				product_type = None
+		else:
+			product_type = this_product.category.name
+
+		# Si el producto permite Vegetales
+		if this_product.allow_vegetables == True:
+			if 'vegetables' in self.request.POST:
+				vegetables = []
+				for i in self.request.POST.getlist('vegetables'):
+					vegetables.append(i)
+			else:
+				vegetables = None
+		else:
+			vegetables = None
+
+		# Si el producto permite Players
+		if this_product.allow_extras == True:
+			if 'extras' in self.request.POST:
+				extras = []
+				for i in self.request.POST.getlist('extras'):
+					extras.append(i)
+			else:
+				extras = None
+		else:
+			extras = None
+
+		# Si el producto permite Bench Players
+		if this_product.allow_paid_extras == True:
+			if 'paid_extras' in self.request.POST:
+				paid_extras = []
+				for i in self.request.POST.getlist('paid_extras'):
+					paid_extras.append(i)
+			else:
+				paid_extras = None
+		else:
+			paid_extras = None
+
+		
+		# Si el producto permite Sauces
+		if this_product.allow_sauces == True:
+			if 'sauces' in self.request.POST:
+				sauces = []
+				for i in self.request.POST.getlist('sauces'):
+					sauces.append(i)
+			else:
+				sauces = None
+		else:
+			sauces = None
+
+		# Si el producto permite Drinks
+		if this_product.allow_drinks == True:
+			if 'soft_drinks' in self.request.POST:
+				drinks = self.request.POST['soft_drinks']
+			else:
+				drinks = None
+		else:
+			drinks = None
+		
+		if this_product.category.show_in_menu == True:
+			main_product = True
+		else:
+			main_product = False
+
+		a = {
+			'type' : product_type,
+			'product_id':self.request.POST['id_for_product'],
+			'arepa_type':product_type,
+			'vegetables':vegetables,
+			'extras':extras,
+			'paid_extras': paid_extras,
+			'sauces':sauces,
+			'soft_drinks':drinks,
+			'main_product':main_product
+			}
+
+		if 'cart' in self.request.session:
+			local_cart = self.request.session['cart']
+			if this_product.allow_qtty == True:
+				for x in range(0,int(self.request.POST['qtty'])):
+					local_cart.append(a)
+			else:
+				local_cart.append(a)
+			self.request.session['cart'] = local_cart
+
+		else:
+			local_cart = []
+			if this_product.allow_qtty == True:
+				for x in range(0,int(self.request.POST['qtty'])):
+					local_cart.append(a)
+			else:
+				local_cart.append(a)
+			self.request.session['cart'] = local_cart
+
+		return super(MealForm, self).form_valid(form)
+		
 
 ###############################################################################
 def menu(request):
@@ -243,12 +362,9 @@ def menu(request):
 	if context['status']==False:
 		return HttpResponseRedirect(reverse('website:closed'))
 
-	context['show_in'] = category.objects.filter(Active=True, show_in_menu=True).order_by('order')
+	context['show_in'] = get_list_or_404(category, Active=True, show_in_menu=True)
 
-	try:
-		return render(request, 'website/plain_page.html', context)
-	except ValueError:
-		return HttpResponseRedirect(reverse('website:closed'))
+	return render(request, 'website/plain_page.html', context)
 
 def ProductDetail(request,id_for_prod):
 	context = cart(request);
@@ -273,7 +389,7 @@ def ProductDetail(request,id_for_prod):
 
 			# Si el producto permite Vegetales
 			if context['product'].allow_vegetables == True:
-				if 'vegetables' in request.POST:
+				if 'vegetables' in request.POST and request.POST['NoVegetablesCheck'] == False:
 					vegetables = []
 					for i in request.POST.getlist('vegetables'):
 						vegetables.append(i)
@@ -307,7 +423,7 @@ def ProductDetail(request,id_for_prod):
 			
 			# Si el producto permite Sauces
 			if context['product'].allow_sauces == True:
-				if 'sauces' in request.POST:
+				if 'sauces' in request.POST and request.POST['NoSaucesCheck'] == False:
 					sauces = []
 					for i in request.POST.getlist('sauces'):
 						sauces.append(i)
