@@ -237,23 +237,17 @@
 {% block FooterDeclarations %}
 <script type="text/javascript">
 $(document).ready(function(){
-    $("#vgch").click(function(){
-        if ($("input[name=NoVegetablesCheck]").prop('checked')){
-            $("div[id=vegetables-div]").hide();
-            $("p[id=vegetables-p]").hide();
-        }else{
-            $("div[id=vegetables-div]").show();
-            $("p[id=vegetables-p]").show();
-        }
+    $('#vgch').on('ifChecked', function(event){
+        $("div[id=vegetables-div], p[id=vegetables-p]").hide();
     });
-    $("#sach").click(function(){
-        if ($("input[name=NoSaucesCheck]").prop('checked')){
-            $("div[id=sauces-div]").hide();
-            $("p[id=sauces-p]").hide();
-        }else{
-            $("div[id=sauces-div]").show();
-            $("p[id=sauces-p]").show();
-        }
+    $('#vgch').on('ifUnchecked', function(event){
+        $("div[id=vegetables-div], p[id=vegetables-p]").show();
+    });
+    $("#sach").on('ifChecked', function(event){
+        $("div[id=sauces-div], p[id=sauces-p]").hide();
+    });
+    $("#sach").on('ifUnchecked', function(event){
+        $("div[id=sauces-div], p[id=sauces-p]").show();
     });
 })
 </script>
