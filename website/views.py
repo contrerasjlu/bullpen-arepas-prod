@@ -389,7 +389,8 @@ def ProductDetail(request,id_for_prod):
 
 			# Si el producto permite Vegetales
 			if context['product'].allow_vegetables == True:
-				if 'vegetables' in request.POST and request.POST['NoVegetablesCheck'] == False:
+				NoVegetables = request.POST.get('NoVegetablesCheck', False)
+				if 'vegetables' in request.POST and NoVegetables == False:
 					vegetables = []
 					for i in request.POST.getlist('vegetables'):
 						vegetables.append(i)
@@ -423,7 +424,8 @@ def ProductDetail(request,id_for_prod):
 			
 			# Si el producto permite Sauces
 			if context['product'].allow_sauces == True:
-				if 'sauces' in request.POST and request.POST['NoSaucesCheck'] == False:
+				NoSauce = request.POST.get('NoSaucesCheck', False)
+				if 'sauces' in request.POST and NoSauce == False:
 					sauces = []
 					for i in request.POST.getlist('sauces'):
 						sauces.append(i)
