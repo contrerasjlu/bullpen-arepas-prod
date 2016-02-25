@@ -110,6 +110,40 @@ class product(models.Model):
 	def __unicode__(self):
 		return self.name + ' (' + self.description + ')'
 
+	@classmethod
+	def NeedWizard(self, pk):
+		this = product.objects.get(pk=pk)
+		wizard = []
+		i = 0
+		def AppendWizard(misc, section_name, i):
+			i += 1
+			wizard.append({'section_number':i,
+						  'section_name':section_name,
+						  str(misc):True})
+			return i
+
+		i = AppendWizard('type','Baked or Fry',i) if this.allow_type == True else i
+		i = AppendWizard('vegetables','Vegetables',i) if this.allow_vegetables == True else i
+		i = AppendWizard('players','Players',i) if this.allow_extras == True else i
+		i = AppendWizard('extras','Extras',i) if this.allow_paid_extras == True else i
+		i = AppendWizard('sauces','Sauces',i) if this.allow_sauces == True else i
+		i = AppendWizard('drinks','Drinks',i) if this.allow_drinks == True else i
+		i = AppendWizard('qtty','Quantity',i) if this.allow_qtty == True else i
+
+		if i == 0 or i<= 3:
+			return False
+		else:
+			return wizard
+
+	@classmethod
+	def CartExplicit(self, cart):
+		pass
+
+	class Meta:
+		verbose_name = "Product"
+		verbose_name_plural = "Products"
+		ordering = ['order_in_menu']
+
 class RelatedImages(models.Model):
     product = models.ForeignKey(product)
     description = models.CharField(verbose_name='Image Description', max_length=50)

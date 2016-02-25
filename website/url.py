@@ -23,8 +23,8 @@ urlpatterns = [
     url(r'^logout/$', views.userLogout, name="userlogout"),
 
     # Vistas del Menu
-    #url(r'^menu/$', views.MenuHome.as_view(), name="menu"),
-    url(r'^menu/$', views.menu, name="menu"),
+    url(r'^menu/$', views.MenuHome.as_view(), name="menu"),
+    #url(r'^menu/$', views.menu, name="menu"),
     url(r'^menu/category/(?P<pk>[0-9]+)/$', views.CategoryProductsList.as_view(), name="ProductList"),
     url(r'^menu/category/(?P<pk_cat>[0-9]+)/product/(?P<pk_prod>[0-9]+)/$', views.MealForm.as_view(), name="MealForm"),
     url(r'^menu/product/(?P<id_for_prod>[0-9]+)/$', views.ProductDetail, name="product_detail"),

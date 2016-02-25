@@ -12,8 +12,7 @@
 
     <!-- Bootstrap core CSS -->
     {% load staticfiles %}
-    <link href="{% static 'website/v2/css/bootstrap.min.css' %}" rel="stylesheet">
-
+    
     <link href="{% static 'website/v2/fonts/css/font-awesome.min.css' %}" rel="stylesheet">
     <link href="{% static 'website/v2/css/animate.min.css' %}" rel="stylesheet">
 
@@ -23,6 +22,7 @@
 
 
     <script src="{% static 'website/v2/js/jquery.min.js' %}"></script>
+    <link href="{% static 'website/v2/css/bootstrap.min.css' %}" rel="stylesheet">
 
     <!--[if lt IE 9]>
         <script src="../assets/js/ie8-responsive-file-warning.js"></script>
@@ -54,43 +54,34 @@
     <div class="clearfix"></div>
     <hr>
     <div class="row">
-        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4">
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
     {% block left-side %}
     <div class="panel panel-success">
         <div class="panel-heading">
             <h1 class="agencia-bold"><i class="fa fa-cutlery"></i> On the Game</h1>
         </div>
         <div class="panel-body">
-            {% for category in categories %}
-            <div class="list-group agencia-bold">
-                <a href="{% url 'website:ProductList' category.id %}" class="list-group-item {% if category.id == selected %}active{% endif %}">
-                    <h4>{{ category.name }}</h4>
-                    <small class="agencia-regular">{{ category.description }}</small>
-                </a>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                Select any of our Product
+                <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    {% for category in categories %}
+                    <li>
+                        <a href="{% url 'website:ProductList' category.id %}" class="agencia-bold">
+                            <h4>{{ category.name }}</h4>
+                            <small class="agencia-regular">{{ category.description }}</small>
+                        </a>
+                    </li>
+                    {% if not forloop.last %}<li class="divider"></li>{% endif %}
+                    {% endfor %}
+                </ul>
             </div>
-            {% endfor %}
         </div>
     </div>
     {% endblock %}
         </div>
-        <div class="col-lg-6 col-md-6 col-sm-8 col-xs-8">
-    {% block right-side %}
-            <div class="panel panel-success">
-                <div class="panel-heading">
-                    <h1 class="agencia-bold"><i class="fa fa-info-circle"></i> Instructions</h1>
-                </div>
-                <div class="panel-body">
-                    <h2 class="agencia-regular"><kbd>Step 1:</kbd> What do you want to eat?</h2>
-                    <p class="agencia-regular">Please select a category from our menu to start</p>
-                    <h4 class="agencia-bold">What is an Arepa?</h4>
-                    <blockquote>
-                        <p class="agencia-regular"> Is a type of food made of ground maize dough or cooked flour prominent in the cuisine of Colombia and Venezuela. It is eaten daily in those countries and can be served with various accompaniments such as cheese (cuajada), avocado, or (especially in Venezuela) split and used to make sandwiches. Various sizes, maize types, and added ingredients are used to vary its preparation.</p>
-                    </blockquote>
-                </div>
-            </div>
-    {% endblock %}
-        </div>
-        <div class="col-lg-3 col-md-3 hidden-sm hidden-xs">
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
     {% block cart-side %}
     <div class="panel panel-success">
         <div class="panel-heading">
@@ -98,7 +89,7 @@
         </div>
         <div class="panel-body">
             <ul>
-                {% for item in cart %}
+                {% for item in cart.cart %}
                 <li>
                     <a href="#">
                         <span>
@@ -114,7 +105,7 @@
                         </span>
                         {% endif %}
 
-                        {% if not item.vegetables == 0 or not item.vegetales == 'No Vegetables' %}
+                        {% if not item.vegetables == 0 or not item.vegetales == None %}
                         <span class="message">
                         {% for vegetable in item.vegetables %}
                             {% if forloop.first %}Vegetables: {% endif %}
@@ -141,7 +132,7 @@
                         </span>
                         {% endif %}
 
-                        {% if not item.soft_drinks == 0 %}
+                        {% if not item.soft_drinks == None %}
                         <span class="message">Drink: {{ item.soft_drinks }}</span>
                         {% endif %}
                     </a>
@@ -159,25 +150,42 @@
             </ul>
         </div>
     </div>
-            
+    {% endblock %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    {% block right-side %}
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h1 class="agencia-bold"><i class="fa fa-info-circle"></i> Instructions</h1>
+                </div>
+                <div class="panel-body">
+                    <h2 class="agencia-regular"><kbd>Step 1:</kbd> What do you want to eat?</h2>
+                    <p class="agencia-regular">Please select a category from our menu to start</p>
+                    <h4 class="agencia-bold">What is an Arepa?</h4>
+                    <blockquote>
+                        <p class="agencia-regular">Is a type of food made of ground maize dough or cooked flour prominent in the cuisine of Colombia and Venezuela. It is eaten daily in those countries and can be served with various accompaniments such as cheese (cuajada), avocado, or (especially in Venezuela) split and used to make sandwiches. Various sizes, maize types, and added ingredients are used to vary its preparation.</p>
+                    </blockquote>
+                </div>
+            </div>
     {% endblock %}
         </div>
     </div>
 
+    
     <script src="{% static 'website/v2/js/bootstrap.min.js' %}"></script>
-
-    <!-- chart js -->
-
-    <script src="{% static 'website/v2/js/chartjs/chart.min.js' %}"></script>
-    <!-- bootstrap progress js -->
-    <script src="{% static 'website/v2/js/progressbar/bootstrap-progressbar.min.js' %}"></script>
-    <script src="{% static 'website/v2/js/nicescroll/jquery.nicescroll.min.js' %}"></script>
     <!-- icheck -->
     <script src="{% static 'website/v2/js/icheck/icheck.min.js' %}"></script>
 
+    <script src="{% static 'website/v2/js/nicescroll/jquery.nicescroll.min.js' %}"></script>
     <script src="{% static 'website/v2/js/custom.js' %}"></script>
     {% block FooterDeclaration %}
-    {{ cart }}
+    <script>
+    $(document).ready(function() {
+        $(".dropdown-toggle").dropdown();
+    });
+    </script>
     {% endblock %}
 </body>
 </html>

@@ -63,3 +63,5 @@ class GuestDetailAdmin(admin.ModelAdmin):
 admin.site.register(GuestDetail, GuestDetailAdmin)
 
 admin.site.register(Album)
+
+admin.site.register(ProductRestriction)

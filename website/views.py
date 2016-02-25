@@ -13,6 +13,7 @@ from ordertogo.models import *
 from website.models import *
 from .forms import *
 
+
 #Generar un numero de orden aleatorio
 def get_order_number():
 	t = 100000
@@ -64,115 +65,48 @@ def index(request):
 	return render(request, 'website/index.html', context)
 
 def closed(request):
-	context = {}
 	if PaymentBatch.objects.BullpenIsOpen() == True:
 		return HttpResponseRedirect(reverse('website:menu'))
 
-	context['text'] = WebText.objects.get_text('closed_text')
+	context = {'text': WebText.objects.get_text('closed_text')}
+
 	return render(request, 'website/closed.html', context)
 
-def cart(request):
+def cart(cartList):
+
+	def AppendItems(listA, sum=False, price=0):
+		thisList = [] if isinstance(listA,list) else None
+		for itemA in listA:
+			item = product.objects.get(pk=itemA)
+			thisList.append(item.name+ ' (' + item.description + ')')
+		return thisList
+
 	context = {}
 	context['status'] = PaymentBatch.objects.BullpenIsOpen()
+	subtotal = 0
 
-	if 'guest' in request.session:
-		context['guest'] = request.session['guest']
-		
-	if 'cart' in request.session:
-		context['item_count'] = len(request.session['cart'])
+	if cartList:
 		the_cart = []
-		subtotal = 0
-		the_session_cart = request.session['cart']
-		for item in the_session_cart:
+		for item in cartList:
 			a = product.objects.get(pk=item['product_id'])
 			price = a.price
-			
-			the_item_type = item['type']
-
-			if a.allow_extras == True:
-				if not a.extras == 0:
-					the_extras = []
-					for extra in item['extras']:
-						b = product.objects.get(pk=extra)
-						the_extras.append(b.name+ ' (' + b.description + ')')
-				else:
-					the_extras = 'No Players Allowed'
-			else:
-				the_extras = 0
-
-
-			if a.allow_vegetables == True:
-				if not item['vegetables'] == None:
-					the_vegetables = []
-					for vegetable in item['vegetables']:
-						v = product.objects.get(pk=vegetable)
-						the_vegetables.append(v.name + ' (' + v.description + ')')
-						price += v.price
-
-				else:
-					the_vegetables = None
-			else:
-				the_vegetables = 0
-
-			if a.allow_paid_extras == True:
-				if not item['paid_extras'] == None:
-					the_paid_extras = []
-					for paid_extra in item['paid_extras']:
-						c = product.objects.get(pk=paid_extra)
-						the_paid_extras.append(c.name+ ' (' + c.description + ')')
-						price += c.price
-
-				else:
-					the_paid_extras = None
-			else:
-				the_paid_extras = 0
-
-			if a.allow_sauces == True:
-				if not item['sauces'] == None:
-					the_sauces = []
-					for sauce in item['sauces']:
-						d = product.objects.get(pk=sauce)
-						the_sauces.append(d.name + ' (' + d.description + ')')
-
-				else:
-					the_sauces = None
-			else:
-				the_sauces = 0
-
-			if a.allow_drinks == True:
-				if not item['soft_drinks'] == '':
-					try:
-						e = product.objects.get(pk=item['soft_drinks'])
-					
-					except product.DoesNotExist:
-						the_drink = 0
-					
-					else:						
-						the_drink = e.name
-						price += e.price
-
-				else:
-					the_drink = 'No Drink'
-			else:
-				the_drink = 0
-
-			this_item = {
-						'product': a.name + ' (' + a.description + ')',
-						'product_code': a.code,
-						'image' : a.image,
-						'type': the_item_type,
-						'extras' : the_extras,
-						'vegetables': the_vegetables,
-						'paid_extras' : the_paid_extras,
-						'sauces':the_sauces,
-						'soft_drinks':the_drink,
-						'price' : price
-						}
+			the_cart.append({
+				'product': a.name + ' (' + a.description + ')',
+				'product_code': a.code,
+				'image' : a.image,
+				'type': item['type'],
+				'extras' : AppendItems(item['extras']) \
+						   if item['extras'] and a.allow_extras else None,
+				'vegetables': AppendItems(item['vegetables'],True,price) \
+							  if item['vegetables'] and a.allow_vegetables == True else None,
+				'paid_extras': AppendItems(item['paid_extras'],True,price) \
+							   if item['paid_extras'] and a.allow_paid_extras else None,
+				'sauces': AppendItems(item['sauces'],True,price) \
+						  if item['sauces'] and a.allow_sauces else None,
+				'drink': item['soft_drinks']
+			})
 
 			subtotal += price
-			the_cart.append(this_item)
-
-		
 
 		amounts = {
 			'subtotal': subtotal,
@@ -202,7 +136,8 @@ class MenuHome(ListView):
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
 		context = super(MenuHome, self).get_context_data(**kwargs)
-		context['cart'] = cart(self.request)
+		context['cart'] = cart(self.request.session['cart']) \
+						  if 'cart' in self.request.session else None
 		return context
 
 class CategoryProductsList(ListView):
@@ -218,7 +153,8 @@ class CategoryProductsList(ListView):
 		context = super(CategoryProductsList, self).get_context_data(**kwargs)
 		context['products'] = get_list_or_404(product, Active=True, category=self.kwargs['pk'])
 		context['selected'] = str(self.kwargs['pk'])
-		context['cart'] = cart(self.request)
+		context['cart'] = cart(self.request.session['cart']) \
+						  if 'cart' in self.request.session else None
 		return context
 
 class MealForm(FormView):
@@ -239,112 +175,56 @@ class MealForm(FormView):
 		
 		context['selected'] = str(self.kwargs['pk_cat'])
 		context['wizard'] = product.NeedWizard(self.kwargs['pk_prod'])
-		context['cart'] = cart(self.request)
+		context['cart'] = cart(self.request.session['cart']) \
+						  if 'cart' in self.request.session else None
 		return context
 
 	def form_valid(self, form, **kwargs):
-		# This method is called when valid form data has been POSTed.
-		# It should return an HttpResponse.
+		'''
+		Se obtienen los valores del POST, si no son encontrados
+		o no existen el valor por defecto es None.
+
+		Para el caso de los Check de Vegetales y Salsas se validan si
+		estan checked para no tomar en cuenta cualquier valor que venga
+		en el POST.
+
+		Al final se obtiene el valor de qtty, si viene se asigna el valor
+		de lo contrario se asigna 1. Luego se repite tantan veces se
+		encuentre (o no) y se suma el item en el carrito local.
+
+		El carrito local se asigna de nuevo al de la sesion y finaliza la
+		funcion.
+		'''
+		thisProduct = get_object_or_404(product, Active=True, 
+										category=self.kwargs['pk_cat'], 
+										pk=self.kwargs['pk_prod'])
+
+		NoVegetables = self.request.POST.get('NoVegetablesCheck', None)
+		vegetables = self.request.POST.getlist('vegetables', None) if not NoVegetables == 'on' else None
 		
-		# Si el producto permite Type
-		this_product = product.objects.get(pk=self.kwargs['pk_prod'])
+		NoSauce = self.request.POST.get('NoSaucesCheck', False)
+		sauces = self.request.POST.getlist('sauces', None) if not NoSauce == 'on' else None
 		
-		if this_product.allow_type == True:
-			if 'arepa_type' in self.request.POST:
-				product_type = self.request.POST['arepa_type']
-			else:
-				product_type = None
-		else:
-			product_type = this_product.category.name
+		main_product =  True if thisProduct.category.show_in_menu == True else False
 
-		# Si el producto permite Vegetales
-		if this_product.allow_vegetables == True:
-			if 'vegetables' in self.request.POST:
-				vegetables = []
-				for i in self.request.POST.getlist('vegetables'):
-					vegetables.append(i)
-			else:
-				vegetables = None
-		else:
-			vegetables = None
-
-		# Si el producto permite Players
-		if this_product.allow_extras == True:
-			if 'extras' in self.request.POST:
-				extras = []
-				for i in self.request.POST.getlist('extras'):
-					extras.append(i)
-			else:
-				extras = None
-		else:
-			extras = None
-
-		# Si el producto permite Bench Players
-		if this_product.allow_paid_extras == True:
-			if 'paid_extras' in self.request.POST:
-				paid_extras = []
-				for i in self.request.POST.getlist('paid_extras'):
-					paid_extras.append(i)
-			else:
-				paid_extras = None
-		else:
-			paid_extras = None
-
-		
-		# Si el producto permite Sauces
-		if this_product.allow_sauces == True:
-			if 'sauces' in self.request.POST:
-				sauces = []
-				for i in self.request.POST.getlist('sauces'):
-					sauces.append(i)
-			else:
-				sauces = None
-		else:
-			sauces = None
-
-		# Si el producto permite Drinks
-		if this_product.allow_drinks == True:
-			if 'soft_drinks' in self.request.POST:
-				drinks = self.request.POST['soft_drinks']
-			else:
-				drinks = None
-		else:
-			drinks = None
-		
-		if this_product.category.show_in_menu == True:
-			main_product = True
-		else:
-			main_product = False
-
-		a = {
-			'type' : product_type,
+		item = {
+			'type': self.request.POST.get('arepa_type', thisProduct.category.name),
 			'product_id':self.request.POST['id_for_product'],
-			'arepa_type':product_type,
+			'arepa_type':self.request.POST.get('arepa_type', thisProduct.category.name),
 			'vegetables':vegetables,
-			'extras':extras,
-			'paid_extras': paid_extras,
+			'extras':self.request.POST.getlist('extras', None),
+			'paid_extras':self.request.POST.getlist('paid_extras', None),
 			'sauces':sauces,
-			'soft_drinks':drinks,
+			'soft_drinks':self.request.POST.get('soft_drinks', None),
 			'main_product':main_product
 			}
 
-		if 'cart' in self.request.session:
-			local_cart = self.request.session['cart']
-			if this_product.allow_qtty == True:
-				for x in range(0,int(self.request.POST['qtty'])):
-					local_cart.append(a)
-			else:
-				local_cart.append(a)
-			self.request.session['cart'] = local_cart
+		local_cart = self.request.session.get('cart', [])
+		
+		for x in range(0,int(self.request.POST.get('qtty',1))):
+			local_cart.append(item)
 
-		else:
-			local_cart = []
-			if this_product.allow_qtty == True:
-				for x in range(0,int(self.request.POST['qtty'])):
-					local_cart.append(a)
-			else:
-				local_cart.append(a)
-			self.request.session['cart'] = local_cart
+		self.request.session['cart'] = local_cart
 
 		return super(MealForm, self).form_valid(form)
 		
@@ -376,117 +256,58 @@ def ProductDetail(request,id_for_prod):
 	if request.POST:
 
 		this_product = ArepaForm(request.POST)
+
 		if this_product.is_valid():
+			'''
+			Se obtienen los valores del POST, si no son encontrados
+			o no existen el valor por defecto es None.
+
+			Para el caso de los Check de Vegetales y Salsas se validan si
+			estan checked para no tomar en cuenta cualquier valor que venga
+			en el POST.
+
+			Al final se obtiene el valor de qtty, si viene se asigna el valor
+			de lo contrario se asigna 1. Luego se repite tantan veces se
+			encuentre (o no) y se suma el item en el carrito local.
+
+			El carrito local se asigna de nuevo al de la sesion y finaliza la
+			funcion.
+			'''
 			
-			# Si el producto permite Type
-			if context['product'].allow_type == True:
-				if 'arepa_type' in request.POST:
-					product_type = request.POST['arepa_type']
-				else:
-					product_type = None
-			else:
-				product_type = context['product'].category.name
-
-			# Si el producto permite Vegetales
-			if context['product'].allow_vegetables == True:
-				NoVegetables = request.POST.get('NoVegetablesCheck', False)
-				if 'vegetables' in request.POST and NoVegetables == False:
-					vegetables = []
-					for i in request.POST.getlist('vegetables'):
-						vegetables.append(i)
-				else:
-					vegetables = None
-			else:
-				vegetables = None
-
-			# Si el producto permite Players
-			if context['product'].allow_extras == True:
-				if 'extras' in request.POST:
-					extras = []
-					for i in request.POST.getlist('extras'):
-						extras.append(i)
-				else:
-					extras = None
-			else:
-				extras = None
-
-			# Si el producto permite Bench Players
-			if context['product'].allow_paid_extras == True:
-				if 'paid_extras' in request.POST:
-					paid_extras = []
-					for i in request.POST.getlist('paid_extras'):
-						paid_extras.append(i)
-				else:
-					paid_extras = None
-			else:
-				paid_extras = None
-
+			NoVegetables = request.POST.get('NoVegetablesCheck', None)
+			vegetables = request.POST.getlist('vegetables', None) if not NoVegetables == 'on' else None
 			
-			# Si el producto permite Sauces
-			if context['product'].allow_sauces == True:
-				NoSauce = request.POST.get('NoSaucesCheck', False)
-				if 'sauces' in request.POST and NoSauce == False:
-					sauces = []
-					for i in request.POST.getlist('sauces'):
-						sauces.append(i)
-				else:
-					sauces = None
-			else:
-				sauces = None
-
-			# Si el producto permite Drinks
-			if context['product'].allow_drinks == True:
-				if 'soft_drinks' in request.POST:
-					drinks = request.POST['soft_drinks']
-				else:
-					drinks = None
-			else:
-				drinks = None
+			NoSauce = request.POST.get('NoSaucesCheck', False)
+			sauces = request.POST.getlist('sauces', None) if not NoSauce == 'on' else None
 			
-			if context['product'].category.show_in_menu == True:
-				main_product = True
-			else:
-				main_product = False
+			main_product =  True if context['product'].category.show_in_menu == True else False
 
-			a = {
-				'type' : product_type,
+			item = {
+				'type': request.POST.get('arepa_type', context['product'].category.name),
 				'product_id':request.POST['id_for_product'],
-				'arepa_type':product_type,
+				'arepa_type':request.POST.get('arepa_type', context['product'].category.name),
 				'vegetables':vegetables,
-				'extras':extras,
-				'paid_extras': paid_extras,
+				'extras':request.POST.getlist('extras', None),
+				'paid_extras': request.POST.getlist('paid_extras', None),
 				'sauces':sauces,
-				'soft_drinks':drinks,
+				'soft_drinks':request.POST.get('soft_drinks', None),
 				'main_product':main_product
 				}
 
-			if 'cart' in request.session:
-				local_cart = request.session['cart']
-				if context['product'].allow_qtty == True:
-					for x in range(0,int(request.POST['qtty'])):
-						local_cart.append(a)
-				else:
-					local_cart.append(a)
-				request.session['cart'] = local_cart
+			local_cart = request.session.get('cart', [])
+			
+			for x in range(0,int(request.POST.get('qtty',1))):
+				local_cart.append(item)
 
-			else:
-				local_cart = []
-				if context['product'].allow_qtty == True:
-					for x in range(0,int(request.POST['qtty'])):
-						local_cart.append(a)
-				else:
-					local_cart.append(a)
-				request.session['cart'] = local_cart
+			request.session['cart'] = local_cart
 
 			return HttpResponseRedirect(reverse('website:menu'))
-		else:
 
-			html = 'website/arepa_wizard.html'
+		else:
 			context['form'] = ArepaForm(request.POST)
 	else:
-		html = 'website/arepa_wizard.html'
 		context['form'] = ArepaForm(initial={ 'id_for_product': id_for_prod })
-	return render(request, html, context)
+	return render(request, 'website/arepa_wizard.html', context)
 
 def empty_cart(request):
 	if 'cart' in request.session:
