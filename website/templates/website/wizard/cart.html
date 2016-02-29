@@ -1,0 +1,70 @@
+<ul class="list-group">
+    {% for item in cart.cart %}
+    <li class="list-group-item">
+        <a href="#">
+            <span>
+                <span class="time">{{ item.type }}</span></br>
+                <span>{{ item.product }}</span>
+            </span>
+            {% if not item.extras == 0 %}
+            <span class="message">
+            {% for extras in item.extras %}
+                {% if forloop.first %}Line Up Players: {% endif %}
+                {{ extras }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            </span>
+            {% endif %}
+
+            {% if not item.vegetables == 0 or not item.vegetales == None %}
+            <span class="message">
+            {% for vegetable in item.vegetables %}
+                {% if forloop.first %}Vegetables: {% endif %}
+                {{ vegetable }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            </span>
+            {% endif %}
+
+            {% if not item.paid_extras == 0 %}
+            <span class="message">
+            {% for paid_extras in item.paid_extras %}
+                {% if forloop.first %}Bench Players: {% endif %}
+                {{ paid_extras }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            </span>
+            {% endif %}
+
+            {% if not item.sauces = 0 %}
+            <span class="message">
+            {% for sauces in item.sauces %}
+                {% if forloop.first %}Sauces: {% endif %}
+                {{ sauces }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            </span>
+            {% endif %}
+
+            {% if not item.soft_drinks == None %}
+            <span class="message">Drink: {{ item.soft_drinks }}</span>
+            {% endif %}
+        </a>
+    </li>
+    {% endfor %}
+    {% if not guest %}
+    <li class="list-group-item">
+        <div class="btn-group btn-group-sm btn-group-justified">
+            <div class="btn-group">
+                <a href="{% url 'website:empty_cart' %}"><button type="button" class="btn btn-sm btn-primary">Empty Cart</button></a>
+            </div>
+            <div class="btn-group">
+                <a href="{% url 'website:pre_checkout' %}"><button type="button" class="btn btn-sm btn-primary">Checkout</button></a></a>
+            </div>
+        </div>
+        <!--
+        <div class="col-md-5 col-xs-5">
+            <a href="{% url 'website:order-history' %}" >
+                <i class="fa fa-history"></i> Orders History
+            </a>
+        </div>
+        -->
+    </li>
+    {% endif %}
+</ul>

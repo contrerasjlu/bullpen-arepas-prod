@@ -1,3 +1,4 @@
+/*
 @font-face{
   font-family: 'Agency Bold';
   src:url(../fonts/fonts/AGENCYB.TTF);
@@ -16,7 +17,7 @@
 .agencia-regular{
     font-family: 'Agency Regular';
     font-size: 18px;
-}
+}*/
 
 .floating-div{
     position: fixed;
@@ -604,6 +605,10 @@ table.no-margin .progress {
 .row {
     margin-right: -10px;
     /*margin-left: -10px;*/
+}
+
+.panel .row{
+    margin-right: 0px;
 }
 
 .grid_slider .col-md-6 {
@@ -4017,8 +4022,8 @@ html > body > .ui-pnotify {
 }
 
 .btn-primary.btn-outline {
-  background: #f0ad4e;
-    border-color: #f0ad4e;
+  background: #417240;
+    border-color: #417240;
 }
 
 .btn-default.btn-outline {
@@ -4066,9 +4071,9 @@ html > body > .ui-pnotify {
 .btn-primary:active,
 .btn-primary.active,
 .open .dropdown-toggle.btn-primary {
-    background-color: #d58512;
-    border-color: #d58512;
-    color: #FFFFFF;
+    background-color: #fff;
+    border-color: #417240;
+    color: #417240;
 }
 
 .btn-success:hover,
@@ -4106,9 +4111,9 @@ html > body > .ui-pnotify {
 .btn-primary:active,
 .btn-primary.active,
 .open .dropdown-toggle.btn-primary {
-    background-color: #d58512;
-    border-color: #d58512;
-    color: #FFFFFF;
+    background-color: #fff;
+    border-color: #417240;
+    color: #417240;
 }
 
 .btn-danger:hover,
@@ -6457,4 +6462,8 @@ a.white {
 
 .plain{
     color: #000;
+}
+
+#menu-bullpen, #instructions-bullpen, #cart-bullpen{
+    min-height: 550px;
 }

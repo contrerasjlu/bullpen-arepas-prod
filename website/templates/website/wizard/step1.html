@@ -13,16 +13,15 @@
     <!-- Bootstrap core CSS -->
     {% load staticfiles %}
     
+    <script src="{% static 'website/v2/js/jquery.min.js' %}"></script>
+    <link href="{% static 'website/v2/css/bootstrap.min.css' %}" rel="stylesheet">
+
     <link href="{% static 'website/v2/fonts/css/font-awesome.min.css' %}" rel="stylesheet">
     <link href="{% static 'website/v2/css/animate.min.css' %}" rel="stylesheet">
 
     <!-- Custom styling plus plugins -->
     <link href="{% static 'website/v2/css/custom.css' %}" rel="stylesheet">
     <link href="{% static 'website/v2/css/icheck/flat/orange.css' %}" rel="stylesheet">
-
-
-    <script src="{% static 'website/v2/js/jquery.min.js' %}"></script>
-    <link href="{% static 'website/v2/css/bootstrap.min.css' %}" rel="stylesheet">
 
     <!--[if lt IE 9]>
         <script src="../assets/js/ie8-responsive-file-warning.js"></script>
@@ -53,123 +52,101 @@
     </div>
     <div class="clearfix"></div>
     <hr>
-    <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-    {% block left-side %}
-    <div class="panel panel-success">
-        <div class="panel-heading">
-            <h1 class="agencia-bold"><i class="fa fa-cutlery"></i> On the Game</h1>
-        </div>
-        <div class="panel-body">
-            <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                Select any of our Product
-                <span class="caret"></span></button>
-                <ul class="dropdown-menu">
-                    {% for category in categories %}
-                    <li>
-                        <a href="{% url 'website:ProductList' category.id %}" class="agencia-bold">
-                            <h4>{{ category.name }}</h4>
-                            <small class="agencia-regular">{{ category.description }}</small>
-                        </a>
-                    </li>
-                    {% if not forloop.last %}<li class="divider"></li>{% endif %}
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    </div>
-    {% endblock %}
-        </div>
-        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-    {% block cart-side %}
-    <div class="panel panel-success">
-        <div class="panel-heading">
-            <h1 class="agencia-bold"><i class="fa fa-shopping-cart"></i> My Order</h1>
-        </div>
-        <div class="panel-body">
-            <ul>
-                {% for item in cart.cart %}
-                <li>
-                    <a href="#">
-                        <span>
-                            <span class="time">{{ item.type }}</span></br>
-                            <span>{{ item.product }}</span>
-                        </span>
-                        {% if not item.extras == 0 %}
-                        <span class="message">
-                        {% for extras in item.extras %}
-                            {% if forloop.first %}Line Up Players: {% endif %}
-                            {{ extras }}{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                        </span>
-                        {% endif %}
-
-                        {% if not item.vegetables == 0 or not item.vegetales == None %}
-                        <span class="message">
-                        {% for vegetable in item.vegetables %}
-                            {% if forloop.first %}Vegetables: {% endif %}
-                            {{ vegetable }}{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                        </span>
-                        {% endif %}
-
-                        {% if not item.paid_extras == 0 %}
-                        <span class="message">
-                        {% for paid_extras in item.paid_extras %}
-                            {% if forloop.first %}Bench Players: {% endif %}
-                            {{ paid_extras }}{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                        </span>
-                        {% endif %}
-
-                        {% if not item.sauces = 0 %}
-                        <span class="message">
-                        {% for sauces in item.sauces %}
-                            {% if forloop.first %}Sauces: {% endif %}
-                            {{ sauces }}{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                        </span>
-                        {% endif %}
-
-                        {% if not item.soft_drinks == None %}
-                        <span class="message">Drink: {{ item.soft_drinks }}</span>
-                        {% endif %}
-                    </a>
-                </li>
-                {% endfor %}
-                {% if not guest %}
-                <li>
-                    <div class="col-md-5 col-xs-5">
-                        <a href="{% url 'website:order-history' %}" >
-                            <i class="fa fa-history"></i> Orders History
-                        </a>
+    <div class="container-fluid">
+        <div class="row">
+        <!-- Only for sm and xs devices -->
+            <div class="hidden-lg hidden-md col-sm-6 col-xs-6">
+                <div class="panel-group">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" href="#collapse1"><i class="fa fa-cutlery"></i> On the Game</a>
+                            </h4>
+                        </div>
+                        <div id="collapse1" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                {% for category in categories %}
+                                <div class="row">
+                                    <a href="{% url 'website:ProductList' category.id %}" class="agencia-bold">
+                                        <button type="button" class="btn btn-primary btn-lg btn-block">{{ category.name }}</button>
+                                    </a>
+                                </div>
+                                <hr>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
-                </li>
-                {% endif %}
-            </ul>
-        </div>
-    </div>
-    {% endblock %}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-    {% block right-side %}
-            <div class="panel panel-success">
-                <div class="panel-heading">
-                    <h1 class="agencia-bold"><i class="fa fa-info-circle"></i> Instructions</h1>
-                </div>
-                <div class="panel-body">
-                    <h2 class="agencia-regular"><kbd>Step 1:</kbd> What do you want to eat?</h2>
-                    <p class="agencia-regular">Please select a category from our menu to start</p>
-                    <h4 class="agencia-bold">What is an Arepa?</h4>
-                    <blockquote>
-                        <p class="agencia-regular">Is a type of food made of ground maize dough or cooked flour prominent in the cuisine of Colombia and Venezuela. It is eaten daily in those countries and can be served with various accompaniments such as cheese (cuajada), avocado, or (especially in Venezuela) split and used to make sandwiches. Various sizes, maize types, and added ingredients are used to vary its preparation.</p>
-                    </blockquote>
                 </div>
             </div>
-    {% endblock %}
+            <div class="hidden-lg hidden-md col-sm-6 col-xs-6">
+                <div class="panel-group">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" href="#collapse2"><i class="fa fa-shopping-cart"></i> My Order</a>
+                            </h4>
+                        </div>
+                        <div id="collapse2" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                {% include 'website/wizard/cart.html' %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!-- end for only sm and xs devices -->
+        </div>
+        <div class="row">
+            <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">
+                <div class="panel panel-success" id="menu-bullpen">
+                    <div class="panel-heading">
+                        <h4><i class="fa fa-cutlery"></i> On the Game</h4>
+                    </div>
+                    <div class="panel-body">
+                        {% for category in categories %}
+                        <div class="row">
+                            <a href="{% url 'website:ProductList' category.id %}" class="agencia-bold">
+                                <button type="button" class="btn btn-primary btn-lg btn-block">{{ category.name }}</button>
+                            </a>
+                        </div>
+                        <hr>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
+                {% block right-side %}
+                <div class="panel panel-success" id="instructions-bullpen">
+                    <div class="panel-heading">
+                        <h4><i class="fa fa-info-circle"></i> Instructions</h4>
+                    </div>
+                    <div class="panel-body">
+                        <h2 class="agencia-regular"><kbd>Step 1:</kbd> What do you want to eat?</h2>
+                        <p class="agencia-regular">Please select a category from our menu to start</p>
+                        <h4 class="agencia-bold">What is an Arepa?</h4>
+                        <blockquote>
+                            <p class="agencia-regular">Is a type of food made of ground maize dough or cooked flour prominent in the cuisine of Colombia and Venezuela. It is eaten daily in those countries and can be served with various accompaniments such as cheese (cuajada), avocado, or (especially in Venezuela) split and used to make sandwiches. Various sizes, maize types, and added ingredients are used to vary its preparation.</p>
+                        </blockquote>
+                    </div>
+                </div>
+                {% endblock %}
+            </div>
+
+            <div class="col-lg-3 col-md-3 hidden-sm hidden-xs">
+                <div class="panel panel-success" id="cart-bullpen">
+                    <div class="panel-heading">
+                        <h4><i class="fa fa-shopping-cart"></i> My Order</h4>
+                    </div>
+                    <div class="panel-body">
+                        {% if cart %}
+                            {% include 'website/wizard/cart.html' %}
+                        {% else %}
+                            You don't have any items in your Order
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -181,11 +158,6 @@
     <script src="{% static 'website/v2/js/nicescroll/jquery.nicescroll.min.js' %}"></script>
     <script src="{% static 'website/v2/js/custom.js' %}"></script>
     {% block FooterDeclaration %}
-    <script>
-    $(document).ready(function() {
-        $(".dropdown-toggle").dropdown();
-    });
-    </script>
     {% endblock %}
 </body>
 </html>
