@@ -107,52 +107,6 @@
                 </div>
 		    </form>
 		{% endif %} {# Si utiliza Wizard #}
-		<form id="myWizard" type="get" action="" class="form-horizontal">
-			{% csrf_token %}
-			<input id="id_id_for_product" name="id_for_product" type="hidden" value="{{ product.id}}" />
-			
-			{% for step in wizard %}
-		    {# Si el producto permite la seleccion de Type (Solo Para Arepas) #}
-			{% if product.allow_type == True and step.type == True %}
-				{% include 'website/wizard/step3_type.html' %}
-			{% endif %}
-		    <section class="step" data-step-title="The first">
-		        <div class="control-group">
-		            <label class="control-label" for="inputEmail">Email</label>
-		            <div class="controls">
-		                <input type="text" id="inputEmail" placeholder="Email" class="input-xlarge" title="Email is required !" required >
-		            </div>
-		        </div>
-		        <div class="control-group">
-		            <label class="control-label" for="inputPassword">Password</label>
-		            <div class="controls">
-		                <input type="password" id="inputPassword" placeholder="Password" class="input-xlarge">
-		            </div>
-		        </div>
-		    </section>
-		    <section class="step" data-step-title="The second">
-		        <div class="control-group">
-		            <label class="control-label" for="inputUsername">Username</label>
-		                <div class="controls">
-		                <input type="text" id="inputUsername" placeholder="Username" class="input-xlarge">
-		            </div>
-		        </div>
-		    </section>
-		    <section class="step" data-step-title="The third">
-		        <div class="control-group">
-		            <label class="control-label" for="inputFirstname">Firstname</label>
-		                <div class="controls">
-		                <input type="text" id="inputFirstname" placeholder="Firstname" class="input-xlarge">
-		            </div>
-		        </div>
-		        <div class="control-group">
-		            <label class="control-label" for="inputCity">City</label>
-		                <div class="controls">
-		                <input type="text" id="inputCity" placeholder="City" class="input-xlarge">
-		            </div>
-		        </div>
-		    </section>
-		</form>
 	</div>
 </div>
 {% endblock %}
