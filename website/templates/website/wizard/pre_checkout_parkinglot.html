@@ -1,0 +1,105 @@
+<div class="group-for-parking-lot">
+    <form class="form-vertical form-label-left input_mask" method="post">
+    {% csrf_token %}
+    {{ form_parkinglot.type_of_sale }}
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 form-group has-feedback">
+                <label class="control-label">{{ form_parkinglot.location.label }}</label>
+                {{ form_parkinglot.location }}
+                {% if form_parkinglot.location.errors %}
+                <p>
+                    <div class="col-md-4 col-sm-12 col-xs-12 col-lg-4">
+                    {% for msj in form_parkinglot.location.errors %}
+                        <span class="label label-danger">{{ msj }}</span>
+                    {% endfor %}
+                    </div>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+            {# Car Brand #}
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-car"></i></span>
+                    {{ form_parkinglot.car_brand }}
+                </div>
+                <p>
+                    <span class="fa fa-info-circle" style="top:4px;" aria-describedby="basic-addon1"> {{form_parkinglot.car_brand.help_text}}</span>
+                </p>
+                {% if form_parkinglot.car_brand.errors %}
+                <p>
+                    <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
+                    {% for msj in form_parkinglot.car_brand.errors %}
+                        <span class="label label-danger">{{ msj }}</span>
+                    {% endfor %}
+                    </div>
+                </p>
+                {% endif %}
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+            {# Car Model #}
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-car"></i></span>
+                    {{ form_parkinglot.car_model }}
+                </div>
+                <p>
+                    <span class="fa fa-info-circle" style="top:4px;" aria-describedby="basic-addon1"> {{form_parkinglot.car_model.help_text}}</span>
+                </p>
+                {% if form_parkinglot.car_model.errors %}
+                <p>
+                    <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
+                    {% for msj in form_parkinglot.car_model.errors %}
+                        <span class="label label-danger">{{ msj }}</span>
+                    {% endfor %}
+                    </div>
+                </p>
+                {% endif %}
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+            {# Car Color #}
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-car"></i></span>
+                    {{ form_parkinglot.car_color }}
+                </div>
+                <p>
+                    <span class="fa fa-info-circle" style="top:4px;" aria-describedby="basic-addon1"> {{form_parkinglot.car_color.help_text}}</span>
+                </p>
+                {% if form_parkinglot.car_color.errors %}
+                <p>
+                    <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
+                    {% for msj in form_parkinglot.car_color.errors %}
+                        <span class="label label-danger">{{ msj }}</span>
+                    {% endfor %}
+                    </div>
+                </p>
+                {% endif %}
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+            {# Car License #}
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-car"></i></span>
+                    {{ form_parkinglot.car_license }}
+                </div>
+                <p>
+                    <span class="fa fa-info-circle" style="top:4px;" aria-describedby="basic-addon1"> {{form_parkinglot.car_license.help_text}}</span>
+                </p>
+                {% if form_parkinglot.car_license.errors %}
+                <p>
+                    <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
+                    {% for msj in form_parkinglot.car_license.errors %}
+                        <span class="label label-danger">{{ msj }}</span>
+                    {% endfor %}
+                    </div>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 form-group has-feedback">
+                <button type="submit" class="btn btn-primary">Let's Pay</button>
+            </div>
+        </div>
+    </form>
+</div>

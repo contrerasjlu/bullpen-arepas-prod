@@ -1,0 +1,80 @@
+{% extends 'website/wizard/step1.html' %}
+{% block right-side %}
+<div class="panel panel-success" id="instructions-bullpen">
+    <div class="panel-heading">
+        <h4><i class="fa fa-info-circle"></i> Instructions</h4> 
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 form-group has-feedback" id="select-div">
+                <label class="control-label" >How do you Want the Order?</label>
+                <select class="form-control flat" id="id_type_of_sale_select">
+                    <option value="D" {%if default_type_of_sale == 'D' %}selected{% endif %}>Delivery to my Location</option>
+                    <option value="P" {%if default_type_of_sale == 'P' %}selected{% endif %}>I will Pick it Up</option>
+                    <option value="PL" {%if default_type_of_sale == 'PL' %}selected{% endif %}>I'm at the Parking Lot</option>
+                </select> 
+            </div>
+            <div class="col-lg-6 col-md-6 hidden-xs hidden-sm" id="info-text">
+                <p class="group-for-delivery"><b>Delivery:</b>{% lorem 1 %}</p>
+                <p class="group-for-pick"><b>Pick it Up:</b>{% lorem 1 %}</p>
+                <p class="group-for-parking-lot"><b>Parking Lot:</b>{% lorem 1 %}</p>
+            </div>
+        </div>
+        <div class="row">
+            <!-- Form for Delivery -->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                {% include 'website/wizard/pre_checkout_delivery.html' %}
+            </div>
+
+            <!-- Form for Pick it Up -->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                {% include 'website/wizard/pre_checkout_pickitup.html' %}
+            </div>
+
+            <!-- Form for Parking Lot -->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                {% include 'website/wizard/pre_checkout_parkinglot.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block FooterDeclaration %}
+<script type="text/javascript">
+    if ($("#id_type_of_sale_select").val()=='D'){
+        $(".group-for-pick").hide();
+        $(".group-for-parking-lot").hide();
+        $(".group-for-delivery").show();
+    }
+    if ($("#id_type_of_sale_select").val()=='P'){
+        $(".group-for-pick").show();
+        $(".group-for-delivery").hide();
+        $(".group-for-parking-lot").hide();
+    }
+
+    if ($("#id_type_of_sale_select").val()=='PL'){
+        $(".group-for-pick").hide();
+        $(".group-for-delivery").hide();
+        $(".group-for-parking-lot").show();
+    }
+
+    $("#id_type_of_sale_select").change(function(){
+        if ($(this).val()=='D'){
+            $(".group-for-pick").hide();
+            $(".group-for-parking-lot").hide();
+            $(".group-for-delivery").show();
+        }
+        if ($(this).val()=='P'){
+            $(".group-for-pick").show();
+            $(".group-for-parking-lot").hide();
+            $(".group-for-delivery").hide();
+        }
+        if ($(this).val()=='PL'){
+            $(".group-for-pick").hide();
+            $(".group-for-parking-lot").show();
+            $(".group-for-delivery").hide();
+        }
+    })
+
+</script>
+{% endblock %}

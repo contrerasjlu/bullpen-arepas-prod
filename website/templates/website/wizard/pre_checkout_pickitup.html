@@ -1,0 +1,40 @@
+<div class="group-for-pick">
+    <form class="form-vertical form-label-left input_mask" method="post">
+    {% csrf_token %}
+    {{ form_pickitup.type_of_sale }}
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 form-group has-feedback">
+                <label class="control-label">{{ form_pickitup.location.label }}</label>
+                {{ form_pickitup.location }}
+                {% if form_pickitup.location.errors %}
+                <p>
+                    <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
+                        {% for msj in form_pickitup.location.errors %}
+                            <span class="label label-danger">{{ msj }}</span>
+                        {% endfor %}
+                    </div>
+                </p>
+                {% endif %}
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 form-group has-feedback">
+                <label class="control-label">{{ form_pickitup.time.label }}</label>
+                {{ form_pickitup.time }}
+                {% if form_pickitup.time.errors %}
+                <p>
+                    <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
+                        {% for msj in form_pickitup.time.errors %}
+                            <span class="label label-danger">{{ msj }}</span>
+                        {% endfor %}
+                    </div>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 form-group has-feedback">
+                <button type="submit" class="btn btn-primary">Let's Pay</button>
+            </div>
+        </div>
+    </form>
+</div>

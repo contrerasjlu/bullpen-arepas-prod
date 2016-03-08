@@ -8,30 +8,18 @@
 		<h2 class="agencia-regular"><kbd>Step 3:</kbd> How do you want your Meal?</h2>
 		<p class="agencia-regular">Please select the ingredients for your product</p>
 		<blockquote class="agencia-regular">{{ product.description }}</blockquote>
-		{% if not wizard == False %}
-		<div id="wizard" class="form_wizard wizard_horizontal">
-			<ul class="list-unstyled wizard_steps">
-				{% for step in wizard %}
-				<li>
-					<a href="#step-{{ step.section_number }}">
-						<span class="step_no">{{ step.section_number }}</span>
-					</a>
-				</li>
-				{% endfor %}
-			</ul>
-			
-			<form id="product-form{{product.id}}" method="post" action="">
+		{% if not wizard == False %}			
+			<form id="myWizard" type="get" action="" class="form-horizontal">
 			{% csrf_token %}
-			<input id="id_id_for_product" name="id_for_product" type="hidden" value="{{ product.id}}" />
-			
-			{% for step in wizard %}
-			<div id="step-{{ step.section_number }}">
-				{# Si el producto permite la seleccion de Type (Solo Para Arepas) #}
+				<input id="id_id_for_product" name="id_for_product" type="hidden" value="{{ product.id}}" />
+
+				{% for step in wizard %}
+			    {# Si el producto permite la seleccion de Type (Solo Para Arepas) #}
 				{% if product.allow_type == True and step.type == True %}
 					{% include 'website/wizard/step3_type.html' %}
 				{% endif %}
-			
-		        {# Si el producto permite la seleccion de Vegetales #}
+
+				{# Si el producto permite la seleccion de Vegetales #}
 		        {% if product.allow_vegetables == True and step.vegetables == True %}
 		        	{% include 'website/wizard/step3_vegetables.html' %}
 		        {% endif %}
@@ -60,10 +48,9 @@
 		        {% if product.allow_qtty ==  True and step.qtty == True %}
 		        	{% include 'website/wizard/step3_qtty.html' %}
 		        {% endif %}
-	        </div>
-	        {% endfor %}
-	        </form>
-		</div>
+		        
+			    {% endfor %}
+			</form>
 		{% else %}
 			<form id="product-form{{product.id}}" method="post" action="">
 			{% csrf_token %}
@@ -107,52 +94,7 @@
                 </div>
 		    </form>
 		{% endif %} {# Si utiliza Wizard #}
-		<form id="myWizard" type="get" action="" class="form-horizontal">
-			{% csrf_token %}
-			<input id="id_id_for_product" name="id_for_product" type="hidden" value="{{ product.id}}" />
-			
-			{% for step in wizard %}
-		    {# Si el producto permite la seleccion de Type (Solo Para Arepas) #}
-			{% if product.allow_type == True and step.type == True %}
-				{% include 'website/wizard/step3_type.html' %}
-			{% endif %}
-		    <section class="step" data-step-title="The first">
-		        <div class="control-group">
-		            <label class="control-label" for="inputEmail">Email</label>
-		            <div class="controls">
-		                <input type="text" id="inputEmail" placeholder="Email" class="input-xlarge" title="Email is required !" required >
-		            </div>
-		        </div>
-		        <div class="control-group">
-		            <label class="control-label" for="inputPassword">Password</label>
-		            <div class="controls">
-		                <input type="password" id="inputPassword" placeholder="Password" class="input-xlarge">
-		            </div>
-		        </div>
-		    </section>
-		    <section class="step" data-step-title="The second">
-		        <div class="control-group">
-		            <label class="control-label" for="inputUsername">Username</label>
-		                <div class="controls">
-		                <input type="text" id="inputUsername" placeholder="Username" class="input-xlarge">
-		            </div>
-		        </div>
-		    </section>
-		    <section class="step" data-step-title="The third">
-		        <div class="control-group">
-		            <label class="control-label" for="inputFirstname">Firstname</label>
-		                <div class="controls">
-		                <input type="text" id="inputFirstname" placeholder="Firstname" class="input-xlarge">
-		            </div>
-		        </div>
-		        <div class="control-group">
-		            <label class="control-label" for="inputCity">City</label>
-		                <div class="controls">
-		                <input type="text" id="inputCity" placeholder="City" class="input-xlarge">
-		            </div>
-		        </div>
-		    </section>
-		</form>
+		</div>
 	</div>
 </div>
 {% endblock %}
@@ -161,7 +103,11 @@
 {% load staticfiles %}
 	<script type="text/javascript" src="{% static 'website/v2/js/wizard/jquery.easyWizard.js' %}"></script>
 	<script type="text/javascript">
-		$('#myWizard').easyWizard();
+		$('#myWizard').easyWizard({
+			'buttonsClass': 'btn btn-primary',
+			'submitButtonClass': 'btn btn-primary',
+			'submitButtonText': 'Add to Cart'
+		});
 	</script>
 
     <script type="text/javascript" src="{% static 'website/v2/js/wizard/jquery.smartWizard.js' %}"></script>

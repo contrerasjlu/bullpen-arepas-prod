@@ -21,8 +21,8 @@
 
 .floating-div{
     position: fixed;
-    top: 175px;
-    left: 45px;
+    top: 0px;
+    left: 0px;
 }
 
 .white{
@@ -6465,5 +6465,15 @@ a.white {
 }
 
 #menu-bullpen, #instructions-bullpen, #cart-bullpen{
-    min-height: 550px;
+    height: auto;
+    min-height: 400px;
+}
+
+.btn-primary.disabled{
+    background-color: #417240;
+    border-color: #417240;
+}
+
+table{
+    font-size: 10px;
 }

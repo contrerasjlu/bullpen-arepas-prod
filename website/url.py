@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^menu/category/(?P<pk_cat>[0-9]+)/product/(?P<pk_prod>[0-9]+)/$', views.MealForm.as_view(), name="MealForm"),
     url(r'^menu/product/(?P<id_for_prod>[0-9]+)/$', views.ProductDetail, name="product_detail"),
     url(r'^menu/checkout/type$', views.pre_checkout, name="pre_checkout"),
+    #url(r'^menu/checkout/type$', views.PreCheckout.as_view(), name="pre_checkout"),
     url(r'^menu/checkout/payment$', views.checkout, name="checkout"),
     url(r'^menu/checkout/thankyou/$', views.thankyou, name="thankyou"),
     url(r'^menu/view-cart/$', views.ViewCart, name="view-cart"),

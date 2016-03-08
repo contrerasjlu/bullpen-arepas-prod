@@ -10,7 +10,7 @@ from website.models import WebInfo, WebText
 
 attr  = 'form-control has-feedback-left agencia-regular'
 attr2 = 'form-control agencia-regular'
-attr3 = 'flat agencia-regular'
+attr3 = 'flat'
 
 class ArepaForm(forms.Form):
 
@@ -27,7 +27,7 @@ class ArepaForm(forms.Form):
                                    help_text="We can Fry your Arepa or make it in the Oven"
     )
     NoVegetablesCheck = forms.BooleanField(initial=False, 
-                                           widget=forms.CheckboxInput(attrs={'class':attr3, 'id':'vgch'}),
+                                           widget=forms.CheckboxInput(attrs={'class':attr3 + ' vgch'}),
                                            required=False, 
                                            label="No, I don't want Vegetables")
 
@@ -46,6 +46,10 @@ class ArepaForm(forms.Form):
                                                            want with your selected \
                                                            product"
         )
+    NoExtrasCheck = forms.BooleanField(initial=False, 
+                                       widget=forms.CheckboxInput(attrs={'class':attr3 + ' extras-id'}),
+                                       required=False, 
+                                       label="No, I don't want Extras")
 
     extras = forms.ModelMultipleChoiceField(
         label="Choose the Players with your Arepa...",
@@ -63,7 +67,7 @@ class ArepaForm(forms.Form):
     )
 
     NoSaucesCheck = forms.BooleanField(initial=False, 
-                                       widget=forms.CheckboxInput(attrs={'class':attr3,'id':'sach'}),
+                                       widget=forms.CheckboxInput(attrs={'class':attr3 + ' sach'}),
                                        required=False, 
                                        label="No, I don't want Sauces")
 
@@ -264,6 +268,14 @@ class PaymentForm(forms.Form):
 
         return expiry
 
+class PreCheckoutForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ('order_type','address','adress2',
+                  'batch','time','car_model','car_license','car_brand',
+                  'car_color',)
+    
+        
 class PreCheckoutForm_Delivery(forms.Form):
 
     type_of_sale = forms.CharField(widget=forms.HiddenInput())
@@ -320,7 +332,7 @@ class PreCheckoutForm_Delivery(forms.Form):
 class PreCheckoutForm_PickItUp(forms.Form):
     type_of_sale = forms.CharField(widget=forms.HiddenInput())
 
-    location = forms.ModelChoiceField(label="Location",
+    location = forms.ModelChoiceField(label="Where are you going to pick the order up?",
         widget=forms.Select(attrs={'class': attr2}),
         queryset=PaymentBatch.objects.filter(status='O'),
         to_field_name="location",
@@ -337,7 +349,7 @@ class PreCheckoutForm_PickItUp(forms.Form):
 class PreCheckoutForm_ParkingLot(forms.Form):
     type_of_sale = forms.CharField(widget=forms.HiddenInput())
 
-    location = forms.ModelChoiceField(label="Location",
+    location = forms.ModelChoiceField(label="Wich Parking lot Location are you?",
                                       widget=forms.Select(attrs={'class': attr2}),
                                       queryset=PaymentBatch.objects.filter(status='O'),
                                       to_field_name="location",

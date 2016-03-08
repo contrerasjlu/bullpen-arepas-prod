@@ -1,53 +1,4 @@
 <ul class="list-group">
-    {% for item in cart.cart %}
-    <li class="list-group-item">
-        <a href="#">
-            <span>
-                <span class="time">{{ item.type }}</span></br>
-                <span>{{ item.product }}</span>
-            </span>
-            {% if not item.extras == 0 %}
-            <span class="message">
-            {% for extras in item.extras %}
-                {% if forloop.first %}Line Up Players: {% endif %}
-                {{ extras }}{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-            </span>
-            {% endif %}
-
-            {% if not item.vegetables == 0 or not item.vegetales == None %}
-            <span class="message">
-            {% for vegetable in item.vegetables %}
-                {% if forloop.first %}Vegetables: {% endif %}
-                {{ vegetable }}{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-            </span>
-            {% endif %}
-
-            {% if not item.paid_extras == 0 %}
-            <span class="message">
-            {% for paid_extras in item.paid_extras %}
-                {% if forloop.first %}Bench Players: {% endif %}
-                {{ paid_extras }}{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-            </span>
-            {% endif %}
-
-            {% if not item.sauces = 0 %}
-            <span class="message">
-            {% for sauces in item.sauces %}
-                {% if forloop.first %}Sauces: {% endif %}
-                {{ sauces }}{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-            </span>
-            {% endif %}
-
-            {% if not item.soft_drinks == None %}
-            <span class="message">Drink: {{ item.soft_drinks }}</span>
-            {% endif %}
-        </a>
-    </li>
-    {% endfor %}
     {% if not guest %}
     <li class="list-group-item">
         <div class="btn-group btn-group-sm btn-group-justified">
@@ -58,13 +9,108 @@
                 <a href="{% url 'website:pre_checkout' %}"><button type="button" class="btn btn-sm btn-primary">Checkout</button></a></a>
             </div>
         </div>
-        <!--
-        <div class="col-md-5 col-xs-5">
-            <a href="{% url 'website:order-history' %}" >
-                <i class="fa fa-history"></i> Orders History
-            </a>
-        </div>
-        -->
     </li>
     {% endif %}
 </ul>
+<div class="panel-group">
+    {% for item in cart.cart %}
+    <div class="panel panel-warning">
+        <div class="panel-heading">
+            {{ item.product.category.name }} <small>({{ item.product.name }})</small> x {{ item.qtty }}
+            <div class="pull-right">$ {{ item.price }}</div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <a href="#" data-toggle="modal" data-target=".mymodal{{ forloop.counter }}-09" role="button">View Item</a>
+                </div>
+                <div id="" class="modal fade mymodal{{ forloop.counter }}-09" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                    <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">{{ item.product.name }}</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p>{{ item.product.description }}</p>
+                                <div class="container">
+                                    <div class="row">
+                                        {# Main Ingredients #}
+                                        {% if not item.extras == 0 and item.product.allow_extras == True %}
+                                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+                                            <h4>Main Ingredients</h4>
+                                            <ul class="list-group">
+                                                {% for extras in item.extras %}
+                                                <li class="list-group-item">{{ extras }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        {% endif %}
+
+                                        {# Vegetables #}
+                                        {% if item.product.allow_vegetables == True %}
+                                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+                                            <h4>Vegetables</h4>
+                                            <ul class="list-group">
+                                                {% for vegetable in item.vegetables %}
+                                                <li class="list-group-item">{{ vegetable }}</li>
+                                                {% empty %}
+                                                <li class="list-group-item">No Vegetables</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        {% endif %}
+
+                                        {# Paid Extras #}
+                                        {% if item.product.allow_paid_extras == True %}
+                                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+                                            <h4>Extras</h4>
+                                            <ul class="list-group">
+                                                {% for paid_extras in item.paid_extras %}
+                                                <li class="list-group-item">{{ paid_extras }}</li>
+                                                {% empty %}
+                                                <li class="list-group-item">No extras</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        {% endif %}
+
+                                        {# Sauces #}
+                                        {% if item.product.allow_sauces == True %}
+                                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+                                            <h4>Sauces</h4>
+                                            <ul class="list-group">
+                                                {% for sauces in item.sauces %}
+                                                <li class="list-group-item">{{ sauces }}</li>
+                                                {% empty %}
+                                                <li class="list-group-item">No Sauces</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                {# Drink Meal #}
+                                {% if item.product.allow_drinks == True %}
+                                <h4>Drink</h4>
+                                <ul class="list-group">
+                                    <li class="list-group-item">{{ item.soft_drinks }}</li>
+                                </ul>
+                                {% endif %}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <a href="{% url 'website:delete-item' forloop.counter %}">Delete Item</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>

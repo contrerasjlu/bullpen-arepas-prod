@@ -1,0 +1,79 @@
+{% extends 'website/wizard/step1.html' %}
+{% block right-side %}
+<div class="panel panel-success" id="instructions-bullpen">
+	<div class="panel-heading">
+		<h4><i class="fa fa-info-circle"></i> Instructions</h4>	
+	</div>
+	<div class="panel-body">
+		<h2 class="agencia-regular"><kbd>Step 3:</kbd> How do you want your Meal?</h2>
+		<p class="agencia-regular">Please select the ingredients for your product</p>
+		<blockquote class="agencia-regular">{{ product.description }}</blockquote>
+		<form id="product-form{{product.id}}" method="post" action="">
+		{% csrf_token %}
+			<input id="id_id_for_product" name="id_for_product" type="hidden" value="{{ product.id}}" />
+			{# Si el producto permite la seleccion de Type (Solo Para Arepas) #}
+			{% if product.allow_type == True %}
+				{% include 'website/wizard/step3_type.html' %}
+			{% endif %}
+
+			{# Si el producto permite la seleccion Extras (Players) #}
+	        {% if product.allow_extras ==  True %}
+        		{% include 'website/wizard/step3_players.html' %}
+        	{% endif %}
+		
+	        {# Si el producto permite la seleccion de Vegetales #}
+	        {% if product.allow_vegetables == True %}
+	        	{% include 'website/wizard/step3_vegetables.html' %}
+	        {% endif %}
+
+	        {# Si el producto permite la seleccion de Paid Extras #}
+	        {% if product.allow_paid_extras ==  True %}
+	        	{% include 'website/wizard/step3_extras.html' %}
+	        {% endif %}
+
+	        {# Si el producto permite la seleccion de Salsas #}
+	        {% if product.allow_sauces ==  True %}
+	        	{% include 'website/wizard/step3_sauces.html' %}
+	        {% endif %}
+
+	        {# Si el producto permite la seleccion de Bebidas #}
+	        {% if product.allow_drinks ==  True %}
+	        	{% include 'website/wizard/step3_drinks.html' %}
+	        {% endif %}
+
+	        {# Si el producto acepta cantidades #}
+	        {% if product.allow_qtty ==  True %}
+	        	{% include 'website/wizard/step3_qtty.html' %}
+	        {% endif %}
+	        <div class="">
+                <button type="submit" form="product-form{{product.id}}" class="btn btn-primary btn-lg">Add to Cart</button>
+            </div>
+	    </form>
+	</div>
+</div>
+{% endblock %}
+{% block FooterDeclaration %}
+<script type="text/javascript">
+$(document).ready(function(){
+	$('.vgch').on('ifChecked', function(event){
+  		$('.vegetables-btn').addClass('disabled');
+	});
+	$('.vgch').on('ifUnchecked', function(event){
+		$('.vegetables-btn').removeClass('disabled');
+	});
+	$('.sach').on('ifChecked', function(event){
+  		$('.sauces-btn').addClass('disabled');
+	});
+	$('.sach').on('ifUnchecked', function(event){
+		$('.sauces-btn').removeClass('disabled');
+	});
+
+	$('.extras-id').on('ifChecked', function(event){
+  		$('.extras-btn').addClass('disabled');
+	});
+	$('.extras-id').on('ifUnchecked', function(event){
+		$('.extras-btn').removeClass('disabled');
+	});
+})
+</script>
+{% endblock %}

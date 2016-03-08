@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth import authenticate, login, logout, user_logged_in
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.generic.edit import FormView
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, ListView, TemplateView
 from django.core.mail import send_mail, BadHeaderError
 from random import randint
 from datetime import *
@@ -74,7 +74,7 @@ def closed(request):
 
 def cart(cartList):
 
-	def AppendItems(listA, sum=False, price=0):
+	def AppendItems(listA, sum=False):
 		thisList = [] if isinstance(listA,list) else None
 		for itemA in listA:
 			item = product.objects.get(pk=itemA)
@@ -84,26 +84,34 @@ def cart(cartList):
 	context = {}
 	context['status'] = PaymentBatch.objects.BullpenIsOpen()
 	subtotal = 0
-
 	if cartList:
 		the_cart = []
 		for item in cartList:
 			a = product.objects.get(pk=item['product_id'])
 			price = a.price
 			the_cart.append({
-				'product': a.name + ' (' + a.description + ')',
-				'product_code': a.code,
-				'image' : a.image,
+				
+				'product': a,
+
 				'type': item['type'],
+
 				'extras' : AppendItems(item['extras']) \
 						   if item['extras'] and a.allow_extras else None,
-				'vegetables': AppendItems(item['vegetables'],True,price) \
+
+				'vegetables': AppendItems(item['vegetables'],True) \
 							  if item['vegetables'] and a.allow_vegetables == True else None,
-				'paid_extras': AppendItems(item['paid_extras'],True,price) \
+
+				'paid_extras': AppendItems(item['paid_extras'],True) \
 							   if item['paid_extras'] and a.allow_paid_extras else None,
-				'sauces': AppendItems(item['sauces'],True,price) \
+
+				'sauces': AppendItems(item['sauces'],True) \
 						  if item['sauces'] and a.allow_sauces else None,
-				'drink': item['soft_drinks']
+
+				'drink': item['soft_drinks'],
+
+				'qtty': item.get('qtty',1),
+
+				'price': int(item.get('qtty',1))*price
 			})
 
 			subtotal += price
@@ -118,7 +126,6 @@ def cart(cartList):
 		context['cart_is_empty'] = False
 
 	else:
-		context['item_count'] = 0
 		context['cart_is_empty'] = True
 
 	return context
@@ -158,7 +165,7 @@ class CategoryProductsList(ListView):
 		return context
 
 class MealForm(FormView):
-	template_name = 'website/wizard/step3.html'
+	template_name = 'website/wizard/step3_new2.html'
 	form_class = ArepaForm
 	success_url = '/menu/'
 
@@ -200,10 +207,16 @@ class MealForm(FormView):
 										pk=self.kwargs['pk_prod'])
 
 		NoVegetables = self.request.POST.get('NoVegetablesCheck', None)
-		vegetables = self.request.POST.getlist('vegetables', None) if not NoVegetables == 'on' else None
+		vegetables = self.request.POST.getlist('vegetables', None) \
+					 if not NoVegetables == 'on' else None
 		
 		NoSauce = self.request.POST.get('NoSaucesCheck', False)
-		sauces = self.request.POST.getlist('sauces', None) if not NoSauce == 'on' else None
+		sauces = self.request.POST.getlist('sauces', None) \
+				 if not NoSauce == 'on' else None
+
+		NoExtras = self.request.POST.get('NoExtrasCheck', False)
+		extras = self.request.POST.getlist('paid_extras', None) \
+				 if not NoExtras == 'on' else None
 		
 		main_product =  True if thisProduct.category.show_in_menu == True else False
 
@@ -213,199 +226,32 @@ class MealForm(FormView):
 			'arepa_type':self.request.POST.get('arepa_type', thisProduct.category.name),
 			'vegetables':vegetables,
 			'extras':self.request.POST.getlist('extras', None),
-			'paid_extras':self.request.POST.getlist('paid_extras', None),
+			'paid_extras':extras,
 			'sauces':sauces,
 			'soft_drinks':self.request.POST.get('soft_drinks', None),
-			'main_product':main_product
+			'main_product':main_product,
+			'qtty': self.request.POST.get('qtty',1)
 			}
 
 		local_cart = self.request.session.get('cart', [])
 		
-		for x in range(0,int(self.request.POST.get('qtty',1))):
-			local_cart.append(item)
+		local_cart.append(item)
 
 		self.request.session['cart'] = local_cart
 
 		return super(MealForm, self).form_valid(form)
 		
-
-###############################################################################
-def menu(request):
-	# Load the Cart to show the products already in cart
-	context = cart(request)
-
-	# If the pay was already did it, delete the var
-	if 'finish' in request.session:
-		del request.session['finish']
-
-	# If there any Batch open
-	if context['status']==False:
-		return HttpResponseRedirect(reverse('website:closed'))
-
-	context['show_in'] = get_list_or_404(category, Active=True, show_in_menu=True)
-
-	return render(request, 'website/plain_page.html', context)
-
-def ProductDetail(request,id_for_prod):
-	context = cart(request);
-	if context['status']==False:
-		return HttpResponseRedirect(reverse('website:closed'))
-
-	context['product'] = get_object_or_404(product, pk=id_for_prod)
-
-	if request.POST:
-
-		this_product = ArepaForm(request.POST)
-
-		if this_product.is_valid():
-			'''
-			Se obtienen los valores del POST, si no son encontrados
-			o no existen el valor por defecto es None.
-
-			Para el caso de los Check de Vegetales y Salsas se validan si
-			estan checked para no tomar en cuenta cualquier valor que venga
-			en el POST.
-
-			Al final se obtiene el valor de qtty, si viene se asigna el valor
-			de lo contrario se asigna 1. Luego se repite tantan veces se
-			encuentre (o no) y se suma el item en el carrito local.
-
-			El carrito local se asigna de nuevo al de la sesion y finaliza la
-			funcion.
-			'''
-			
-			NoVegetables = request.POST.get('NoVegetablesCheck', None)
-			vegetables = request.POST.getlist('vegetables', None) if not NoVegetables == 'on' else None
-			
-			NoSauce = request.POST.get('NoSaucesCheck', False)
-			sauces = request.POST.getlist('sauces', None) if not NoSauce == 'on' else None
-			
-			main_product =  True if context['product'].category.show_in_menu == True else False
-
-			item = {
-				'type': request.POST.get('arepa_type', context['product'].category.name),
-				'product_id':request.POST['id_for_product'],
-				'arepa_type':request.POST.get('arepa_type', context['product'].category.name),
-				'vegetables':vegetables,
-				'extras':request.POST.getlist('extras', None),
-				'paid_extras': request.POST.getlist('paid_extras', None),
-				'sauces':sauces,
-				'soft_drinks':request.POST.get('soft_drinks', None),
-				'main_product':main_product
-				}
-
-			local_cart = request.session.get('cart', [])
-			
-			for x in range(0,int(request.POST.get('qtty',1))):
-				local_cart.append(item)
-
-			request.session['cart'] = local_cart
-
-			return HttpResponseRedirect(reverse('website:menu'))
-
-		else:
-			context['form'] = ArepaForm(request.POST)
-	else:
-		context['form'] = ArepaForm(initial={ 'id_for_product': id_for_prod })
-	return render(request, 'website/arepa_wizard.html', context)
-
-def empty_cart(request):
-	if 'cart' in request.session:
-		del request.session['cart']
-	if 'order_number' in request.session:
-		del request.session['order_number']
-	return HttpResponseRedirect(reverse('website:menu'))
-
-def create_account(request):
-	if request.POST:
-		a = CreateAccountForm(request.POST)
-
-		if a.is_valid():
-			from django.contrib.auth.models import User
-			user = User.objects.create_user(
-				username = request.POST['username'],
-				password = request.POST['password'],
-				email = request.POST['email'],
-				first_name = request.POST['firstname'],
-				last_name = request.POST['lastname']
-				)
-			user.save()
-			username = request.POST['username']
-			password = request.POST['password']
-			user = authenticate(username=username, password=password)
-			if user is not None:
-				login(request, user)
-				if 'next' in request.GET:
-					return HttpResponseRedirect(request.GET['next'])
-				else:
-					return HttpResponseRedirect(reverse('website:menu'))
-		else:
-			context = {}
-			context['new_user'] = CreateAccountForm(request.POST)
-			return render(request, 'website/login.html', context)
-
-
-@login_required(login_url='website:login-auth')
-def ViewCart(request):
-	context = cart(request)
-
-	if context['status']==False:
-		return HttpResponseRedirect(reverse('website:closed'))
-
-	if context['cart_is_empty'] == True:
-		return HttpResponseRedirect(reverse('website:menu'))
-
-	return render(request, 'website/cart-view.html', context)
-
-@login_required(login_url='website:login-auth')
-def DeleteItem(request, item):
-	context = cart(request)
-	if context['status']==False:
-		return HttpResponseRedirect(reverse('website:closed'))
-
-	if context['cart_is_empty'] == True:
-		return HttpResponseRedirect(reverse('website:menu'))
-
-	the_session_cart = request.session['cart']
-	item = int(item) - 1
-	del the_session_cart[item]
-	request.session['cart'] = the_session_cart
-
-	if len(the_session_cart) == 0:
-		return HttpResponseRedirect(reverse('website:menu'))
-	else:
-		return HttpResponseRedirect(reverse('website:view-cart'))
-
-
-@login_required(login_url='website:login-auth')
-def OrderHistory(request):
-	context = cart(request)
-	if context['status']==False:
-		return HttpResponseRedirect(reverse('website:closed'))
-
-	if 'guest' in request.session:
-		return HttpResponseRedirect(reverse('website:menu'))
-
-	context['orders'] = Order.objects.filter(user=request.user).order_by('-id')
-
-	return render(request, 'website/order-history.html', context)
-
-
-@login_required(login_url='website:login-auth')
-def userLogout(request):
-    logout(request)
-    del request.session
-
-    return HttpResponseRedirect(reverse('website:menu'))
-
 @login_required(login_url='website:login-auth')
 def pre_checkout(request):
-	context = cart(request)
-	if context['status']==False:
-		return HttpResponseRedirect(reverse('website:closed'))
+	context = {}
+	context['categories'] = get_list_or_404(category, Active=True,
+			                                show_in_menu=True)
 
-	if context['cart_is_empty'] == True:
-		return HttpResponseRedirect(reverse('website:menu'))
+	context['cart'] = cart(request.session['cart']) \
+						  if 'cart' in request.session else None
+
+	if PaymentBatch.objects.BullpenIsOpen() == False:
+		return HttpResponseRedirect(reverse('website:closed'))
 
 	if 'data_client' in request.session:
 		del request.session['data_client']
@@ -452,7 +298,7 @@ def pre_checkout(request):
 				context['form_pickitup'] = PreCheckoutForm_PickItUp(initial={ 'type_of_sale': 'P' })
 				context['form_parkinglot'] = PreCheckoutForm_ParkingLot(initial={ 'type_of_sale': 'PL' })
 				context['default_type_of_sale'] = 'D'
-				return render(request, 'website/pre_checkout.html', context)
+				return render(request, 'website/wizard/pre_checkout.html', context)
 
 		elif request.POST['type_of_sale'] == 'P':
 			data_client = PreCheckoutForm_PickItUp(request.POST)
@@ -473,7 +319,7 @@ def pre_checkout(request):
 				context['form_delivery'] = PreCheckoutForm_Delivery(initial={ 'type_of_sale': 'D' })
 				context['form_parkinglot'] = PreCheckoutForm_ParkingLot(initial={ 'type_of_sale': 'PL' })
 				context['default_type_of_sale'] = 'P'
-				return render(request, 'website/pre_checkout.html', context)
+				return render(request, 'website/wizard/pre_checkout.html', context)
 		
 		elif request.POST['type_of_sale'] == 'PL':
 			data_client = PreCheckoutForm_ParkingLot(request.POST)
@@ -497,7 +343,7 @@ def pre_checkout(request):
 				context['form_delivery'] = PreCheckoutForm_Delivery(initial={ 'type_of_sale': 'D' })
 				context['form_parkinglot'] = PreCheckoutForm_ParkingLot(request.POST)
 				context['default_type_of_sale'] = 'PL'
-				return render(request, 'website/pre_checkout.html', context)
+				return render(request, 'website/wizard/pre_checkout.html', context)
 		else:
 			return Http404("Wrong Way, Bad Request")
 	else:
@@ -505,16 +351,19 @@ def pre_checkout(request):
 		context['form_pickitup'] = PreCheckoutForm_PickItUp(initial={ 'type_of_sale': 'P' })
 		context['form_parkinglot'] = PreCheckoutForm_ParkingLot(initial={ 'type_of_sale': 'PL' })
 		context['default_type_of_sale'] = 'D'
-		return render(request, 'website/pre_checkout.html', context)
+		return render(request, 'website/wizard/pre_checkout.html', context)
 
-@login_required(redirect_field_name='', login_url='website:login-auth')
+@login_required(login_url='website:login-auth')
 def checkout(request):
-	context = cart(request)
-	if context['status']==False:
-		return HttpResponseRedirect(reverse('website:closed'))
+	context = {}
+	context['categories'] = get_list_or_404(category, Active=True,
+			                                show_in_menu=True)
 
-	if context['cart_is_empty'] == True:
-		return HttpResponseRedirect(reverse('website:menu'))
+	context['cart'] = cart(request.session['cart']) \
+						  if 'cart' in request.session else None
+
+	if PaymentBatch.objects.BullpenIsOpen() == False:
+		return HttpResponseRedirect(reverse('website:closed'))
 
 	if 'data_client' in request.session:
 		context['data_client'] = request.session['data_client']
@@ -522,11 +371,13 @@ def checkout(request):
 		return HttpResponseRedirect(reverse('website:pre_checkout'))
 
 	context['tax'] = context['data_client']['tax_percent']
+	'''
 	context['amounts']['tax'] = Decimal(context['tax']*context['amounts']['subtotal']) / 100 
 	context['amounts']['total'] = context['amounts']['subtotal'] + context['amounts']['tax']
+
 	if context['data_client']['type_of_sale'] == 'D':
 		context['amounts']['total'] += int(GenericVariable.objects.val('delivery.cost'))
-
+	'''
 	if not 'order_number' in request.session:
 		request.session['order_number'] = get_order_number()
 	
@@ -845,7 +696,176 @@ def checkout(request):
 		else:
 			context['pay_form'] = PaymentForm(request.POST)
 
-	return render(request, 'website/invoice.html', context)
+	return render(request, 'website/wizard/invoice.html', context)
+###############################################################################
+def menu(request):
+	# Load the Cart to show the products already in cart
+	context = cart(request)
+
+	# If the pay was already did it, delete the var
+	if 'finish' in request.session:
+		del request.session['finish']
+
+	# If there any Batch open
+	if context['status']==False:
+		return HttpResponseRedirect(reverse('website:closed'))
+
+	context['show_in'] = get_list_or_404(category, Active=True, show_in_menu=True)
+
+	return render(request, 'website/plain_page.html', context)
+
+def ProductDetail(request,id_for_prod):
+	context = cart(request);
+	if context['status']==False:
+		return HttpResponseRedirect(reverse('website:closed'))
+
+	context['product'] = get_object_or_404(product, pk=id_for_prod)
+
+	if request.POST:
+
+		this_product = ArepaForm(request.POST)
+
+		if this_product.is_valid():
+			'''
+			Se obtienen los valores del POST, si no son encontrados
+			o no existen el valor por defecto es None.
+
+			Para el caso de los Check de Vegetales y Salsas se validan si
+			estan checked para no tomar en cuenta cualquier valor que venga
+			en el POST.
+
+			Al final se obtiene el valor de qtty, si viene se asigna el valor
+			de lo contrario se asigna 1. Luego se repite tantan veces se
+			encuentre (o no) y se suma el item en el carrito local.
+
+			El carrito local se asigna de nuevo al de la sesion y finaliza la
+			funcion.
+			'''
+			
+			NoVegetables = request.POST.get('NoVegetablesCheck', None)
+			vegetables = request.POST.getlist('vegetables', None) if not NoVegetables == 'on' else None
+			
+			NoSauce = request.POST.get('NoSaucesCheck', False)
+			sauces = request.POST.getlist('sauces', None) if not NoSauce == 'on' else None
+			
+			main_product =  True if context['product'].category.show_in_menu == True else False
+
+			item = {
+				'type': request.POST.get('arepa_type', context['product'].category.name),
+				'product_id':request.POST['id_for_product'],
+				'arepa_type':request.POST.get('arepa_type', context['product'].category.name),
+				'vegetables':vegetables,
+				'extras':request.POST.getlist('extras', None),
+				'paid_extras': request.POST.getlist('paid_extras', None),
+				'sauces':sauces,
+				'soft_drinks':request.POST.get('soft_drinks', None),
+				'main_product':main_product
+				}
+
+			local_cart = request.session.get('cart', [])
+			
+			for x in range(0,int(request.POST.get('qtty',1))):
+				local_cart.append(item)
+
+			request.session['cart'] = local_cart
+
+			return HttpResponseRedirect(reverse('website:menu'))
+
+		else:
+			context['form'] = ArepaForm(request.POST)
+	else:
+		context['form'] = ArepaForm(initial={ 'id_for_product': id_for_prod })
+	return render(request, 'website/arepa_wizard.html', context)
+
+def empty_cart(request):
+	if 'cart' in request.session:
+		del request.session['cart']
+	if 'order_number' in request.session:
+		del request.session['order_number']
+	return HttpResponseRedirect(reverse('website:menu'))
+
+def create_account(request):
+	if request.POST:
+		a = CreateAccountForm(request.POST)
+
+		if a.is_valid():
+			from django.contrib.auth.models import User
+			user = User.objects.create_user(
+				username = request.POST['username'],
+				password = request.POST['password'],
+				email = request.POST['email'],
+				first_name = request.POST['firstname'],
+				last_name = request.POST['lastname']
+				)
+			user.save()
+			username = request.POST['username']
+			password = request.POST['password']
+			user = authenticate(username=username, password=password)
+			if user is not None:
+				login(request, user)
+				if 'next' in request.GET:
+					return HttpResponseRedirect(request.GET['next'])
+				else:
+					return HttpResponseRedirect(reverse('website:menu'))
+		else:
+			context = {}
+			context['new_user'] = CreateAccountForm(request.POST)
+			return render(request, 'website/login.html', context)
+
+
+@login_required(login_url='website:login-auth')
+def ViewCart(request):
+	context = cart(request)
+
+	if context['status']==False:
+		return HttpResponseRedirect(reverse('website:closed'))
+
+	if context['cart_is_empty'] == True:
+		return HttpResponseRedirect(reverse('website:menu'))
+
+	return render(request, 'website/cart-view.html', context)
+
+@login_required(login_url='website:login-auth')
+def DeleteItem(request, item):
+	context = cart(request)
+	if context['status']==False:
+		return HttpResponseRedirect(reverse('website:closed'))
+
+	if context['cart_is_empty'] == True:
+		return HttpResponseRedirect(reverse('website:menu'))
+
+	the_session_cart = request.session['cart']
+	item = int(item) - 1
+	del the_session_cart[item]
+	request.session['cart'] = the_session_cart
+
+	if len(the_session_cart) == 0:
+		del request.session['cart']
+		return HttpResponseRedirect(reverse('website:menu'))
+	else:
+		return HttpResponseRedirect(reverse('website:menu'))
+
+
+@login_required(login_url='website:login-auth')
+def OrderHistory(request):
+	context = cart(request)
+	if context['status']==False:
+		return HttpResponseRedirect(reverse('website:closed'))
+
+	if 'guest' in request.session:
+		return HttpResponseRedirect(reverse('website:menu'))
+
+	context['orders'] = Order.objects.filter(user=request.user).order_by('-id')
+
+	return render(request, 'website/order-history.html', context)
+
+
+@login_required(login_url='website:login-auth')
+def userLogout(request):
+    logout(request)
+    del request.session
+
+    return HttpResponseRedirect(reverse('website:menu'))
 
 @login_required(redirect_field_name='', login_url='website:login-auth')
 def thankyou(request):
