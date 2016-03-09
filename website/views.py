@@ -74,11 +74,17 @@ def closed(request):
 
 def cart(cartList):
 
-	def AppendItems(listA, sum=False):
-		thisList = [] if isinstance(listA,list) else None
+	def SumItems(items):
+		sub = 0
+		for price in items:
+			sub += price['price']
+		return sub
+
+	def AppendItems(listA):
+		thisList = [] if isinstance(listA,list) else None		
 		for itemA in listA:
 			item = product.objects.get(pk=itemA)
-			thisList.append(item.name+ ' (' + item.description + ')')
+			thisList.append({'description':item.name+ ' (' + item.description + ')','price':item.price})
 		return thisList
 
 	context = {}
@@ -88,33 +94,38 @@ def cart(cartList):
 		the_cart = []
 		for item in cartList:
 			a = product.objects.get(pk=item['product_id'])
+
 			price = a.price
+			
+			qtty = item.get('qtty',1)
+			
+			extras = AppendItems(item['extras']) \
+					 if item['extras'] and a.allow_extras else None
+
+			vegetables = AppendItems(item['vegetables']) \
+						 if item['vegetables'] and a.allow_vegetables == True else None
+
+			paid_extras = AppendItems(item['paid_extras']) \
+						  if item['paid_extras'] and a.allow_paid_extras else None
+
+			sauces = AppendItems(item['sauces']) \
+					 if item['sauces'] and a.allow_sauces else None
+
+			subtotal_extras = SumItems(extras) if not extras == None else 0
+			subtotal_vegetables = SumItems(vegetables) if not vegetables == None else 0
+			subtotal_paid_extras = SumItems(paid_extras) if not paid_extras == None else 0
+			subtotal_sauces = SumItems(sauces) if not sauces == None else 0
+
 			the_cart.append({
-				
-				'product': a,
-
-				'type': item['type'],
-
-				'extras' : AppendItems(item['extras']) \
-						   if item['extras'] and a.allow_extras else None,
-
-				'vegetables': AppendItems(item['vegetables'],True) \
-							  if item['vegetables'] and a.allow_vegetables == True else None,
-
-				'paid_extras': AppendItems(item['paid_extras'],True) \
-							   if item['paid_extras'] and a.allow_paid_extras else None,
-
-				'sauces': AppendItems(item['sauces'],True) \
-						  if item['sauces'] and a.allow_sauces else None,
-
-				'drink': item['soft_drinks'],
-
-				'qtty': item.get('qtty',1),
-
-				'price': int(item.get('qtty',1))*price
+				'product': a,'type': item['type'],'extras' : extras,
+				'vegetables': vegetables,'paid_extras': paid_extras,
+				'sauces': sauces, 'drink': item['soft_drinks'],
+				'qtty': qtty,
+				'price': int(qtty)*(subtotal_extras + subtotal_vegetables + subtotal_paid_extras + subtotal_sauces + price),
+				'unit_price':subtotal_extras + subtotal_vegetables + subtotal_paid_extras + subtotal_sauces + price
 			})
 
-			subtotal += price
+			subtotal += (subtotal_extras + subtotal_vegetables + subtotal_paid_extras + subtotal_sauces + price)*int(qtty)
 
 		amounts = {
 			'subtotal': subtotal,
@@ -124,6 +135,7 @@ def cart(cartList):
 		context['amounts'] = amounts
 		context['cart'] = the_cart
 		context['cart_is_empty'] = False
+		print subtotal
 
 	else:
 		context['cart_is_empty'] = True
@@ -371,13 +383,19 @@ def checkout(request):
 		return HttpResponseRedirect(reverse('website:pre_checkout'))
 
 	context['tax'] = context['data_client']['tax_percent']
-	'''
-	context['amounts']['tax'] = Decimal(context['tax']*context['amounts']['subtotal']) / 100 
-	context['amounts']['total'] = context['amounts']['subtotal'] + context['amounts']['tax']
 
-	if context['data_client']['type_of_sale'] == 'D':
-		context['amounts']['total'] += int(GenericVariable.objects.val('delivery.cost'))
-	'''
+	subtotal = Decimal(context['cart']['amounts']['subtotal'])
+	tax = context['data_client']['tax_percent']
+	delivery = int(GenericVariable.objects.val('delivery.cost'))
+
+	context['taxAmt'] = Decimal(tax*(subtotal + delivery))/100 \
+						if context['data_client']['type_of_sale'] == 'D' \
+						else Decimal(tax*subtotal)/100
+	
+	context['totalAmt'] = subtotal + context['taxAmt'] + delivery \
+						  if context['data_client']['type_of_sale'] == 'D' \
+						  else subtotal + context['taxAmt']
+
 	if not 'order_number' in request.session:
 		request.session['order_number'] = get_order_number()
 	
@@ -389,7 +407,7 @@ def checkout(request):
 
 		if payment.is_valid():
 			exp = request.POST['expiry'].replace('/', '')
-			value = round(context['amounts']['total'],2)
+			value = round(context['totalAmt'],2)
 			value = str(value)
 			valueTry = str(value).split(".")
 			if len(valueTry[1]) == 1:

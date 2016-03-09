@@ -8,25 +8,7 @@
     <div class="panel-body">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <h5><b>Client:</b> {{ user.first_name }} {{ user.last_name }}</h5>
-            </div>
-            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                <ul class="list-group">
-                    <li class="list-group-item list-group-item-warning">Order Number:</li>
-                    <li class="list-group-item">{{ order_number }}</li>
-                </ul>
-            </div>
-            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                <ul class="list-group">
-                    <li class="list-group-item list-group-item-warning">Date:</li>
-                    <li class="list-group-item">{% now "F jS Y" %}</li>
-                </ul>
-            </div>
-            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                <ul class="list-group">
-                    <li class="list-group-item list-group-item-warning">Type of Sale:</li>
-                    <li class="list-group-item">{{ data_client.label_for_type_of_sale }}</li>
-                </ul>
+                <h5><b>Client:</b> {{ user.first_name }} {{ user.last_name }} <a href="#">(Not {{ user.first_name }}?)</a></h5>
             </div>
         </div>
         <div class="row">
@@ -75,7 +57,7 @@
         </div>
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <table class="table table-condensed">
+                <table class="table table-condensed table-bordered">
                     <thead>
                         <tr class="warning">
                             <th>#</th>
@@ -99,7 +81,7 @@
                             {% if item.product.allow_extras == True %}
                             <b>Main Ingredient(s):</b>
                             {% for extras in item.extras %}
-                            {{ extras }}{% if forloop.last %}/ {% else %}, {% endif %}
+                            {{ extras.description }}{% if forloop.last %}/ {% else %}, {% endif %}
                             {% empty %}No Players Allowed /
                             {% endfor %}
                             {% endif %}
@@ -108,7 +90,7 @@
                             {% if item.product.allow_vegetables == True %}
                             <b>Vegetables:</b>
                             {% for vegetable in item.vegetables %}
-                            {{ vegetable }}{% if forloop.last %}/ {% else %}, {% endif %}
+                            {{ vegetable.description }}{% if forloop.last %}/ {% else %}, {% endif %}
                             {% empty %}<span class="label label-danger">No Vegetables</span>/
                             {% endfor %}
                             {% endif %}
@@ -117,7 +99,7 @@
                             {% if item.product.allow_paid_extras == True %}
                             <b>Extras:</b>
                             {% for paid in item.paid_extras %}
-                            {{ paid }}{% if forloop.last %}/ {% else %}, {% endif %}
+                            {{ paid.description }}{% if forloop.last %}/ {% else %}, {% endif %}
                             {% empty %}<span class="label label-danger">No Extras</span>/
                             {% endfor %}
                             {% endif %}
@@ -126,7 +108,7 @@
                             {% if item.product.allow_sauces == True %}
                             <b>Sauces:</b>
                             {% for sauce in item.sauces %}
-                            {{ sauce }}{% if forloop.last %}/ {% else %}, {% endif %}
+                            {{ sauce.description }}{% if forloop.last %}/ {% else %}, {% endif %}
                             {% empty %}<span class="label label-danger">No Sauces</span>/
                             {% endfor %}
                             {% endif %}
@@ -138,7 +120,7 @@
                             {% endif %}
 
                             </td>
-                            <td>${{ item.product.price }}</td>
+                            <td>${{ item.unit_price }}</td>
                             <td>${{ item.price }}</td>
                         </tr>
                         {% endfor %}
@@ -158,57 +140,112 @@
 
         <form class="form-horizontal form-label-left input_mask" method="post">
         {% csrf_token %}
-
-        <div class="row">
-            {% if FailTrx %}
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                <div class="form-control-static">
-                    <div class="alert alert-danger">{{FailTrx}}
-                        <ul class="list-group">
-                        {% for e in FailMsj %}
-                            <li class="list-group-item list-gorup-item-danger">
-                                {{ e.code }} - {{ e.description }}
-                            </li>
-                        {% endfor %}
-                        </ul>
+            <div class="row">
+                {% if FailTrx %}
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-control-static">
+                        <div class="alert alert-danger">{{FailTrx}}
+                            <ul class="list-group">
+                            {% for e in FailMsj %}
+                                <li class="list-group-item list-gorup-item-danger">
+                                    {{ e.code }} - {{ e.description }}
+                                </li>
+                            {% endfor %}
+                            </ul>
+                        </div>
                     </div>
                 </div>
+                {% endif %}
             </div>
-            {% endif %}
-        </div>
 
-        <div class="row">
-            {% for field in pay_form %}
-                {% if field.is_hidden %}
-                    {{ field }}
+            <div class="row">
+                {% for field in pay_form %}
+                    {% if field.is_hidden %}
+                        {{ field }}
+                    {% endif %}
+                {% endfor %}
+                {% for field in pay_form %}
+                {% if not field.is_hidden %}
+                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <label class="control-label">{{field.label}}</label>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            {{field}}
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <i class="fa fa-info-circle"></i> {{field.help_text}}
+                        </div>
+                        {% if field.errors %}
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            {% for msj in field.errors %}
+                            <span class="label label-danger">{{ msj }}</span>    
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
                 {% endif %}
-            {% endfor %}
-            {% for field in pay_form %}
-            {% if not field.is_hidden %}
-            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
-                <label class="control-label">{{field.label}}</label>
-                {{field}}
-                <div class="clearfix"></div>
-                <span class="fa fa-info-circle"> {{field.help_text}}</span>
-                <div class="clearfix"></div>
-                {% if field.errors %}
-                <ul class="list-group">
-                    {% for msj in field.errors %}
-                    <li class="list-group">
-                        <span class="label label-danger">{{ msj }}</span>    
-                    </li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
+                {% endfor %}
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <hr>
+                    <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-credit-card"></i> Submit Payment</button>
+                </div>
             </div>
-            {% endif %}
-            {% endfor %}
-            <hr>
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-credit-card"></i> Submit Payment</button>
-            </div>
-        </div>
         </form>
     </div>
+</div>
+{% endblock %}
+
+{% block left-side %}
+<div class="panel-heading">
+    <h4><i class="fa fa-shopping-cart"></i> Summary</h4>
+</div>
+<div class="panel-body">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-4 col-xs-4">
+            <span class="pull-right">Date: {% now "F jS Y" %}</span>
+        </div>
+    </div>
+    <hr>
+    <table class="summary-table table table-condensed table-bordered table-hover">
+        <thead>
+            <tr class="warning">
+                <th>Order Number</th>
+                <th>Type of Sale</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ order_number }}</td>
+                <td>{{ data_client.label_for_type_of_sale }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr>
+    <table class="summary-table table table-condensed table-bordered table-hover">
+        <tbody>
+            <tr>
+                <td>Subtotal:</td>
+                <td>$ {{ cart.amounts.subtotal }}</td>
+            </tr>
+            {% if data_client.type_of_sale == 'D' %}
+            <tr>
+                <td>Delivery:</td>
+                <td>$ {{ cart.amounts.delivery }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td>Tax ({{ tax }}%):</td>
+                <td>$ {{ taxAmt|floatformat:2 }}</td>
+            </tr>
+            <tr class="success">
+                <td><b>Total:</b></td>
+                <td><b>$ {{ totalAmt|floatformat:2 }}</b></td>
+            </tr>
+        </tbody>
+        
+    </table>
 </div>
 {% endblock %}
