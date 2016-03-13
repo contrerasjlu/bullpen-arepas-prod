@@ -54,37 +54,36 @@
     <div class="container-fluid">
         <div class="row">
         <!-- Only for sm and xs devices -->
-            <div class="panel-group">
-                <div class="hidden-lg hidden-md col-sm-6 col-xs-6">
-                    <div class="panel panel-success">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" href="#collapse1"><i class="fa fa-cutlery"></i> On the Game</a>
-                            </h4>
-                        </div>
-                        <div id="collapse1" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                {% for category in categories %}
-                                <div class="btn-group-vertical btn-block">
-                                    <a href="{% url 'website:ProductList' category.id %}" class="agencia-bold">
-                                        <button type="button" class="btn btn-primary btn-lg btn-block">{{ category.name }}</button>
-                                    </a>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
+            <div class="hidden-lg hidden-md col-sm-12 col-xs-12">
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" href="#collapse1">
+                                <i class="fa fa-cutlery"></i> On the Game / <i class="fa fa-shopping-cart"></i> {% block tittle_up_xs %} My Order{% endblock %}
+                            </a>
+                        </h4>
                     </div>
-                </div>
-                <div class="hidden-lg hidden-md col-sm-6 col-xs-6">
-                    <div class="panel panel-success">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" href="#collapse2"><i class="fa fa-shopping-cart"></i> My Order</a>
-                            </h4>
-                        </div>
-                        <div id="collapse2" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                {% include 'website/wizard/cart.html' %}
+                    <div id="collapse1" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-6 col-xs-6">
+                                    {% for category in categories %}
+                                    <div class="btn-group-vertical btn-block">
+                                        <a href="{% url 'website:ProductList' category.id %}" class="agencia-bold">
+                                            <button type="button" class="btn btn-primary btn-lg btn-block">{{ category.name }}</button>
+                                        </a>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-sm-6 col-xs-6">
+                                    {% block content_left_xs %}
+                                    {% if cart %}
+                                        {% include 'website/wizard/cart.html' %}
+                                    {% else %}
+                                        You don't have any items in your Order
+                                    {% endif %}
+                                    {% endblock %}
+                                </div>
                             </div>
                         </div>
                     </div>

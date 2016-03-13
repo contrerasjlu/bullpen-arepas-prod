@@ -1,0 +1,122 @@
+<h1>Greeting {{ order.user }}</h1>
+<p>Your Order #{{ order.order_number }} have been recived...</p>
+<h2>Summary</h2>
+<table width="50%" cellpadding="0" cellspacing="0" border="1">
+    <thead>
+        <tr bgcolor="fcf8e3" style="color: #8a6d3b;">
+            <th>Order Number</th>
+            <th>Type of Sale</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ order.order_number }}</td>
+            <td>
+                {% if order.order_type == 'P' %}
+                Pick it Up
+                {% elif order.order_type == 'PL' %}
+                Parking Lot
+                {% else %}
+                Delivery
+                {% endif %}
+            </td>
+        </tr>
+    </tbody>
+</table>
+<table width="50%" cellpadding="0" cellspacing="0" border="1">
+    <tbody>
+        <tr>
+            <td>Subtotal:</td>
+            <td>$ {{ order.sub_amt }}</td>
+        </tr>
+        {% if order.order_type == 'D' %}
+        <tr>
+            <td>Delivery:</td>
+            <td>$ {{ order.delivery_amt }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td>Tax ({{ tax }}%):</td>
+            <td>$ {{ order.tax_amt|floatformat:2 }}</td>
+        </tr>
+        <tr bgcolor="d0e9c6">
+            <td><b>Total:</b></td>
+            <td><b>$ {{ order.total_amt|floatformat:2 }}</b></td>
+        </tr>
+    </tbody>
+    
+</table>
+<hr><br>
+<h2>Detailed Order</h2>
+<table cellpadding="0" cellspacing="0" border="1">
+    <thead>
+        <tr bgcolor="fcf8e3" style="color: #8a6d3b;">
+            <th>#</th>
+            <th>Product Description</th>
+            <th>Code</th>
+            <th>Quantity</th>
+            <th width="40%">Description</th>
+            <th>Unit Price</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in cart.cart %}
+        <tr align="center">
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.product.code }}</td>
+            <td>{{ item.qtty }}</td>
+            <td>
+            {# Main Ingredients #}
+            {% if item.product.allow_extras == True %}
+            <b>Main Ingredient(s):</b>
+            {% for extras in item.extras %}
+            {{ extras.description }}{% if forloop.last %}/ {% else %}, {% endif %}
+            {% empty %}No Players Allowed /
+            {% endfor %}
+            {% endif %}
+
+            {# Vegetables #}
+            {% if item.product.allow_vegetables == True %}
+            <b>Vegetables:</b>
+            {% for vegetable in item.vegetables %}
+            {{ vegetable.description }}{% if forloop.last %}/ {% else %}, {% endif %}
+            {% empty %}<span class="label label-danger">No Vegetables</span>/
+            {% endfor %}
+            {% endif %}
+
+            {# Paid Extras #}
+            {% if item.product.allow_paid_extras == True %}
+            <b>Extras:</b>
+            {% for paid in item.paid_extras %}
+            {{ paid.description }}{% if forloop.last %}/ {% else %}, {% endif %}
+            {% empty %}<span class="label label-danger">No Extras</span>/
+            {% endfor %}
+            {% endif %}
+
+            {# Sauces #}
+            {% if item.product.allow_sauces == True %}
+            <b>Sauces:</b>
+            {% for sauce in item.sauces %}
+            {{ sauce.description }}{% if forloop.last %}/ {% else %}, {% endif %}
+            {% empty %}<span class="label label-danger">No Sauces</span>/
+            {% endfor %}
+            {% endif %}
+
+            {# Soft Drink #}
+            {% if item.product.allow_drinks == True %}
+            <b>Drink:</b>
+            {{ item.soft_drinks }}
+            {% endif %}
+
+            </td>
+            <td>${{ item.unit_price }}</td>
+            <td>${{ item.price }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<p>Any Questions?</p> 
+<p>Write us at support@bullpenarepas.com</p>
+<p>Call us at (404) 643 2568</p>

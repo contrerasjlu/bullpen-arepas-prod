@@ -1,8 +1,8 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from website import views
-from website.views import GuestLogin, MenuHome, CategoryProductsList, MealForm
+from website.views import GuestLogin, MenuHome, CategoryProductsList, MealForm, CreateAcct
 from .forms import CreateAccountForm
 
 
@@ -14,12 +14,12 @@ urlpatterns = [
     # Vistas autogeneradas
     url(r'^login/$', auth_views.login, 
         {
-        'template_name': 'website/login.html',
+        'template_name': 'website/wizard/login.html',
         'extra_context':{'new_user':CreateAccountForm()}
         }, name='login-auth'),
     
     url(r'^login/guest/$', GuestLogin.as_view(), name="guest-login"),
-    url(r'^signup/$', views.create_account, name="new_account"),
+    url(r'^signup/$', views.CreateAcct.as_view(), name="new-account"),
     url(r'^logout/$', views.userLogout, name="userlogout"),
 
     # Vistas del Menu
@@ -27,7 +27,7 @@ urlpatterns = [
     #url(r'^menu/$', views.menu, name="menu"),
     url(r'^menu/category/(?P<pk>[0-9]+)/$', views.CategoryProductsList.as_view(), name="ProductList"),
     url(r'^menu/category/(?P<pk_cat>[0-9]+)/product/(?P<pk_prod>[0-9]+)/$', views.MealForm.as_view(), name="MealForm"),
-    url(r'^menu/product/(?P<id_for_prod>[0-9]+)/$', views.ProductDetail, name="product_detail"),
+    #url(r'^menu/product/(?P<id_for_prod>[0-9]+)/$', views.ProductDetail, name="product_detail"),
     url(r'^menu/checkout/type$', views.pre_checkout, name="pre_checkout"),
     #url(r'^menu/checkout/type$', views.PreCheckout.as_view(), name="pre_checkout"),
     url(r'^menu/checkout/payment$', views.checkout, name="checkout"),

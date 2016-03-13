@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.generic.edit import FormView
 from django.views.generic import CreateView, ListView, TemplateView
 from django.core.mail import send_mail, BadHeaderError
+from django.template.loader import render_to_string
 from random import randint
 from datetime import *
 from decimal import Decimal
@@ -179,7 +180,7 @@ class CategoryProductsList(ListView):
 class MealForm(FormView):
 	template_name = 'website/wizard/step3_new2.html'
 	form_class = ArepaForm
-	success_url = '/menu/'
+	success_url = reverse_lazy('website:menu')
 
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
@@ -382,6 +383,9 @@ def checkout(request):
 	else:
 		return HttpResponseRedirect(reverse('website:pre_checkout'))
 
+	if 'guest' in request.session:
+		context['guest'] = request.session['guest']
+
 	context['tax'] = context['data_client']['tax_percent']
 
 	subtotal = Decimal(context['cart']['amounts']['subtotal'])
@@ -540,10 +544,10 @@ def checkout(request):
 						batch=PaymentBatch.objects.get(location=context['data_client']['location'], status='O'),
 						address='--',
 						time=context['data_client']['time'],
-						sub_amt=context['amounts']['subtotal'],
-						tax_amt=context['amounts']['tax'],
+						sub_amt=subtotal,
+						tax_amt=context['taxAmt'],
 						delivery_amt=0,
-						total_amt=context['amounts']['total']
+						total_amt=context['totalAmt']
 					)
 
 				elif context['data_client']['type_of_sale'] == 'PL':
@@ -559,10 +563,10 @@ def checkout(request):
 						car_color=context['data_client']['car_color'],
 						car_license=context['data_client']['car_license'],
 						time='--',
-						sub_amt=context['amounts']['subtotal'],
-						tax_amt=context['amounts']['tax'],
+						sub_amt=subtotal,
+						tax_amt=context['taxAmt'],
 						delivery_amt=0,
-						total_amt=context['amounts']['total']
+						total_amt=context['totalAmt']
 					)
 				elif context['data_client']['type_of_sale'] == 'D':
 					
@@ -574,10 +578,10 @@ def checkout(request):
 						address=context['data_client']['address'],
 						adress2=context['data_client']['address2'],
 						time='--',
-						sub_amt=context['amounts']['subtotal'],
-						tax_amt=context['amounts']['tax'],
+						sub_amt=subtotal,
+						tax_amt=context['taxAmt'],
 						delivery_amt=Decimal(GenericVariable.objects.val('delivery.cost')),
-						total_amt=context['amounts']['total']
+						total_amt=context['totalAmt']
 					)
 				else:
 					return HttpResponseRedirect(reverse('website:pre_checkout'))
@@ -709,127 +713,74 @@ def checkout(request):
 				del request.session['data_client']
 				del request.session['order_number']
 				del request.session['cart']
-				send_invoice_email(this_order,AddressForEmail)
+				send_invoice_email(this_order,AddressForEmail,context['cart'])
 				return HttpResponseRedirect(reverse('website:thankyou'))
 		else:
 			context['pay_form'] = PaymentForm(request.POST)
 
 	return render(request, 'website/wizard/invoice.html', context)
+
+class GuestLogin(CreateView):
+	model = GuestDetail
+	fields = ('firstname','lastname','email','phone')
+	template_name = 'website/wizard/guest_login.html'
+	context_object_name = 'form'
+
+	def get_context_data(self, **kwargs):
+	    context = super(GuestLogin, self).get_context_data(**kwargs)
+	    context['next'] = self.request.GET.get('next','')
+	    return context
+
+	def form_valid(self, form):
+		username = GenericVariable.objects.val('guest.user')
+		password = GenericVariable.objects.val('guest.password')
+
+		user = authenticate(username=username, password=password)
+		login(self.request, user)
+
+		phone = self.request.POST.get('phone','')
+		self.request.session['guest'] = {
+			'firstname' : self.request.POST['firstname'],
+			'lastname' : self.request.POST['lastname'],
+			'email' : self.request.POST['email'],
+			'phone' : phone
+		}
+
+		return HttpResponseRedirect(self.request.POST.get('next',reverse('website:pre_checkout')))
+
+class CreateAcct(FormView):
+	template_name = 'website/wizard/create-acct.html'
+	form_class = CreateAccountForm
+
+	def get_context_data(self, **kwargs):
+	    context = super(CreateAcct, self).get_context_data(**kwargs)
+	    context['next'] = self.request.GET.get('next','')
+	    return context
+
+	def form_valid(self, form, **kwargs):
+		from django.contrib.auth.models import User
+		user = User.objects.create_user(
+			username = self.request.POST['username'],
+			password = self.request.POST['password'],
+			email = self.request.POST['email'],
+			first_name = self.request.POST['firstname'],
+			last_name = self.request.POST['lastname']
+			)
+		user.save()
+		username = self.request.POST['username']
+		password = self.request.POST['password']
+		user = authenticate(username=username, password=password)
+		if user is not None:
+			login(request, user)
+		return HttpResponseRedirect(self.request.POST.get('next',reverse('website:pre_checkout')))
+
 ###############################################################################
-def menu(request):
-	# Load the Cart to show the products already in cart
-	context = cart(request)
-
-	# If the pay was already did it, delete the var
-	if 'finish' in request.session:
-		del request.session['finish']
-
-	# If there any Batch open
-	if context['status']==False:
-		return HttpResponseRedirect(reverse('website:closed'))
-
-	context['show_in'] = get_list_or_404(category, Active=True, show_in_menu=True)
-
-	return render(request, 'website/plain_page.html', context)
-
-def ProductDetail(request,id_for_prod):
-	context = cart(request);
-	if context['status']==False:
-		return HttpResponseRedirect(reverse('website:closed'))
-
-	context['product'] = get_object_or_404(product, pk=id_for_prod)
-
-	if request.POST:
-
-		this_product = ArepaForm(request.POST)
-
-		if this_product.is_valid():
-			'''
-			Se obtienen los valores del POST, si no son encontrados
-			o no existen el valor por defecto es None.
-
-			Para el caso de los Check de Vegetales y Salsas se validan si
-			estan checked para no tomar en cuenta cualquier valor que venga
-			en el POST.
-
-			Al final se obtiene el valor de qtty, si viene se asigna el valor
-			de lo contrario se asigna 1. Luego se repite tantan veces se
-			encuentre (o no) y se suma el item en el carrito local.
-
-			El carrito local se asigna de nuevo al de la sesion y finaliza la
-			funcion.
-			'''
-			
-			NoVegetables = request.POST.get('NoVegetablesCheck', None)
-			vegetables = request.POST.getlist('vegetables', None) if not NoVegetables == 'on' else None
-			
-			NoSauce = request.POST.get('NoSaucesCheck', False)
-			sauces = request.POST.getlist('sauces', None) if not NoSauce == 'on' else None
-			
-			main_product =  True if context['product'].category.show_in_menu == True else False
-
-			item = {
-				'type': request.POST.get('arepa_type', context['product'].category.name),
-				'product_id':request.POST['id_for_product'],
-				'arepa_type':request.POST.get('arepa_type', context['product'].category.name),
-				'vegetables':vegetables,
-				'extras':request.POST.getlist('extras', None),
-				'paid_extras': request.POST.getlist('paid_extras', None),
-				'sauces':sauces,
-				'soft_drinks':request.POST.get('soft_drinks', None),
-				'main_product':main_product
-				}
-
-			local_cart = request.session.get('cart', [])
-			
-			for x in range(0,int(request.POST.get('qtty',1))):
-				local_cart.append(item)
-
-			request.session['cart'] = local_cart
-
-			return HttpResponseRedirect(reverse('website:menu'))
-
-		else:
-			context['form'] = ArepaForm(request.POST)
-	else:
-		context['form'] = ArepaForm(initial={ 'id_for_product': id_for_prod })
-	return render(request, 'website/arepa_wizard.html', context)
-
 def empty_cart(request):
 	if 'cart' in request.session:
 		del request.session['cart']
 	if 'order_number' in request.session:
 		del request.session['order_number']
 	return HttpResponseRedirect(reverse('website:menu'))
-
-def create_account(request):
-	if request.POST:
-		a = CreateAccountForm(request.POST)
-
-		if a.is_valid():
-			from django.contrib.auth.models import User
-			user = User.objects.create_user(
-				username = request.POST['username'],
-				password = request.POST['password'],
-				email = request.POST['email'],
-				first_name = request.POST['firstname'],
-				last_name = request.POST['lastname']
-				)
-			user.save()
-			username = request.POST['username']
-			password = request.POST['password']
-			user = authenticate(username=username, password=password)
-			if user is not None:
-				login(request, user)
-				if 'next' in request.GET:
-					return HttpResponseRedirect(request.GET['next'])
-				else:
-					return HttpResponseRedirect(reverse('website:menu'))
-		else:
-			context = {}
-			context['new_user'] = CreateAccountForm(request.POST)
-			return render(request, 'website/login.html', context)
-
 
 @login_required(login_url='website:login-auth')
 def ViewCart(request):
@@ -877,7 +828,6 @@ def OrderHistory(request):
 
 	return render(request, 'website/order-history.html', context)
 
-
 @login_required(login_url='website:login-auth')
 def userLogout(request):
     logout(request)
@@ -897,35 +847,6 @@ def thankyou(request):
     	return render(request, 'website/thankyou.html')
     except KeyError:
     	return HttpResponseRedirect(reverse('website:userlogout'))
-
-class GuestLogin(CreateView):
-	model = GuestDetail
-	fields = ('firstname','lastname','email','phone')
-	success_url = reverse_lazy('website:menu')
-	template_name = 'website/guest_login.html'
-	context_object_name = 'form'
-
-	def form_valid(self, form):
-		if 'phone' in self.request.POST:
-			phone = self.request.POST['phone']
-		else:
-			phone = ''
-
-		self.request.session['guest'] = {
-			'firstname' : self.request.POST['firstname'],
-			'lastname' : self.request.POST['lastname'],
-			'email' : self.request.POST['email'],
-			'phone' : phone
-		}
-
-		username = GenericVariable.objects.val('guest.user')
-		password = GenericVariable.objects.val('guest.password')
-
-		user = authenticate(username=username, password=password)
-		login(self.request, user)
-
-		return HttpResponseRedirect(reverse('website:menu'))
-
 
 def RewriteAddress(address, key):
 	import googlemaps
@@ -1033,20 +954,9 @@ def PaymentRaw(name,card,exp,amt,cvv,ref):
 
 	return response
 
-def send_invoice_email(order,email):
+def send_invoice_email(order,email,cart):
 	text = "Your Order "+order.order_number+" have been recived\nThank you...\nAny Questions?\nWrite us at support@bullpenarepas.com\nCall us at (404) 643 2568"
-	html = """\
-	<html>
-		<head></head>
-		<body>
-			<p>Your Order #"""+order.order_number+""" have been recived</p>
-			<p>Thank you... </p>
-			<p>Any Questions?</p> 
-			<p>Write us at support@bullpenarepas.com</p>
-			<p>Call us at (404) 643 2568</p>
-		</body>
-	</html>
-	"""
+	html = render_to_string('website/wizard/email_template.html',{'cart':cart,'order':order})
 	try:
 		send_mail(
 			'Your Order #'+ order.order_number +' From bullpenarepas.com', 

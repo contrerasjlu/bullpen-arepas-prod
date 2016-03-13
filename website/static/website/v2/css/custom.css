@@ -6469,6 +6469,11 @@ a.white {
     min-height: 400px;
 }
 
+#login-login, #login-social{
+    height: auto;
+    min-height: 200px;
+}
+
 .btn-primary.disabled{
     background-color: #417240;
     border-color: #417240;

@@ -8,7 +8,11 @@
     <div class="panel-body">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <h5><b>Client:</b> {{ user.first_name }} {{ user.last_name }} <a href="#">(Not {{ user.first_name }}?)</a></h5>
+                {% if guest %}
+                <h5><b>Guest Client:</b> {{ guest.firstname }} {{ guest.lastname }} <a href="{% url 'website:login-auth' %}?next={% url 'website:checkout' %}">(Not {{ guest.firstname }}?)</a></h5>
+                {% else %}
+                <h5><b>Client:</b> {{ user.first_name }} {{ user.last_name }} <a href="{% url 'website:login-auth' %}?next={% url 'website:checkout' %}">(Not {{ user.first_name }}?)</a></h5>
+                {% endif %}
             </div>
         </div>
         <div class="row">
@@ -57,75 +61,78 @@
         </div>
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <table class="table table-condensed table-bordered">
-                    <thead>
-                        <tr class="warning">
-                            <th>#</th>
-                            <th>Product Description</th>
-                            <th>Code</th>
-                            <th>Quantity</th>
-                            <th width="40%">Description</th>
-                            <th>Unit Price</th>
-                            <th>Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in cart.cart %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ item.product }}</td>
-                            <td>{{ item.product.code }}</td>
-                            <td>{{ item.qtty }}</td>
-                            <td>
-                            {# Main Ingredients #}
-                            {% if item.product.allow_extras == True %}
-                            <b>Main Ingredient(s):</b>
-                            {% for extras in item.extras %}
-                            {{ extras.description }}{% if forloop.last %}/ {% else %}, {% endif %}
-                            {% empty %}No Players Allowed /
+            <button class="btn btn-primary btn-sm" data-toggle="collapse" data-target=".invoice-hide"><i class="fa fa-shopping-cart"></i> Show Deatiled Order</button>
+                <div class="invoice-hide collapse">
+                    <table class="table table-condensed table-bordered">
+                        <thead>
+                            <tr class="warning">
+                                <th>#</th>
+                                <th>Product Description</th>
+                                <th>Code</th>
+                                <th>Quantity</th>
+                                <th width="40%">Description</th>
+                                <th>Unit Price</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart.cart %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ item.product }}</td>
+                                <td>{{ item.product.code }}</td>
+                                <td>{{ item.qtty }}</td>
+                                <td>
+                                {# Main Ingredients #}
+                                {% if item.product.allow_extras == True %}
+                                <b>Main Ingredient(s):</b>
+                                {% for extras in item.extras %}
+                                {{ extras.description }}{% if forloop.last %}/ {% else %}, {% endif %}
+                                {% empty %}No Players Allowed /
+                                {% endfor %}
+                                {% endif %}
+
+                                {# Vegetables #}
+                                {% if item.product.allow_vegetables == True %}
+                                <b>Vegetables:</b>
+                                {% for vegetable in item.vegetables %}
+                                {{ vegetable.description }}{% if forloop.last %}/ {% else %}, {% endif %}
+                                {% empty %}<span class="label label-danger">No Vegetables</span>/
+                                {% endfor %}
+                                {% endif %}
+
+                                {# Paid Extras #}
+                                {% if item.product.allow_paid_extras == True %}
+                                <b>Extras:</b>
+                                {% for paid in item.paid_extras %}
+                                {{ paid.description }}{% if forloop.last %}/ {% else %}, {% endif %}
+                                {% empty %}<span class="label label-danger">No Extras</span>/
+                                {% endfor %}
+                                {% endif %}
+
+                                {# Sauces #}
+                                {% if item.product.allow_sauces == True %}
+                                <b>Sauces:</b>
+                                {% for sauce in item.sauces %}
+                                {{ sauce.description }}{% if forloop.last %}/ {% else %}, {% endif %}
+                                {% empty %}<span class="label label-danger">No Sauces</span>/
+                                {% endfor %}
+                                {% endif %}
+
+                                {# Soft Drink #}
+                                {% if item.product.allow_drinks == True %}
+                                <b>Drink:</b>
+                                {{ item.soft_drinks }}
+                                {% endif %}
+
+                                </td>
+                                <td>${{ item.unit_price }}</td>
+                                <td>${{ item.price }}</td>
+                            </tr>
                             {% endfor %}
-                            {% endif %}
-
-                            {# Vegetables #}
-                            {% if item.product.allow_vegetables == True %}
-                            <b>Vegetables:</b>
-                            {% for vegetable in item.vegetables %}
-                            {{ vegetable.description }}{% if forloop.last %}/ {% else %}, {% endif %}
-                            {% empty %}<span class="label label-danger">No Vegetables</span>/
-                            {% endfor %}
-                            {% endif %}
-
-                            {# Paid Extras #}
-                            {% if item.product.allow_paid_extras == True %}
-                            <b>Extras:</b>
-                            {% for paid in item.paid_extras %}
-                            {{ paid.description }}{% if forloop.last %}/ {% else %}, {% endif %}
-                            {% empty %}<span class="label label-danger">No Extras</span>/
-                            {% endfor %}
-                            {% endif %}
-
-                            {# Sauces #}
-                            {% if item.product.allow_sauces == True %}
-                            <b>Sauces:</b>
-                            {% for sauce in item.sauces %}
-                            {{ sauce.description }}{% if forloop.last %}/ {% else %}, {% endif %}
-                            {% empty %}<span class="label label-danger">No Sauces</span>/
-                            {% endfor %}
-                            {% endif %}
-
-                            {# Soft Drink #}
-                            {% if item.product.allow_drinks == True %}
-                            <b>Drink:</b>
-                            {{ item.soft_drinks }}
-                            {% endif %}
-
-                            </td>
-                            <td>${{ item.unit_price }}</td>
-                            <td>${{ item.price }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>                                
         <div class="row">
@@ -203,49 +210,10 @@
     <h4><i class="fa fa-shopping-cart"></i> Summary</h4>
 </div>
 <div class="panel-body">
-    <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-4 col-xs-4">
-            <span class="pull-right">Date: {% now "F jS Y" %}</span>
-        </div>
-    </div>
-    <hr>
-    <table class="summary-table table table-condensed table-bordered table-hover">
-        <thead>
-            <tr class="warning">
-                <th>Order Number</th>
-                <th>Type of Sale</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>{{ order_number }}</td>
-                <td>{{ data_client.label_for_type_of_sale }}</td>
-            </tr>
-        </tbody>
-    </table>
-    <hr>
-    <table class="summary-table table table-condensed table-bordered table-hover">
-        <tbody>
-            <tr>
-                <td>Subtotal:</td>
-                <td>$ {{ cart.amounts.subtotal }}</td>
-            </tr>
-            {% if data_client.type_of_sale == 'D' %}
-            <tr>
-                <td>Delivery:</td>
-                <td>$ {{ cart.amounts.delivery }}</td>
-            </tr>
-            {% endif %}
-            <tr>
-                <td>Tax ({{ tax }}%):</td>
-                <td>$ {{ taxAmt|floatformat:2 }}</td>
-            </tr>
-            <tr class="success">
-                <td><b>Total:</b></td>
-                <td><b>$ {{ totalAmt|floatformat:2 }}</b></td>
-            </tr>
-        </tbody>
-        
-    </table>
+    {% include 'website/wizard/summary.html' %}
 </div>
+{% endblock %}
+{% block tittle_up_xs %}Summary{% endblock %}
+{% block content_left_xs %}
+    {% include 'website/wizard/summary.html' %}
 {% endblock %}

@@ -1,0 +1,43 @@
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <span class="pull-right">Date: {% now "F jS Y" %}</span>
+    </div>
+</div>
+<hr>
+<table class="summary-table table table-condensed table-bordered table-hover">
+    <thead>
+        <tr class="warning">
+            <th>Order Number</th>
+            <th>Type of Sale</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ order_number }}</td>
+            <td>{{ data_client.label_for_type_of_sale }}</td>
+        </tr>
+    </tbody>
+</table>
+<hr>
+<table class="summary-table table table-condensed table-bordered table-hover">
+    <tbody>
+        <tr>
+            <td>Subtotal:</td>
+            <td>$ {{ cart.amounts.subtotal }}</td>
+        </tr>
+        {% if data_client.type_of_sale == 'D' %}
+        <tr>
+            <td>Delivery:</td>
+            <td>$ {{ cart.amounts.delivery }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td>Tax ({{ tax }}%):</td>
+            <td>$ {{ taxAmt|floatformat:2 }}</td>
+        </tr>
+        <tr class="success">
+            <td><b>Total:</b></td>
+            <td><b>$ {{ totalAmt|floatformat:2 }}</b></td>
+        </tr>
+    </tbody>
+</table>
