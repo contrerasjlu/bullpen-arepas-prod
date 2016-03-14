@@ -22,5 +22,6 @@ urlpatterns = [
     url(r'^', include('website.url', namespace='website')),
     url(r'^ordertogo/', include('ordertogo.url', namespace='order')),
     url(r'^location/', include('LocationManager.url', namespace='LocationManager')),
+    url('',include('social.apps.django_app.urls', namespace='social')),
     url(r'^admin/', include(admin.site.urls)),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
