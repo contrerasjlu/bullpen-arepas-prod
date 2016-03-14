@@ -263,6 +263,9 @@ def pre_checkout(request):
 	context['cart'] = cart(request.session['cart']) \
 						  if 'cart' in request.session else None
 
+	if context['cart'] == None:
+		return HttpResponseRedirect(reverse('website:menu'))
+
 	if PaymentBatch.objects.BullpenIsOpen() == False:
 		return HttpResponseRedirect(reverse('website:closed'))
 
@@ -373,7 +376,10 @@ def checkout(request):
 			                                show_in_menu=True)
 
 	context['cart'] = cart(request.session['cart']) \
-						  if 'cart' in request.session else None
+					  if 'cart' in request.session else None
+
+	if context['cart'] == None:
+		return HttpResponseRedirect(reverse('website:menu'))
 
 	if PaymentBatch.objects.BullpenIsOpen() == False:
 		return HttpResponseRedirect(reverse('website:closed'))
@@ -835,18 +841,9 @@ def userLogout(request):
 
     return HttpResponseRedirect(reverse('website:menu'))
 
-@login_required(redirect_field_name='', login_url='website:login-auth')
+@login_required(login_url='website:login-auth')
 def thankyou(request):
-    try:
-    	if request.session['finish'] == True:
-    		logout(request)
-    		del request.session
-    	else:
-    		del request.session
-    	
-    	return render(request, 'website/thankyou.html')
-    except KeyError:
-    	return HttpResponseRedirect(reverse('website:userlogout'))
+    return render(request,'website/thankyou.html')
 
 def RewriteAddress(address, key):
 	import googlemaps

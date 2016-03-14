@@ -39,6 +39,36 @@
     </div>
 </div>
 {% endblock %}
+{% block heightcalc %}
+    <script>
+        function mayor(){
+            var m=[].slice.call(arguments);
+            return m.sort(function(a,b){return a-b;}).pop();
+        }
+        h_instructions = $('#instructions-bullpen').height();
+        h_cart = $('#cart-bullpen').height();
+        h_menu = $('#menu-bullpen').height()
+        max_height = mayor($('#instructions-bullpen').height(),$('#cart-bullpen').height(),$('#menu-bullpen').height());
+        if ($('#instructions-bullpen').height() === max_height){
+            $('#menu-bullpen').height(max_height-700);
+            $('#cart-bullpen').height(max_height-700);
+        }else {
+            if ($('#menu-bullpen').height() === max_height){
+                $('#instructions-bullpen').height(max_height);
+                $('#cart-bullpen').height(max_height);
+            } else {
+                $('#menu-bullpen').height(max_height);
+                $('#instructions-bullpen').height(max_height);
+            }
+        }
+        if ($('#cart-bullpen').height() > 630){
+            $('#cart-bullpen').height(h_cart);
+            $('#instructions-bullpen').height(h_cart);
+            $('#menu-bullpen').height(h_cart);
+        }
+
+    </script>
+    {% endblock %}
 {% block FooterDeclaration %}
 <script type="text/javascript">
     if ($("#id_type_of_sale_select").val()=='D'){

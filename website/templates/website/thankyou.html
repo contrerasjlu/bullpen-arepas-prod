@@ -1,66 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>Bullpen Arepas</title>
+
+    <!-- Bootstrap core CSS -->
+
     {% load staticfiles %}
-    <link href="{% static 'website/css/fullcalendar.css' %}" rel="stylesheet" />
-    <link href="{% static 'website/css/fullcalendar.print.css' %}" rel='stylesheet' media='print' />
-    <link href="{% static 'website/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'website/css/font-awesome.min.css' %}" rel="stylesheet">
-    <link href="{% static 'website/css/animate.min.css' %}" rel="stylesheet"> 
-    <link href="{% static 'website/css/lightbox.css' %}" rel="stylesheet"> 
-    <link href="{% static 'website/css/main.css' %}" rel="stylesheet">
-    <link href="{% static 'website/css/responsive.css' %}" rel="stylesheet">
-    <link href="{% static 'website/css/calendar.css' %}" rel="stylesheet">    
-    <script type="text/javascript" src="{% static 'website/js/jquery.js' %}"></script>
-    <script type="text/javascript" src="{% static 'website/js/bootstrap.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'website/js/lightbox.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'website/js/wow.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'website/js/main.js' %}"></script>
-    <script type="text/javascript" src="{% static 'website/js/audio.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'website/js/modal.js' %}"></script>
-    <script src="{% static 'website/js/moment.min.js' %}"></script>
-    <script src="{% static 'website/js/jquery.min.js' %}"></script>
-    <script src="{% static 'website/js/fullcalendar.min.js' %}"></script>
-    <script src="{% static 'website/js/gcal.js' %}"></script> 
-    <script type="text/javascript" src="{% static 'website/js/infocalendar.js' %}"></script>    
-    <script type="text/javascript">
-    
-  audiojs.events.ready(function() {
-    var as = audiojs.createAll();
-  });
-</script> 
+    <link href="{% static 'website/v2/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <link href="{% static 'website/v2/fonts/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'website/v2/css/animate.min.css' %}" rel="stylesheet">
+
+    <!-- Custom styling plus plugins -->
+    <link href="{% static 'website/v2/css/custom.css' %}" rel="stylesheet">
+
     <!--[if lt IE 9]>
-        <script src="js/html5shiv.js"></script>
-        <script src="js/respond.min.js"></script>
-    <![endif]-->       
+        <script src="../assets/js/ie8-responsive-file-warning.js"></script>
+        <![endif]-->
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
     <link rel="shortcut icon" href="{% static 'website/img/bullpen.ico' %}">
-</head><!--/head-->
+</head>
 <body>
-    <section id="error-page">
-        <div class="error-page-inner">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="text-center">
-                            <div class="bg-404">
-                                <div class="error-image">                                
-                                    <img class="img-responsive" src="{% static 'website/img/tks_bullpenarepas.png' %}" alt="We're Closed">  
-                                </div>
-                            </div>
-                            <h2 class="white">Thank you...</h2>
-                            <h4 class="white">The Invoice have been sent to your Email Address</h4>
-                            <a href="{% url 'website:menu' %}" class="btn btn-error">RETURN TO MENU PAGE</a>
-                        </div>
-                    </div>
-                </div>
+
+    <header class="container text-center">
+        <div class="row">
+            <div class="col-lg-offset-4 col-lg-4 col-md-offset-4 col-md-4 col-sm-offset-4 col-sm-4 col-xs-offset-4 col-xs-4">
+                <img class="img-responsive" src="{% static 'website/img/tks_bullpenarepas.png' %}" alt="We're Closed">
+                <hr>
             </div>
         </div>
-    </section>
-	</div>
+    </header>
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-lg-offset-4 col-lg-4 col-md-offset-4 col-md-4 col-sm-offset-4 col-sm-4 col-xs-offset-4 col-xs-4">
+                <h1>Thank you...</h1>
+                <h2>The Invoice have been sent to your Email Address</h2>
+                <a href="{% url 'website:menu' %}">
+                    <button class="btn btn-primary btn-lg" type="button">
+                        Go to Home Page
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

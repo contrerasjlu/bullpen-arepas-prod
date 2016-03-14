@@ -52,6 +52,17 @@
     <div class="clearfix"></div>
     <hr>
     <div class="container-fluid">
+    {% block userinfo %}
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                {% if user %}
+                Hello, {{ user.first_name }} {{ user.last_name }} <a href="{% url 'website:login-auth' %}?next={{ request.path }}">(Not {{ user.first_name }}?)</a>
+                {% else %}
+                You are not Logged in, <a href="{% url 'website:login-auth' %}?next={{ request.path }}">Log in?</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endblock %}
         <div class="row">
         <!-- Only for sm and xs devices -->
             <div class="hidden-lg hidden-md col-sm-12 col-xs-12">
@@ -91,7 +102,7 @@
             </div>
         </div>
         <!-- end for only sm and xs devices -->
-        <div class="row">
+        <div class="row row-eq-height">
             <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">
                 <div class="panel panel-success" id="menu-bullpen">
                     <div class="panel-heading">
@@ -162,11 +173,33 @@
         ga('create', 'UA-74418683-1', 'auto');
         ga('send', 'pageview');
     </script>
+    {% block heightcalc %}
     <script>
-        $(document).ready(function(){
-            $('[data-toggle="popover"]').popover();   
-        });
+        function mayor(){
+            var m=[].slice.call(arguments);
+            return m.sort(function(a,b){return a-b;}).pop();
+        }
+        h_instructions = $('#instructions-bullpen').height();
+        h_cart = $('#cart-bullpen').height();
+        h_menu = $('#menu-bullpen').height()
+        max_height = mayor($('#instructions-bullpen').height(),$('#cart-bullpen').height(),$('#menu-bullpen').height());
+        if ($('#instructions-bullpen').height() === max_height){
+            $('#menu-bullpen').height(max_height);
+            $('#cart-bullpen').height(max_height);
+        }else {
+            if ($('#menu-bullpen').height() === max_height){
+                console.log('menu-bullpen');
+                $('#instructions-bullpen').height(max_height);
+                $('#cart-bullpen').height(max_height);
+            } else {
+                console.log('cart-bullpen');
+                $('#menu-bullpen').height(max_height);
+                $('#instructions-bullpen').height(max_height);
+            }
+        }
+
     </script>
+    {% endblock %}
     {% block FooterDeclaration %}
     {% endblock %}
 </body>

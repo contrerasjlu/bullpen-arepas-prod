@@ -6486,3 +6486,33 @@ table{
 .summary-table{
     font-size: 13px;
 }
+
+.face{
+    background-color: #3b5998;
+    border-color: #3b5998;
+}
+
+.face:hover{
+    color: #3b5998;
+    border-color: #3b5998;
+}
+
+.tweet{
+    background-color: #0084b4;
+    border-color: #0084b4;
+}
+
+.tweet:hover{
+    color: #0084b4;
+    border-color: #0084b4;
+}
+
+.google{
+    background-color: #d34836;
+    border-color: #d34836;
+}
+
+.google:hover{
+    color: #d34836;
+    border-color: #d34836;
+}

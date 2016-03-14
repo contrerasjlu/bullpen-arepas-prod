@@ -23,29 +23,6 @@
         </tr>
     </tbody>
 </table>
-<table width="50%" cellpadding="0" cellspacing="0" border="1">
-    <tbody>
-        <tr>
-            <td>Subtotal:</td>
-            <td>$ {{ order.sub_amt }}</td>
-        </tr>
-        {% if order.order_type == 'D' %}
-        <tr>
-            <td>Delivery:</td>
-            <td>$ {{ order.delivery_amt }}</td>
-        </tr>
-        {% endif %}
-        <tr>
-            <td>Tax ({{ tax }}%):</td>
-            <td>$ {{ order.tax_amt|floatformat:2 }}</td>
-        </tr>
-        <tr bgcolor="d0e9c6">
-            <td><b>Total:</b></td>
-            <td><b>$ {{ order.total_amt|floatformat:2 }}</b></td>
-        </tr>
-    </tbody>
-    
-</table>
 <hr><br>
 <h2>Detailed Order</h2>
 <table cellpadding="0" cellspacing="0" border="1">
@@ -116,6 +93,30 @@
         </tr>
         {% endfor %}
     </tbody>
+</table>
+<hr><br>
+<table width="50%" cellpadding="0" cellspacing="0" border="1">
+    <tbody>
+        <tr>
+            <td>Subtotal:</td>
+            <td>$ {{ order.sub_amt }}</td>
+        </tr>
+        {% if order.order_type == 'D' %}
+        <tr>
+            <td>Delivery:</td>
+            <td>$ {{ order.delivery_amt }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td>Tax ({{ tax }}%):</td>
+            <td>$ {{ order.tax_amt|floatformat:2 }}</td>
+        </tr>
+        <tr bgcolor="d0e9c6">
+            <td><b>Total:</b></td>
+            <td><b>$ {{ order.total_amt|floatformat:2 }}</b></td>
+        </tr>
+    </tbody>
+    
 </table>
 <p>Any Questions?</p> 
 <p>Write us at support@bullpenarepas.com</p>
