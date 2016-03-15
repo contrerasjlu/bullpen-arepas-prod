@@ -55,8 +55,14 @@
     {% block userinfo %}
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                {% if user %}
-                Hello, {{ user.first_name }} {{ user.last_name }} <a href="{% url 'website:login-auth' %}?next={{ request.path }}">(Not {{ user.first_name }}?)</a>
+                {% if user.is_authenticated %}
+                    {% if user.first_name == 'Guest' %}
+                        {% autoescape on %}
+                        You're Logged in as a Guest <b>{{ request.session.guest.firstname|capfirst }} {{ request.session.guest.lastname|capfirst }}</b>, <a href="{% url 'website:userlogout' %}?next={{ request.path }}">Login as a different user?</a>
+                        {% endautoescape %}
+                    {% else %}
+                        Hello, {{ user.first_name }} {{ user.last_name }} <a href="{% url 'website:userlogout' %}?next={{ request.path }}">(Not {{ user.first_name }}?, Log out)</a>
+                    {% endif %}
                 {% else %}
                 You are not Logged in, <a href="{% url 'website:login-auth' %}?next={{ request.path }}">Log in?</a>
                 {% endif %}

@@ -742,7 +742,7 @@ class GuestLogin(CreateView):
 		password = GenericVariable.objects.val('guest.password')
 
 		user = authenticate(username=username, password=password)
-		login(self.request, user)
+		login(self.request,user)
 
 		phone = self.request.POST.get('phone','')
 		self.request.session['guest'] = {
@@ -777,7 +777,7 @@ class CreateAcct(FormView):
 		password = self.request.POST['password']
 		user = authenticate(username=username, password=password)
 		if user is not None:
-			login(request, user)
+			login(self.request,user)
 		return HttpResponseRedirect(self.request.POST.get('next',reverse('website:pre_checkout')))
 
 ###############################################################################
@@ -820,7 +820,6 @@ def DeleteItem(request, item):
 	else:
 		return HttpResponseRedirect(reverse('website:menu'))
 
-
 @login_required(login_url='website:login-auth')
 def OrderHistory(request):
 	context = cart(request)
@@ -837,9 +836,8 @@ def OrderHistory(request):
 @login_required(login_url='website:login-auth')
 def userLogout(request):
     logout(request)
-    del request.session
-
-    return HttpResponseRedirect(reverse('website:menu'))
+    next = request.GET.get('next','')
+    return HttpResponseRedirect(reverse('website:login-auth'))
 
 @login_required(login_url='website:login-auth')
 def thankyou(request):

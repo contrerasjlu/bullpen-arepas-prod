@@ -13,10 +13,7 @@ urlpatterns = [
 
     # Vistas autogeneradas
     url(r'^login/$', auth_views.login, 
-        {
-        'template_name': 'website/wizard/login.html',
-        'extra_context':{'new_user':CreateAccountForm()}
-        }, name='login-auth'),
+        {'template_name': 'website/wizard/login.html'}, name='login-auth'),
     
     url(r'^login/guest/$', GuestLogin.as_view(), name="guest-login"),
     url(r'^signup/$', views.CreateAcct.as_view(), name="new-account"),
@@ -24,12 +21,9 @@ urlpatterns = [
 
     # Vistas del Menu
     url(r'^menu/$', views.MenuHome.as_view(), name="menu"),
-    #url(r'^menu/$', views.menu, name="menu"),
     url(r'^menu/category/(?P<pk>[0-9]+)/$', views.CategoryProductsList.as_view(), name="ProductList"),
     url(r'^menu/category/(?P<pk_cat>[0-9]+)/product/(?P<pk_prod>[0-9]+)/$', views.MealForm.as_view(), name="MealForm"),
-    #url(r'^menu/product/(?P<id_for_prod>[0-9]+)/$', views.ProductDetail, name="product_detail"),
     url(r'^menu/checkout/type$', views.pre_checkout, name="pre_checkout"),
-    #url(r'^menu/checkout/type$', views.PreCheckout.as_view(), name="pre_checkout"),
     url(r'^menu/checkout/payment$', views.checkout, name="checkout"),
     url(r'^menu/checkout/thankyou/$', views.thankyou, name="thankyou"),
     url(r'^menu/view-cart/$', views.ViewCart, name="view-cart"),
