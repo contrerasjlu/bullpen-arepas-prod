@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '$wcb%%v#2)0x2&if7z2i5vlejk^j5cnci!8$gd*%hs(6q-y8^x'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['bullpenarepas.com']
+ALLOWED_HOSTS = [ ]
 
 
 # Application definition
@@ -42,10 +42,13 @@ INSTALLED_APPS = (
     'website',
     'LocationManager',
     'widget_tweaks',
+    'corsheaders',
+    'social.apps.django_app.default',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -55,7 +58,24 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
+AUTHENTICATION_BACKENDS = (
+    'social.backends.facebook.FacebookOAuth2',
+    'social.backends.google.GoogleOAuth2',
+    'social.backends.twitter.TwitterOAuth',
+    'django.contrib.auth.backends.ModelBackend',
+  )
+
 ROOT_URLCONF = 'bullpen.urls'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny'
+    ]
+}
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+APPEND_SLASH = True
 
 TEMPLATES = [
     {
@@ -68,6 +88,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
             ],
         },
     },
@@ -82,13 +104,26 @@ WSGI_APPLICATION = 'bullpen.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bullpenarepas',
-        'USER': 'bullpenarepas_db',
-        'PASSWORD': '$3dd3v1d@',
+        'NAME': 'bullpen',
+        'USER': 'root',
+        'PASSWORD': '14657790',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
+'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'pruebas_bullpenarepas',
+        'USER': 'bullpen_db_test',
+        'PASSWORD': '$omosEquip0',
         'HOST': 'db.bullpenarepas.com',
         'PORT': '3306',
     }
 }
+'''
+
 
 
 # Internationalization
@@ -111,6 +146,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.dirname(BASE_DIR) + '/public/static/'
 MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.dirname(BASE_DIR) + '/bullpen/'
 
 EMAIL_HOST_USER = 'support@bullpenarepas.com'
 EMAIL_HOST_PASSWORD = 'hVDt?u7H'
@@ -118,4 +154,6 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST = 'mail.bullpenarepas.com'
 
-SECURE_SSL_REDIRECT = True
+#SECURE_SSL_REDIRECT = True
+
+from config import *
