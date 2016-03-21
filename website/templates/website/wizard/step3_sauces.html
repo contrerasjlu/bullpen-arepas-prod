@@ -14,20 +14,23 @@
             <div class="form-inline">
                 <label for="{{ form.NoSaucesCheck.id_for_label }}" id="{{ form.NoSaucesCheck.id_for_label }}">{{ form.NoSaucesCheck }} {{ form.NoSaucesCheck.label }}</label>
                 <div>
-                    <button type="button" data-toggle="modal" data-target=".sauces-modal" class="btn btn-primary sauces-btn">Yes, let me Choose</button>
+                    <button type="button" data-toggle="modal" data-target=".sauces-modal" data-keyboard="true" class="btn btn-primary sauces-btn">Yes, let me Choose</button>
                 </div>
                 <div id="" class="modal fade sauces-modal" role="dialog" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
+                    <div class="modal-dialog modal-sm">
                     <!-- Modal content-->
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">{{ form.sauces.help_text }}</h4>
+                                <h4 class="modal-title">
+                                    {{ form.sauces.label }}<br>
+                                    <small>{{ form.sauces.help_text }}</small>
+                                </h4>
                             </div>
                             <div class="modal-body">
                                 <div class="row">
                                 {% for field in form.sauces %}
-                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                         {{ field }}
                                     </div>
                                 {{ field.field }}

@@ -148,30 +148,12 @@
         <form class="form-horizontal form-label-left input_mask" method="post">
         {% csrf_token %}
             <div class="row">
-                {% if FailTrx %}
-                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                    <div class="form-control-static">
-                        <div class="alert alert-danger">{{FailTrx}}
-                            <ul class="list-group">
-                            {% for e in FailMsj %}
-                                <li class="list-group-item list-gorup-item-danger">
-                                    {{ e.code }} - {{ e.description }}
-                                </li>
-                            {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-
-            <div class="row">
-                {% for field in pay_form %}
+                {% for field in form %}
                     {% if field.is_hidden %}
                         {{ field }}
                     {% endif %}
                 {% endfor %}
-                {% for field in pay_form %}
+                {% for field in form %}
                 {% if not field.is_hidden %}
                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                     <div class="row">

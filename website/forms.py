@@ -4,6 +4,7 @@
 
 from django.forms import ModelForm, widgets, NumberInput, TextInput, EmailInput
 from django.contrib.auth.models import User
+from requests import ConnectionError
 from django import forms
 from ordertogo.models import *
 from website.models import WebInfo, WebText
@@ -41,10 +42,7 @@ class ArepaForm(forms.Form):
                                                         code='vegetables'
                                                         )
                                                     ).order_by('order_in_menu'),
-                                                help_text="Please select \
-                                                           wich vegetables do you \
-                                                           want with your selected \
-                                                           product"
+                                                help_text="Wich vegetables do you want on your item"
         )
     NoExtrasCheck = forms.BooleanField(initial=False, 
                                        widget=forms.CheckboxInput(attrs={'class':attr3 + ' extras-id'}),
@@ -59,8 +57,8 @@ class ArepaForm(forms.Form):
     )
 
     paid_extras = forms.ModelMultipleChoiceField(
-        label="On The Bench",
-        help_text="Choose as much players as you want for $0.99 each",
+        label="Additional Players",
+        help_text="Choose as much as 4 additional players for your item ($1.00 each)",
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={'class': attr3}),
         queryset=product.objects.filter(Active=True,category=category.objects.get(code='paid.extras')).order_by('order_in_menu')
@@ -73,6 +71,7 @@ class ArepaForm(forms.Form):
 
     sauces = forms.ModelMultipleChoiceField(
         label="Sauces",
+        help_text="Select the sauces thet you want.",
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={'class': attr3}),
         queryset=product.objects.filter(Active=True,category=category.objects.get(code='sauces')).order_by('order_in_menu')
@@ -97,13 +96,10 @@ class ArepaForm(forms.Form):
     def clean(self):
         cleaned_data = super(ArepaForm, self).clean()
         id_for_product = cleaned_data.get("id_for_product")
-        arepa_type = cleaned_data.get("arepa_type")
-        vegetables = cleaned_data.get("vegetables")
-        extras = cleaned_data.get("extras")
+        extras = cleaned_data.get('extras')
         paid_extras = cleaned_data.get("paid_extras")
-        sauces = cleaned_data.get("sauces")
-        soft_drinks = cleaned_data.get("soft_drinks")
         qtty = cleaned_data.get("qtty")
+        MaxExtras = GenericVariable.objects.val('max_extras')
 
         this_product = product.objects.get(pk=id_for_product)
 
@@ -114,6 +110,10 @@ class ArepaForm(forms.Form):
         if this_product.allow_qtty == True and (qtty < 1):
             msg = "You must enter a valid Quantty"
             self.add_error('qtty', msg)
+
+        if (len(paid_extras) > int(MaxExtras)) and this_product.allow_paid_extras == True:
+            msg = "You can't select more the %s Extras for your item" % MaxExtras
+            self.add_error('paid_extras', msg)
 
 class CreateAccountForm(forms.Form):
     firstname = forms.CharField(
@@ -168,15 +168,16 @@ class CreateAccountForm(forms.Form):
         else:
             raise forms.ValidationError("Email Taken")
 
-
 class PaymentForm(forms.Form):
     name_on_card = forms.CharField(
+        required=True,
         max_length=80,
         label="Name on Card",
         help_text="Ex: Jhon D Lopez"
     )
 
     card_number = forms.CharField(
+        required=True,
         max_length=16,
         min_length=15,
         label="Card Number",
@@ -184,16 +185,24 @@ class PaymentForm(forms.Form):
     )
 
     expiry = forms.CharField(
+        required=True,
         label="Expiricy Date",
         max_length=5,
         help_text="Ex: 06/16" )
 
     cvv = forms.CharField(
+        required=True,
         max_length=4,
         min_length=3,
         label="CVV",
         help_text="This code is in the front side of your American Express Card, and in the back side of your Visa or Master Card"
     )
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
+        self.cart = kwargs.pop('cart')
+        self.user = kwargs.pop('user')
+        super(PaymentForm, self).__init__(*args, **kwargs)
 
     def clean_name_on_card(self):
         name_on_card = self.cleaned_data.get('name_on_card')
@@ -266,16 +275,62 @@ class PaymentForm(forms.Form):
         else:
             raise forms.ValidationError("The Expiricy Date is not Valid")
 
-        return expiry
+        return expiry.replace('/', '')
 
-class PreCheckoutForm(forms.ModelForm):
-    class Meta:
-        model = Order
-        fields = ('order_type','address','adress2',
-                  'batch','time','car_model','car_license','car_brand',
-                  'car_color',)
-    
-        
+    def clean(self, **kwargs):
+        cleaned_data = super(PaymentForm, self).clean()
+        name_on_card = cleaned_data.get("name_on_card")
+        card_number = cleaned_data.get("card_number")
+        expiry = cleaned_data.get("expiry")
+        cvv = cleaned_data.get("cvv")
+        OrderNumber = self.request['order_number']
+        ref = 'Order #'+str(OrderNumber)
+        DataClient = self.request['data_client']
+        Amounts = Order.GetAmts(self.cart['amounts']['subtotal'], DataClient['tax_percent'], DataClient['type_of_sale'])
+        TotalAmt = Amounts['TotalAmt']
+        TaxAmt = Amounts['TaxAmt']
+        Subtotal = self.cart['amounts']['subtotal']
+
+        #exp = expiry.replace('/', '')
+        value = round(TotalAmt,2)
+        value = str(value)
+        valueTry = str(value).split(".")
+        if len(valueTry[1]) == 1:
+            value += "0"
+        value = value.replace('.','')
+        try:
+            pay = Order.Payment(name_on_card,card_number,expiry,value,cvv,ref)
+
+        except ConnectionError:
+            msj = "Something went wrong with the Payment Gateway, Try Again Later"
+            self.add_error('card_number',msj)
+        else:
+            if pay['status'] == False:
+                for error in pay['object']:
+                    msj = "%s - %s" % (error['code'],error['description'])
+                    self.add_error('card_number',msj)
+            else:
+                ThisOrder = Order.SaveOrder(DataClient,OrderNumber, Subtotal, TaxAmt, TotalAmt, self.user)
+                
+                OrderPaymentDetail.SaveOrderPaymentDetail(pay, ThisOrder)
+
+                AddressForEmail = ThisOrder.user.email
+
+                if self.user.username == GenericVariable.objects.val('guest.user'):
+                    guest = self.request['guest']
+                    this_guest = GuestDetail(
+                        firstname=guest['firstname'],
+                        lastname=guest['lastname'],
+                        email=guest['email'],
+                        phone=guest['phone'],
+                        order=this_order
+                        )
+                    this_guest.save()
+                    AddressForEmail = guest['email']
+
+                OrderDetail.SaveOrderDetail(self.request,ThisOrder)
+                Order.SendInvoice(ThisOrder, AddressForEmail, self.cart)
+
 class PreCheckoutForm_Delivery(forms.Form):
 
     type_of_sale = forms.CharField(widget=forms.HiddenInput())
@@ -304,7 +359,6 @@ class PreCheckoutForm_Delivery(forms.Form):
                                widget=forms.TextInput(attrs={'class': attr,
                                                              'placeholder':'Zip Code'}))
 
-    # 750 South Perry Street, Suite 400. Lawrenceville, GA 30046
     def clean(self):
         cleaned_data = super(PreCheckoutForm_Delivery, self).clean()
         address = cleaned_data.get('address')
@@ -319,7 +373,7 @@ class PreCheckoutForm_Delivery(forms.Form):
         if len(origins) > 0:
             i = 0
             for location in origins:
-                valid_address = ValidateAddress(key, location.address_for_truck,
+                valid_address = Order.ValidateAddress(key, location.address_for_truck,
                                                 addr_composed,location.max_miles)
                 if valid_address == True:
                     i+=1

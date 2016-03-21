@@ -1,4 +1,7 @@
 {% extends 'LocationManager/index.html' %}
+{% block HeaderAditionals %}
+    <meta http-equiv="refresh" content="60; url={{ request.path }}">
+{% endblock %}
 {% block WindowTittle %}| Orders {% endblock %}
 {% block Content %}
 <!-- page content -->
@@ -62,3 +65,4 @@
                 </div>
             </div>
 {% endblock %}
+{% block FooterDeclarations %}{% endblock %}

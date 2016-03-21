@@ -5,9 +5,32 @@
 		<h4><i class="fa fa-info-circle"></i> Instructions</h4>	
 	</div>
 	<div class="panel-body">
-		<h2 class="agencia-regular"><kbd>Step 3:</kbd> How do you want your Meal?</h2>
-		<p class="agencia-regular">Please select the ingredients for your product</p>
-		<blockquote class="agencia-regular">{{ product.description }}</blockquote>
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+				<h2><kbd>Step 3:</kbd> How do you want your Meal?</h2>
+				<p>Please select the ingredients for your product</p>
+				<blockquote class="agencia-regular">{{ product.description }}</blockquote>	
+			</div>
+			{% if restrictions %}
+			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+				<div class="alert alert-warning">
+					This item is only available at:
+					<ul class="list-group">
+					{% for restriction in restrictions %}
+						<li class="list-group-item list-group-item-warning">
+							{{ restriction.location }} <small>({{ restriction.location.location }})</small>
+						</li>
+					{% endfor %}
+					</ul>
+				</div>
+			</div>
+			{% endif %}
+		</div>
+		{% if product.image %}
+		<hr>
+		<img src="/media/{{ product.image }}" style="width:200px;">
+		<hr>
+		{% endif %}
 		<form id="product-form{{product.id}}" method="post" action="">
 		{% csrf_token %}
 			<input id="id_id_for_product" name="id_for_product" type="hidden" value="{{ product.id}}" />

@@ -136,7 +136,6 @@ def cart(cartList):
 		context['amounts'] = amounts
 		context['cart'] = the_cart
 		context['cart_is_empty'] = False
-		print subtotal
 
 	else:
 		context['cart_is_empty'] = True
@@ -166,7 +165,7 @@ class CategoryProductsList(ListView):
 	context_object_name = 'categories'
 
 	def get_queryset(self):
-		return get_list_or_404(category, Active=True, show_in_menu=True)
+		return category.GetMenu()
 
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
@@ -190,13 +189,13 @@ class MealForm(FormView):
 											   category=self.kwargs['pk_cat'], 
 											   pk=self.kwargs['pk_prod'])
 		
-		context['categories'] = get_list_or_404(category, Active=True, 
-											    show_in_menu=True)
+		context['categories'] = category.GetMenu()
 		
 		context['selected'] = str(self.kwargs['pk_cat'])
 		context['wizard'] = product.NeedWizard(self.kwargs['pk_prod'])
 		context['cart'] = cart(self.request.session['cart']) \
 						  if 'cart' in self.request.session else None
+		context['restrictions'] = ProductRestriction.GetProductRestriction(self.kwargs['pk_prod'])
 		return context
 
 	def form_valid(self, form, **kwargs):
@@ -257,8 +256,7 @@ class MealForm(FormView):
 @login_required(login_url='website:login-auth')
 def pre_checkout(request):
 	context = {}
-	context['categories'] = get_list_or_404(category, Active=True,
-			                                show_in_menu=True)
+	context['categories'] = category.GetMenu()
 
 	context['cart'] = cart(request.session['cart']) \
 						  if 'cart' in request.session else None
@@ -280,12 +278,8 @@ def pre_checkout(request):
 				addr_compose = "%s, %s, GA, %s" % (request.POST['address'],request.POST['city'],request.POST['zip_code'])
 				near = 0
 				for location in origins:
-					valid = ValidateAddress(
-											GenericVariable.objects.val('google.API.KEY'),
-											location.address_for_truck,
-											addr_compose,
-											location.max_miles
-											)
+					valid = Order.ValidateAddress(GenericVariable.objects.val('google.API.KEY'),
+												  location.address_for_truck, addr_compose, location.max_miles)
 					if not valid == False:
 						if near == 0:
 							near = valid
@@ -302,10 +296,7 @@ def pre_checkout(request):
 					'label_for_type_of_sale': 'Delivery',
 					'batch': near_batch,
 					'tax_percent':realOrigin.tax_percent,
-					'address': RewriteAddress(
-											  addr_compose,
-											  GenericVariable.objects.val('google.API.KEY')
-											  ),
+					'address': Order.RewriteAddress(addr_compose, GenericVariable.objects.val('google.API.KEY')),
 					'address2': request.POST['address2']
 				}
 				return HttpResponseRedirect(reverse('website:checkout'))
@@ -369,11 +360,70 @@ def pre_checkout(request):
 		context['default_type_of_sale'] = 'D'
 		return render(request, 'website/wizard/pre_checkout.html', context)
 
+class Checkout(FormView):
+	template_name = 'website/wizard/invoice.html'
+	form_class = PaymentForm
+	success_url = reverse_lazy('website:thankyou')
+
+	def get_context_data(self, **kwargs):
+
+		context = super(Checkout, self).get_context_data(**kwargs)
+
+		context['categories'] = category.GetMenu()
+
+		if 'cart' in self.request.session:
+			context['cart'] = cart(self.request.session['cart'])
+
+		if context['cart'] == None:
+			return HttpResponseRedirect(reverse('website:menu'))
+
+		if PaymentBatch.objects.BullpenIsOpen() == False:
+			return HttpResponseRedirect(reverse('website:closed'))
+
+		context['data_client'] = self.request.session['data_client'] \
+								 if 'data_client' in self.request.session \
+								 else HttpResponseRedirect(reverse('website:pre_checkout'))
+
+		context['guest'] = self.request.session['guest'] if 'guest' in self.request.session else False
+
+		context['tax'] = context['data_client']['tax_percent']
+
+		subtotal = Decimal(context['cart']['amounts']['subtotal'])
+		tax = context['data_client']['tax_percent']
+		delivery = int(GenericVariable.objects.val('delivery.cost'))
+
+		context['taxAmt'] = Decimal(tax*(subtotal + delivery))/100 \
+							if context['data_client']['type_of_sale'] == 'D' \
+							else Decimal(tax*subtotal)/100
+		
+		context['totalAmt'] = subtotal + context['taxAmt'] + delivery \
+							  if context['data_client']['type_of_sale'] == 'D' \
+							  else subtotal + context['taxAmt']
+
+		if not 'order_number' in self.request.session:
+			self.request.session['order_number'] = get_order_number()
+		
+		context['order_number'] = self.request.session['order_number']
+
+		return context
+
+	def get_form_kwargs(self, **kwargs):
+		kwargs = super(Checkout, self).get_form_kwargs()
+		kwargs['request'] = self.request.session
+		kwargs['cart'] = cart(self.request.session['cart'])
+		kwargs['user'] = self.request.user
+		return kwargs
+
+	def form_valid(self, form, **kwargs):
+		del self.request.session['data_client']
+		del self.request.session['order_number']
+		del self.request.session['cart']
+		return super(Checkout, self).form_valid(form)
+
 @login_required(login_url='website:login-auth')
 def checkout(request):
 	context = {}
-	context['categories'] = get_list_or_404(category, Active=True,
-			                                show_in_menu=True)
+	context['categories'] = category.GetMenu()
 
 	context['cart'] = cart(request.session['cart']) \
 					  if 'cart' in request.session else None
@@ -542,57 +592,10 @@ def checkout(request):
 				except KeyError:
 					PayEgg['transaction_id'] = 'Not Available'
 
-				if context['data_client']['type_of_sale'] == 'P':
-					this_order = Order(
-						order_number=context['order_number'],
-						order_type=context['data_client']['type_of_sale'],
-						user=request.user,
-						batch=PaymentBatch.objects.get(location=context['data_client']['location'], status='O'),
-						address='--',
-						time=context['data_client']['time'],
-						sub_amt=subtotal,
-						tax_amt=context['taxAmt'],
-						delivery_amt=0,
-						total_amt=context['totalAmt']
-					)
+				# Guardar la Orden
+				this_order = Order.SaveOrder(context['data_client'],context['order_number'], 
+											 subtotal, context['taxAmt'], context['totalAmt'], request.user)
 
-				elif context['data_client']['type_of_sale'] == 'PL':
-					Batching = PaymentBatch.objects.get(location=context['data_client']['location'], status='O')
-					this_order = Order(
-						order_number=context['order_number'],
-						order_type=context['data_client']['type_of_sale'],
-						user=request.user,
-						batch=Batching,
-						address=Batching.address_for_truck,
-						car_brand=context['data_client']['car_brand'],
-						car_model=context['data_client']['car_model'],
-						car_color=context['data_client']['car_color'],
-						car_license=context['data_client']['car_license'],
-						time='--',
-						sub_amt=subtotal,
-						tax_amt=context['taxAmt'],
-						delivery_amt=0,
-						total_amt=context['totalAmt']
-					)
-				elif context['data_client']['type_of_sale'] == 'D':
-					
-					this_order = Order(
-						order_number=context['order_number'],
-						order_type=context['data_client']['type_of_sale'],
-						user=request.user,
-						batch=PaymentBatch.objects.get(pk=context['data_client']['batch']),
-						address=context['data_client']['address'],
-						adress2=context['data_client']['address2'],
-						time='--',
-						sub_amt=subtotal,
-						tax_amt=context['taxAmt'],
-						delivery_amt=Decimal(GenericVariable.objects.val('delivery.cost')),
-						total_amt=context['totalAmt']
-					)
-				else:
-					return HttpResponseRedirect(reverse('website:pre_checkout'))
-
-				this_order.save()
 				AddressForEmail = this_order.user.email
 
 				if request.user.username == GenericVariable.objects.val('guest.user'):
@@ -842,124 +845,3 @@ def userLogout(request):
 @login_required(login_url='website:login-auth')
 def thankyou(request):
     return render(request,'website/thankyou.html')
-
-def RewriteAddress(address, key):
-	import googlemaps
-	gmaps = googlemaps.Client(key=key)
-	dest = gmaps.geocode(address)
-	return dest[0]['formatted_address']
-
-
-def ValidateAddress(key,origin,destination,max_miles):
-    import googlemaps
-    
-    gmaps = googlemaps.Client(key=key)
-    dest = gmaps.geocode(destination)
-    directions_result = gmaps.directions(
-        origin,
-        dest[0]['formatted_address']
-    )
-    
-    
-    miles = directions_result[0]['legs'][0]['distance']['text'].split(' ')
-    
-    if miles[1] == 'ft':
-    	result = Decimal(1)
-    elif  Decimal(miles[0]) < max_miles:
-        result = Decimal(miles[0])
-    else:
-        result = False
-
-    return result
-
-# VISA: 4788250000028291
-def PaymentRaw(name,card,exp,amt,cvv,ref):
-
-	import os,hashlib,hmac,time,base64,json,requests
-
-	apiKey = str(GenericVariable.objects.val('pay.apikey')).strip()
-
-	apiSecret = str(GenericVariable.objects.val('pay.secret')).strip()
-
-	token = str(GenericVariable.objects.val('pay.token')).strip()
-
-	if card.startswith('3'):
-		cardT = 'American Express'
-	elif card.startswith('4'):
-		cardT = 'Visa'
-	elif card.startswith('5'):
-		cardT = 'Mastercard'
-
-
-	payload = {
-			   "merchant_ref": ref,
-			   "transaction_type": "purchase",
-			   "method": "credit_card",
-			   "amount":amt,
-			   "partial_redemption":"false",
-			   "currency_code":"USD",
-			   "credit_card":{"type":cardT,
-			   				  "cardholder_name":name,
-			   				  "card_number":card,
-			   				  "exp_date":exp,
-			   				  "cvv":cvv
-			   				  }
-			   }
-	payload = json.dumps(payload)
-
-	# Crypographically strong random number
-	nonce = str(int(os.urandom(16).encode('hex'),16)) 
-
-	# Epoch timestamp in milli seconds
-	timestamp = str(int(round(time.time() * 1000)))
-
-	data = apiKey + nonce + timestamp + token + payload
-	
-	# Make sure the HMAC hash is in hex 
-	hmac = hmac.new(apiSecret, msg=data, digestmod=hashlib.sha256).hexdigest()
-	
-	# Authorization : base64 of hmac hash 
-	authorization = base64.b64encode(hmac);
-
-	url = GenericVariable.objects.val('pay.url')
-
-	headers = {
-			   'apikey':apiKey,
-			   'Authorization':authorization,
-			   'Content-type':'application/json',
-			   'nonce':nonce,
-			   'timestamp':timestamp,
-			   'token':token
-			   }
-
-	payment = requests.post(url, data=payload, headers=headers)
-
-	response = {}
-
-	try:
-		payment.json()['Error']['messages']
-
-	except KeyError:
-		response['status'] = True
-		response['object'] = payment
-	else:
-		Error = payment.json()['Error']['messages']
-		response['status'] = False
-		response['object'] = Error
-
-	return response
-
-def send_invoice_email(order,email,cart):
-	text = "Your Order "+order.order_number+" have been recived\nThank you...\nAny Questions?\nWrite us at support@bullpenarepas.com\nCall us at (404) 643 2568"
-	html = render_to_string('website/wizard/email_template.html',{'cart':cart,'order':order})
-	try:
-		send_mail(
-			'Your Order #'+ order.order_number +' From bullpenarepas.com', 
-			text,
-			'Bullpen Arepas <do-not-reply@bullpenarepas.com>', #From Email
-			[email], #To Email
-			fail_silently=False,
-			html_message=html
-		)
-	except BadHeaderError:
-		return HttpResponse('Invalid header found.')

@@ -2,6 +2,11 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.core.validators import MinValueValidator, MaxValueValidator, MinLengthValidator, MaxLengthValidator, ValidationError
+from django.shortcuts import get_list_or_404, get_object_or_404
+from django.core.mail import send_mail, BadHeaderError
+from django.template.loader import render_to_string
+from django.core.mail import send_mail, BadHeaderError
+from decimal import Decimal
 
 #Modelo para almacenar las categorias de las comidas ofrecidas
 class category(models.Model):
@@ -27,6 +32,10 @@ class category(models.Model):
 
 	def __unicode__(self):
 		return self.name
+
+	@classmethod
+	def GetMenu(self):
+		return get_list_or_404(category, Active=True, show_in_menu=True)
 
 	class Meta:
 		verbose_name = "Category"
@@ -136,7 +145,7 @@ class product(models.Model):
 			return wizard
 
 	@classmethod
-	def CartExplicit(self, cart):
+	def ProductDescription(self, ProductObject, VegetablesList=None, ExtrasList=None, PaidExtrasList=None, SaucesList=None):
 		pass
 
 	class Meta:
@@ -206,6 +215,19 @@ class ProductRestriction(models.Model):
 
 	def __unicode__(self):
 		return self.product.name + " Only for " + self.location.description
+
+	@classmethod
+	def GetProductRestriction(self, ProductId):
+		try:
+			Restrictions = ProductRestriction.objects.filter(product_id=ProductId)
+		except ProductRestriction.DoesNotExist:
+			return None
+		else:
+			return Restrictions
+
+	@classmethod
+	def GetCartRestrictions(self, Cart):
+		pass
 
 class PaymentBatchManager(models.Manager):
 	"""
@@ -296,6 +318,9 @@ class PaymentBatch(models.Model):
 		choices=batch_status
 		)
 
+	#Mail de Notificacion de Orden
+	notifier = models.EmailField(default='do-not-reply@bullpenarepas.com')
+
 	objects = PaymentBatchManager()
 
 	class Meta:
@@ -313,7 +338,6 @@ class PaymentBatch(models.Model):
 		else:
 			if not valid.id == self.id:
 				raise ValidationError({'location': "You can't save a Batch for this Location, already Open"})
-
 
 #Modelo de Ordenes Recibidas
 class Order(models.Model):
@@ -418,6 +442,185 @@ class Order(models.Model):
 	def __unicode__(self):
 		return str(self.order_number)
 
+	@classmethod
+	def RewriteAddress(self, address, key):
+		import googlemaps
+		gmaps = googlemaps.Client(key=key)
+		dest = gmaps.geocode(address)
+		return dest[0]['formatted_address']
+
+	@classmethod
+	def ValidateAddress(self,key,origin,destination,max_miles):
+		'''
+		https://maps.googleapis.com/maps/api/distancematrix/json?origins=1280+Jardin+CT+GA&destinations=San+Francisco|Victoria+BC&mode=bicycling&language=en-EN
+		'''
+		import googlemaps
+		from decimal import Decimal
+		import json, pprint
+
+		gmaps = googlemaps.Client(key=key)
+		dest = gmaps.geocode(destination)
+		directions_result = gmaps.directions(
+			origin,
+			dest[0]['formatted_address']
+		)
+		miles = directions_result[0]['legs'][0]['distance']['text'].split(' ')
+
+		if miles[1] == 'ft':
+		    result = True
+		elif  Decimal(miles[0]) < max_miles:
+		    result = True
+		else:
+		    result = False
+
+		return result
+
+	@classmethod
+	def SaveOrder(self, DataClient, OrderNumber, Subtotal, TaxAmt, TotalAmt, Customer):
+
+		TypeOfSale = DataClient['type_of_sale']
+
+		Batch = PaymentBatch.objects.get(location=DataClient['location'], status='O') \
+				if not TypeOfSale == 'D' else PaymentBatch.objects.get(pk=DataClient['batch'])
+
+		ThisOrder = Order(
+					order_number = OrderNumber,
+					order_type = TypeOfSale,
+					user = Customer,
+					batch = Batch,
+					address = Batch.address_for_truck \
+							  if not TypeOfSale == 'D' else DataClient['address'],
+					adress2 = DataClient['address2'] \
+							  if TypeOfSale == 'D' else '',
+					car_brand = DataClient['car_brand'] \
+								if TypeOfSale == 'PL' else '',
+					car_model = DataClient['car_model'] \
+								if TypeOfSale == 'PL' else '',
+					car_license = DataClient['car_license'] \
+								  if TypeOfSale == 'PL' else '',
+					time = '--' if not TypeOfSale == 'P' else DataClient['time'],
+					sub_amt = Subtotal,
+					delivery_amt = Decimal(GenericVariable.objects.val('delivery.cost')) \
+								   if TypeOfSale == 'D' else 0,
+					tax_amt = TaxAmt,
+					total_amt = TotalAmt
+				    )
+
+		ThisOrder.save()
+
+		return ThisOrder
+
+	@classmethod
+	def GetAmts(self, Subtotal,TaxPercent,TypeOfSale):
+		delivery = int(GenericVariable.objects.val('delivery.cost'))
+
+		Amounts = {}
+		Amounts['TaxAmt'] = Decimal(TaxPercent*(Subtotal + delivery))/100 \
+							if TypeOfSale == 'D' else Decimal(TaxPercent*Subtotal)/100
+		
+		Amounts['TotalAmt'] = Subtotal + Amounts['TaxAmt'] + delivery \
+							  if TypeOfSale == 'D' else Subtotal + Amounts['TaxAmt']
+
+		return Amounts
+
+	@classmethod
+	def Payment(self,name,card,exp,amt,cvv,ref):
+		'''
+		Funcion para realizar un pago a la pasarela payeezy
+		Datos de entrada validos: 	# VISA: 4788250000028291
+		con cualquier nombre, cualquier cualquier fecha de 
+		vencimiento que sea mayor a la actual y cualquier cvv.
+		'''
+
+		import os,hashlib,hmac,time,base64,json,requests
+
+		apiKey = str(GenericVariable.objects.val('pay.apikey')).strip()
+
+		apiSecret = str(GenericVariable.objects.val('pay.secret')).strip()
+
+		token = str(GenericVariable.objects.val('pay.token')).strip()
+
+		if card.startswith('3'):
+			cardT = 'American Express'
+		elif card.startswith('4'):
+			cardT = 'Visa'
+		elif card.startswith('5'):
+			cardT = 'Mastercard'
+
+
+		payload = {
+				   "merchant_ref": ref,
+				   "transaction_type": "purchase",
+				   "method": "credit_card",
+				   "amount":amt,
+				   "partial_redemption":"false",
+				   "currency_code":"USD",
+				   "credit_card":{"type":cardT,
+				   				  "cardholder_name":name,
+				   				  "card_number":card,
+				   				  "exp_date":exp,
+				   				  "cvv":cvv
+				   				  }
+				   }
+		payload = json.dumps(payload)
+
+		# Crypographically strong random number
+		nonce = str(int(os.urandom(16).encode('hex'),16)) 
+
+		# Epoch timestamp in milli seconds
+		timestamp = str(int(round(time.time() * 1000)))
+
+		data = apiKey + nonce + timestamp + token + payload
+		
+		# Make sure the HMAC hash is in hex 
+		hmac = hmac.new(apiSecret, msg=data, digestmod=hashlib.sha256).hexdigest()
+		
+		# Authorization : base64 of hmac hash 
+		authorization = base64.b64encode(hmac);
+
+		url = GenericVariable.objects.val('pay.url')
+
+		headers = {
+				   'apikey':apiKey,
+				   'Authorization':authorization,
+				   'Content-type':'application/json',
+				   'nonce':nonce,
+				   'timestamp':timestamp,
+				   'token':token
+				   }
+
+		payment = requests.post(url, data=payload, headers=headers)
+
+		response = {}
+
+		try:
+			payment.json()['Error']['messages']
+
+		except KeyError:
+			response['status'] = True
+			response['object'] = payment
+		else:
+			Error = payment.json()['Error']['messages']
+			response['status'] = False
+			response['object'] = Error
+
+		return response
+
+	@classmethod
+	def SendInvoice(self, Order, Email, Cart):
+		text = "Your Order "+Order.order_number+" have been recived\nThank you...\nAny Questions?\nWrite us at support@bullpenarepas.com\nCall us at (404) 643 2568"
+		html = render_to_string('website/wizard/email_template.html',{'cart':Cart,'order':Order})
+		subject = 'Your Order #'+ Order.order_number +' From bullpenarepas.com'
+		from_email = 'Bullpen Arepas <do-not-reply@bullpenarepas.com>'
+		cc_email = Order.batch.notifier
+
+		try:
+			send_mail(subject,text, from_email, [Email], fail_silently=True, html_message=html)
+			send_mail(subject,text, from_email, [cc_email], fail_silently=True, html_message=html)
+
+		except BadHeaderError:
+			return HttpResponse('Invalid header found.')
+
 class GuestDetail(models.Model):
     firstname = models.CharField(verbose_name='First Name', max_length=50)
     
@@ -436,7 +639,6 @@ class GuestDetail(models.Model):
 
     def __unicode__(self):
         return self.firstname + ' ' + self.lastname
-  
 
 #Modelo de Detalle del la Orden (Productos seleccionados por el cliente)
 class OrderDetail(models.Model):
@@ -465,6 +667,51 @@ class OrderDetail(models.Model):
 	def __unicode__(self):
 		return str(self.order_number.order_number)
 
+	@classmethod
+	def SaveExtraDetail(self, DetaillList, Item, ThisOrder, ArepaType):
+		for Extra in DetaillList:
+			ThisExtra = product.objects.get(pk=Extra)
+			Detail = OrderDetail(item=Item, arepa_type=ArepaType, 
+								 product_selected=ThisExtra, order_number=ThisOrder)
+			Detail.save()
+
+	@classmethod
+	def SaveOrderDetail(self, Cart, ThisOrder):
+		item_number=1
+		for item in Cart['cart']:
+			for i in range(int(item['qtty'])):
+				ThisProduct = product.objects.get(pk=item['product_id'])
+				Vegetables = item['vegetables']
+				PaidExtras = item['paid_extras']
+				Sauces = item['sauces']
+				Drink = [item['soft_drinks'],]
+
+				ThisItem = OrderDetail(
+					item=item_number,
+					arepa_type=ThisProduct.category.name,
+					product_selected=ThisProduct,
+					order_number=ThisOrder,
+					main_product=True,
+				)
+				ThisItem.save()
+
+				if ThisProduct.allow_extras == True:
+					OrderDetail.SaveExtraDetail(item['extras'],ThisItem.item,ThisOrder, 'With')
+				
+				if ThisProduct.allow_vegetables == True and not Vegetables == None:
+					OrderDetail.SaveExtraDetail(Vegetables, ThisItem.item, ThisOrder, 'Vegetables')
+
+				if ThisProduct.allow_paid_extras == True and not PaidExtras == None:
+					OrderDetail.SaveExtraDetail(PaidExtras, ThisItem.item, ThisOrder, 'Extras')
+
+				if ThisProduct.allow_sauces == True and not Sauces == None:
+					OrderDetail.SaveExtraDetail(Sauces, ThisItem.item, ThisOrder, 'Sauces')
+
+				if ThisProduct.allow_drinks == True and not Drink == '':
+					OrderDetail.SaveExtraDetail(Drink, ThisItem.item, ThisOrder, 'Drink')
+				
+				item_number+=1
+
 #Modelo de Detalle del pago de la orden (Tarjeta, etc)
 class OrderPaymentDetail(models.Model):
 	order_number = models.ForeignKey(Order)
@@ -491,6 +738,136 @@ class OrderPaymentDetail(models.Model):
 
 	def __unicode__(self):
 		return str(self.order_number.order_number)
+
+	@classmethod
+	def SaveOrderPaymentDetail(self, pay, Order):
+		PayEgg = {}
+
+		try:
+			PayEgg['cardholder_name'] = pay['object'].json()['card']['cardholder_name']
+		except KeyError:
+			PayEgg['cardholder_name'] = 'Not Available'
+
+		try:
+			PayEgg['card_type'] = pay['object'].json()['card']['type']
+		except KeyError:
+			PayEgg['card_type'] = 'Not Available'
+
+		try:
+			PayEgg['card_number'] = pay['object'].json()['card']['card_number']
+		except KeyError:
+			PayEgg['card_number'] = 'Not Available'
+
+		try:
+			PayEgg['exp_date'] = pay['object'].json()['card']['exp_date']
+		except KeyError:
+			PayEgg['exp_date'] = 'Not Available'
+
+		try:
+			PayEgg['gateway_message'] = pay['object'].json()['gateway_message']
+		except KeyError:
+			PayEgg['gateway_message'] = 'Not Available'
+
+		try:
+			PayEgg['bank_message'] = pay['object'].json()['bank_message']
+		except KeyError:
+			PayEgg['bank_message'] = 'Not Available'
+
+		try:
+			PayEgg['bank_resp_code'] = pay['object'].json()['bank_resp_code']
+		except KeyError:
+			PayEgg['bank_resp_code'] = 'Not Available'
+
+		try:
+			PayEgg['gateway_resp_code'] = pay['object'].json()['gateway_resp_code']
+		except KeyError:
+			PayEgg['gateway_resp_code'] = 'Not Available'
+
+		try:
+			PayEgg['cvv2'] = pay['object'].json()['cvv2']
+		except KeyError:
+			PayEgg['cvv2'] = 'Not Available'
+
+		try:
+			PayEgg['amount'] = pay['object'].json()['amount']
+		except KeyError:
+			PayEgg['amount'] = 'Not Available'
+		
+		try:
+			PayEgg['transaction_tag'] = pay['object'].json()['transaction_tag']
+		except KeyError:
+			PayEgg['transaction_tag'] = 'Not Available'
+
+		try:
+			PayEgg['transaction_type'] = pay['object'].json()['transaction_type']
+		except KeyError:
+			PayEgg['transaction_type'] = 'Not Available'
+		
+		try:
+			PayEgg['currency'] = pay['object'].json()['currency']
+		except KeyError:
+			PayEgg['currency'] = 'Not Available'
+
+		try:
+			PayEgg['correlation_id'] = pay['object'].json()['correlation_id']
+		except KeyError:
+			PayEgg['correlation_id'] = pay['object'].json()['correlation_id']
+
+		try:
+			PayEgg['token_type'] = pay['object'].json()['token']['token_type']
+		except KeyError:
+			PayEgg['token_type'] = 'Not Available'
+
+		try:
+			PayEgg['token_value'] = pay['object'].json()['token']['token_data']['value']
+		except KeyError:
+			PayEgg['token_value'] = 'Not Available'
+
+		try:
+			PayEgg['transaction_status'] = pay['object'].json()['transaction_status']
+		except KeyError:
+			PayEgg['transaction_status'] = 'Not Available'
+
+		try:
+			PayEgg['validation_status'] = pay['object'].json()['validation_status']
+		except KeyError:
+			PayEgg['validation_status'] = 'Not Available'
+
+		try:
+			PayEgg['method'] = pay['object'].json()['method']
+		except KeyError:
+			PayEgg['method'] = 'Not Available'
+
+		try:
+			PayEgg['transaction_id'] = pay['object'].json()['transaction_id']
+		except KeyError:
+			PayEgg['transaction_id'] = 'Not Available'
+
+		PayEgg_model = OrderPaymentDetail(
+					order_number = Order,
+					cardholder_name = PayEgg['cardholder_name'],
+					card_type = PayEgg['card_type'],
+					card_number = PayEgg['card_number'],
+					exp_date = PayEgg['exp_date'],
+					gateway_message = PayEgg['gateway_message'],
+					bank_message = PayEgg['bank_message'],
+					bank_resp_code = PayEgg['bank_resp_code'],
+					gateway_resp_code = PayEgg['gateway_resp_code'],
+					cvv2 = PayEgg['cvv2'],
+					amount = PayEgg['amount'],
+					transaction_tag = PayEgg['transaction_tag'],
+					transaction_type = PayEgg['transaction_type'],
+					currency = PayEgg['currency'],
+					correlation_id = PayEgg['correlation_id'],
+					token_type = PayEgg['token_type'],
+					token_value = PayEgg['token_value'],
+					transaction_status = PayEgg['transaction_status'],
+					validation_status = PayEgg['validation_status'],
+					method = PayEgg['method'],
+					transaction_id = PayEgg['transaction_id']
+				)
+		
+		PayEgg_model.save()
 
 class GenericVariableManager(models.Manager):
 	"""
