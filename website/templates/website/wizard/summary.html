@@ -14,7 +14,7 @@
     <tbody>
         <tr>
             <td>{{ order_number }}</td>
-            <td>{{ data_client.label_for_type_of_sale }}</td>
+            <td>{{ TypeOfSale.text}}</td>
         </tr>
     </tbody>
 </table>
@@ -25,14 +25,14 @@
             <td>Subtotal:</td>
             <td>$ {{ cart.amounts.subtotal }}</td>
         </tr>
-        {% if data_client.type_of_sale == 'D' %}
+        {% if TypeOfSale.code == 'D' %}
         <tr>
             <td>Delivery:</td>
             <td>$ {{ cart.amounts.delivery }}</td>
         </tr>
         {% endif %}
         <tr>
-            <td>Tax ({{ tax }}%):</td>
+            <td>Tax ({{ Batch.tax_percent }}%):</td>
             <td>$ {{ taxAmt|floatformat:2 }}</td>
         </tr>
         <tr class="success">

@@ -131,7 +131,7 @@ class BatchesList(ListView):
 
 class BatchesCreate(CreateView):
 	model = PaymentBatch
-	fields = ['location', 'address_for_truck', 'zip_code_for_truck', 'tax_percent', 'max_miles', 'batch_code', 'notifier', 'open_for_delivery']
+	fields = ['location', 'address_for_truck', 'zip_code_for_truck', 'tax_percent', 'max_miles', 'batch_code', 'notifier', 'open_for_delivery', 'Group']
 	success_url = reverse_lazy('LocationManager:batches-list')
 	template_name = 'LocationManager/paymentbatch_form.html'
 
@@ -144,7 +144,7 @@ class BatchesCreate(CreateView):
 
 class BatchesUpdate(UpdateView):
 	model = PaymentBatch
-	fields = ['status', 'location', 'address_for_truck', 'zip_code_for_truck', 'tax_percent', 'max_miles', 'batch_code', 'notifier', 'open_for_delivery', 'status']
+	fields = ['status', 'location', 'address_for_truck', 'zip_code_for_truck', 'tax_percent', 'max_miles', 'batch_code', 'notifier', 'open_for_delivery', 'Group', 'status']
 	success_url = reverse_lazy('LocationManager:batches-list')
 	template_name = 'LocationManager/paymentbatch_form.html'
 

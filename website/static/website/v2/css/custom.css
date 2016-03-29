@@ -352,8 +352,11 @@ dark,
 }
 
 .bg-green {
-    background: #417240 !important;
-    border: 1px solid #7d5527 !important;
+    background: #417240; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(left, #417240 , #7d5527); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, #417240 , #7d5527); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, #417240 , #7d5527); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, #417240 , #7d5527); /* Standard syntax */
     color: #fff;
 }
 
@@ -2191,7 +2194,7 @@ h4.graph_title {
 .tile-stats .icon {
     color: #BAB8B8;
     position: absolute;
-    right: 53px;
+    right: 65px;
     top: 22px;
     z-index: 1;
 }
@@ -6515,4 +6518,8 @@ table{
 .google:hover{
     color: #d34836;
     border-color: #d34836;
+}
+
+#menu-btn{
+    box-shadow: 3px 5px 5px #888;
 }

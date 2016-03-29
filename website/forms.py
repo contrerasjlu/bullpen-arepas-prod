@@ -283,15 +283,18 @@ class PaymentForm(forms.Form):
         card_number = cleaned_data.get("card_number")
         expiry = cleaned_data.get("expiry")
         cvv = cleaned_data.get("cvv")
+
+        ############################################
         OrderNumber = self.request['order_number']
         ref = 'Order #'+str(OrderNumber)
-        DataClient = self.request['data_client']
-        Amounts = Order.GetAmts(self.cart['amounts']['subtotal'], DataClient['tax_percent'], DataClient['type_of_sale'])
+        DataClient = {'Location': PaymentBatch.objects.get(pk=self.request['Batch']),
+                      'TypeOfSale': self.request['TypeOfSale']['code'],
+                      'Object':self.request[self.request['TypeOfSale']['code']]}
+        Amounts = Order.GetAmts(self.cart['amounts']['subtotal'], DataClient['Location'].tax_percent, self.request['TypeOfSale']['code'])
         TotalAmt = Amounts['TotalAmt']
         TaxAmt = Amounts['TaxAmt']
         Subtotal = self.cart['amounts']['subtotal']
 
-        #exp = expiry.replace('/', '')
         value = round(TotalAmt,2)
         value = str(value)
         valueTry = str(value).split(".")
@@ -310,7 +313,7 @@ class PaymentForm(forms.Form):
                     msj = "%s - %s" % (error['code'],error['description'])
                     self.add_error('card_number',msj)
             else:
-                ThisOrder = Order.SaveOrder(DataClient,OrderNumber, Subtotal, TaxAmt, TotalAmt, self.user)
+                ThisOrder = Order.SaveOrder(DataClient,OrderNumber,Subtotal,TaxAmt,TotalAmt, self.user)
                 
                 OrderPaymentDetail.SaveOrderPaymentDetail(pay, ThisOrder)
 
@@ -359,31 +362,36 @@ class PreCheckoutForm_Delivery(forms.Form):
                                widget=forms.TextInput(attrs={'class': attr,
                                                              'placeholder':'Zip Code'}))
 
+    NearestLocation = forms.CharField(widget=forms.HiddenInput(),required=False)
+
     def clean(self):
         cleaned_data = super(PreCheckoutForm_Delivery, self).clean()
         address = cleaned_data.get('address')
         city = cleaned_data.get('city')
         zip_code = cleaned_data.get('zip_code')
 
-        addr_composed = address +", "+city+", GA, "+str(zip_code)
-        
-        key = GenericVariable.objects.val(code='google.API.KEY')
-        
-        origins = PaymentBatch.objects.filter(status='O', open_for_delivery=True)
-        if len(origins) > 0:
-            i = 0
-            for location in origins:
-                valid_address = Order.ValidateAddress(key, location.address_for_truck,
-                                                addr_composed,location.max_miles)
-                if valid_address == True:
-                    i+=1
+        CustomerAddress = "%s, %s, GA, %s" % (address, city, str(zip_code))
+
+        NearestLocation = Order.ValidateAddress(CustomerAddress)
+        Near = 0
+        for Batch in NearestLocation:
+            if Batch['inRange'] == True:
+                if Near == 0:
+                    Near = Decimal(Batch['Distance'][0])
+                    ValidBatch = Batch
+                elif Near < Decimal(Batch['Distance'][0]):
+                    Near = Decimal(Batch['Distance'][0])
+                    ValidBatch = Batch
+
+        if Near == 0:
+            self.add_error('address',"We couldn't find a Location in the range for this Address")
         else:
-            self.add_error('address',"Sorry, we couldn't verify your address. Try it later")
-        
-        if i == 0:
-            self.add_error('address',"You must enter an address in the range")
+            cleaned_data['NearestLocation'] = ValidBatch['Location'].id
+
+        return cleaned_data
 
 class PreCheckoutForm_PickItUp(forms.Form):
+    
     type_of_sale = forms.CharField(widget=forms.HiddenInput())
 
     location = forms.ModelChoiceField(label="Where are you going to pick the order up?",
@@ -401,6 +409,7 @@ class PreCheckoutForm_PickItUp(forms.Form):
     )
 
 class PreCheckoutForm_ParkingLot(forms.Form):
+
     type_of_sale = forms.CharField(widget=forms.HiddenInput())
 
     location = forms.ModelChoiceField(label="Wich Parking lot Location are you?",
@@ -456,27 +465,4 @@ class WebInfoForm(forms.ModelForm):
                 'rows':8}
             )
         }
-
-def ValidateAddress(key,origin,destination,max_miles):
-    import googlemaps
-    from decimal import Decimal
-    import json, pprint
-
-    gmaps = googlemaps.Client(key=key)
-    print destination
-    dest = gmaps.geocode(destination)
-    directions_result = gmaps.directions(
-        origin,
-        dest[0]['formatted_address']
-    )
-    miles = directions_result[0]['legs'][0]['distance']['text'].split(' ')
-    
-    if miles[1] == 'ft':
-        result = True
-    elif  Decimal(miles[0]) < max_miles:
-        result = True
-    else:
-        result = False
-
-    return result
     

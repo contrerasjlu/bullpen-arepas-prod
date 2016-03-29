@@ -68,8 +68,11 @@
 	        {% if product.allow_qtty ==  True %}
 	        	{% include 'website/wizard/step3_qtty.html' %}
 	        {% endif %}
-	        <div class="">
-                <button type="submit" form="product-form{{product.id}}" class="btn btn-primary btn-lg">Add to Cart</button>
+	        <hr>
+	        <div class="pull-right">
+                <button type="submit" form="product-form{{product.id}}" class="btn btn-primary btn-lg">
+                	<i class="fa fa-shopping-cart"></i> Add to Cart
+                </button>
             </div>
 	    </form>
 	</div>

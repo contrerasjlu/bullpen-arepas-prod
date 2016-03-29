@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User, Group
 from django.core.validators import MinValueValidator, MaxValueValidator, MinLengthValidator, MaxLengthValidator, ValidationError
 from django.shortcuts import get_list_or_404, get_object_or_404
@@ -34,8 +35,15 @@ class category(models.Model):
 		return self.name
 
 	@classmethod
-	def GetMenu(self):
-		return get_list_or_404(category, Active=True, show_in_menu=True)
+	def GetMenu(self, Batch):
+		Categories = category.objects.filter(Active=True,show_in_menu=True)
+		CategoryMatrix = []
+		for Category in Categories:
+			Products = len(product.GetProducts(Category,Batch))
+			if Products > 0:
+				CategoryMatrix.append(Category)
+
+		return CategoryMatrix
 
 	class Meta:
 		verbose_name = "Category"
@@ -118,7 +126,8 @@ class product(models.Model):
 
 	def __unicode__(self):
 		return self.name + ' (' + self.description + ')'
-
+	'''
+	Este metodo esta deprecado por que fue creado para los wizard de productos.
 	@classmethod
 	def NeedWizard(self, pk):
 		this = product.objects.get(pk=pk)
@@ -143,15 +152,26 @@ class product(models.Model):
 			return False
 		else:
 			return wizard
-
-	@classmethod
-	def ProductDescription(self, ProductObject, VegetablesList=None, ExtrasList=None, PaidExtrasList=None, SaucesList=None):
-		pass
-
+	'''
 	class Meta:
 		verbose_name = "Product"
 		verbose_name_plural = "Products"
 		ordering = ['order_in_menu']
+
+	@classmethod
+	def GetProducts(self, Category, Batch):
+		Location = PaymentBatch.objects.get(pk=Batch)
+		Products = product.objects.filter(Active=True, category_id=Category)
+		ProductsMatrix = ()
+		for Product in Products:
+			Restrictions = ProductRestriction.GetProductRestriction(Product)
+			if len(Restrictions) == 0:
+				ProductsMatrix += (Product, )
+			else:
+				if len(Restrictions.filter(location=Location.location)) == 1:
+					ProductsMatrix += (Product, )
+
+		return ProductsMatrix
 
 class RelatedImages(models.Model):
     product = models.ForeignKey(product)
@@ -217,9 +237,9 @@ class ProductRestriction(models.Model):
 		return self.product.name + " Only for " + self.location.description
 
 	@classmethod
-	def GetProductRestriction(self, ProductId):
+	def GetProductRestriction(self, Product):
 		try:
-			Restrictions = ProductRestriction.objects.filter(product_id=ProductId)
+			Restrictions = ProductRestriction.objects.filter(product=Product)
 		except ProductRestriction.DoesNotExist:
 			return None
 		else:
@@ -227,12 +247,51 @@ class ProductRestriction(models.Model):
 
 	@classmethod
 	def GetCartRestrictions(self, Cart):
-		pass
+		'''
+		Se espera el Cart del contexto donde se reciben previamente
+		los restrcitions de los productos.
+
+		Se Realiza una depuracion eliminando duplicados para entregar solo
+		los que se debe buscar en ValidateAddress.
+		'''
+		'''
+		ValidLocations = []
+		for item in Cart['cart']:
+			for Restriction in item['restrictions']:
+				if not Restriction.location in ValidLocations:
+					ValidLocations.append(Restriction.location)
+		
+		return ValidLocations
+		'''
+
+		OpenLocations = PaymentBatch.objects.filter(status='O', open_for_delivery=True)
+
+		NotValidLocations = []
+		for Location in OpenLocations:
+			for item in Cart['cart']:
+				if item['restrictions'] ==  None:
+					continue
+					
+				else:				
+					NextItem = False
+					for Restriction in item['restrictions']:
+						if NextItem == True:
+							continue
+
+						if Restriction.location == Location.location:
+							NextItem = True
+							continue
+
+						if not Restriction.location in NotValidLocations:
+							NextItem = False
+							NotValidLocations.append(Location.location)
+
+		return NotValidLocations
 
 class PaymentBatchManager(models.Manager):
-	"""
+	'''
 	Table-level functionality to manage Payment Batch Model
-	"""
+	'''
 	def BullpenIsOpen(self):
 		count = PaymentBatch.objects.filter(status='O')
 		if len(count) > 0:
@@ -338,6 +397,31 @@ class PaymentBatch(models.Model):
 		else:
 			if not valid.id == self.id:
 				raise ValidationError({'location': "You can't save a Batch for this Location, already Open"})
+
+	@classmethod
+	def GetLocationsOpen(self):
+		'''
+		Get the locations that are open and return in an object
+		the count for delivery and the ones that are open for delivery
+
+		Output: Object
+		Locations: Collections of objects Batch with status Open ('O')
+		ForDelivery: Count of Locations Open for delivery
+		ForCountQry: Collections of objects Batch that are open for delivery (open_for_delivery=True)
+		'''
+		try:
+			Locations = PaymentBatch.objects.filter(status='O')
+		
+		except PaymentBatch.DoesNotExist:
+			return None
+		
+		else:
+			ForDelivery = Locations.filter(open_for_delivery=True)
+			Object = { 'Locations': Locations, 
+						'LocationsCount': len(Locations),
+					   'ForDelivery': len(ForDelivery), 
+					   'ForDeliveryQry': ForDelivery }
+			return Object
 
 #Modelo de Ordenes Recibidas
 class Order(models.Model):
@@ -450,55 +534,65 @@ class Order(models.Model):
 		return dest[0]['formatted_address']
 
 	@classmethod
-	def ValidateAddress(self,key,origin,destination,max_miles):
+	def ValidateAddress(self,CustomerAddress):
 		'''
-		https://maps.googleapis.com/maps/api/distancematrix/json?origins=1280+Jardin+CT+GA&destinations=San+Francisco|Victoria+BC&mode=bicycling&language=en-EN
+		Search one by one for the Batches Open for Delivery
+		Using the Google Maps API Client for Python.
+
+		Input: 
+		CustomerAddress: Address of the client
+
+		Output:
+		LocationMatrix: List with Dict, two parameters
+		                in the dict the Batch Id and the Distnace calculated
 		'''
 		import googlemaps
-		from decimal import Decimal
-		import json, pprint
 
-		gmaps = googlemaps.Client(key=key)
-		dest = gmaps.geocode(destination)
-		directions_result = gmaps.directions(
-			origin,
-			dest[0]['formatted_address']
-		)
-		miles = directions_result[0]['legs'][0]['distance']['text'].split(' ')
+		# Get the Open Batches with the ClassMethod
+		OpenBatches = PaymentBatch.GetLocationsOpen()
 
-		if miles[1] == 'ft':
-		    result = True
-		elif  Decimal(miles[0]) < max_miles:
-		    result = True
-		else:
-		    result = False
+		# Instanciates the Google Object for the Python API
+		GoogleObject = googlemaps.Client(key=GenericVariable.objects.val(code='google.API.KEY'))
 
-		return result
+		LocationMatrix = []
+		for Origin in OpenBatches['ForDeliveryQry']:
+			Result = GoogleObject.directions(Origin.address_for_truck,CustomerAddress)
+
+			Distance = Result[0]['legs'][0]['distance']['text'].split(' ')
+
+			if Distance[1] == 'ft':
+				inRange = True
+			elif Distance[1] == 'mi' and Decimal(Distance[0]) < Decimal(Origin.max_miles):
+				inRange = True
+			else:
+				inRange = False
+
+			LocationMatrix.append({'Location':Origin,
+								   'Distance':Distance,
+								   'inRange': inRange})
+		return LocationMatrix
 
 	@classmethod
 	def SaveOrder(self, DataClient, OrderNumber, Subtotal, TaxAmt, TotalAmt, Customer):
 
-		TypeOfSale = DataClient['type_of_sale']
-
-		Batch = PaymentBatch.objects.get(location=DataClient['location'], status='O') \
-				if not TypeOfSale == 'D' else PaymentBatch.objects.get(pk=DataClient['batch'])
-
+		TypeOfSale = DataClient['TypeOfSale']
+		Batch = DataClient['Location']
+		Address = "%s, %s, GA, %s" % (DataClient['Object'].get('Address',''),
+									  DataClient['Object'].get('City',''),
+									  str(DataClient['Object'].get('ZipCode','')))
 		ThisOrder = Order(
 					order_number = OrderNumber,
 					order_type = TypeOfSale,
 					user = Customer,
 					batch = Batch,
 					address = Batch.address_for_truck \
-							  if not TypeOfSale == 'D' else DataClient['address'],
-					adress2 = DataClient['address2'] \
-							  if TypeOfSale == 'D' else '',
-					car_brand = DataClient['car_brand'] \
-								if TypeOfSale == 'PL' else '',
-					car_model = DataClient['car_model'] \
-								if TypeOfSale == 'PL' else '',
-					car_license = DataClient['car_license'] \
-								  if TypeOfSale == 'PL' else '',
-					time = '--' if not TypeOfSale == 'P' else DataClient['time'],
+							  if not TypeOfSale == 'D' else Address,
+					adress2 = DataClient['Object'].get('Address2',''),
+					car_brand = DataClient['Object'].get('CarBrand',''),
+					car_color = DataClient['Object'].get('CarColor',''),
+					car_model = DataClient['Object'].get('CarModel',''),
+					car_license = DataClient['Object'].get('CarLicense',''),
+					time = DataClient['Object'].get('Time','--'),
 					sub_amt = Subtotal,
 					delivery_amt = Decimal(GenericVariable.objects.val('delivery.cost')) \
 								   if TypeOfSale == 'D' else 0,

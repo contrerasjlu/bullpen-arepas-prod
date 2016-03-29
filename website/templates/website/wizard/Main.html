@@ -1,0 +1,96 @@
+<div class="panel-body">
+	<p>We have 3 differents <kbd>methods</kbd> to deliver your order to your hands. Please select one of the following:</p>
+	<hr>
+	{# Delivery Badge #}
+	{% if locations.ForDelivery > 0 %}
+	<a href="{% url 'website:PreCheckoutDelivery' %}">
+		<div class="animated flipInY col-lg-4 col-md-4 col-sm-12 col-xs-12">
+		    <div class="tile-stats">
+		        <div class="icon">
+		            <i class="fa fa-home"></i>
+		        </div>
+		        <div class="count">1</div>
+		        <h3><a href="{% url 'website:PreCheckoutDelivery' %}">Delivery</a></h3>
+		        <h3>Don't Move!</h3>
+		        <p>We will deliver your order to your location</p>
+		    </div>
+		</div>
+	</a>
+	{% else %}
+	<div class="animated flipInY col-lg-4 col-md-4 col-sm-12 col-xs-12">
+	    <div class="tile-stats">
+	        <div class="icon">
+	            <i class="fa fa-home"></i>
+	        </div>
+	        <div class="count">1</div>
+	        <h3>Delivery</h3>
+	        <h3>We're sorry</h3>
+	        <p>Any of our locations are open for delivery</p>
+	    </div>
+	</div>
+	{% endif %}
+
+	{# Pick it up Badge #}
+	<a href="{% url 'website:PreCheckoutPickItUp' %}">
+		<div class="animated flipInY col-lg-4 col-md-4 col-sm-12 col-xs-12">
+		    <div class="tile-stats">
+		        <div class="icon">
+		            <i class="fa fa-bicycle"></i>
+		        </div>
+		        <div class="count">2</div>
+		        <h3><a href="{% url 'website:PreCheckoutPickItUp' %}">Pick it Up</a></h3>
+		        <h3>Welcome!</h3>
+		        <p>Come and visit us, your order will be done</p>
+		    </div>
+		</div>
+	</a>
+
+	{# Parking Lot Badge #}
+	<a href="{% url 'website:PreCheckoutParkingLot' %}">
+		<div class="animated flipInY col-lg-4 col-md-4 col-sm-12 col-xs-12">
+		    <div class="tile-stats">
+		        <div class="icon">
+		            <i class="fa fa-car"></i>
+		        </div>
+		        <div class="count">3</div>
+		        <h3><a href="{% url 'website:PreCheckoutParkingLot' %}">Parking Lot</a></h3>
+		        <h3>Welcome!</h3>
+		        <p>We will deliver your order to your car in our location</p>
+		    </div>
+		</div>
+	</a>
+	<hr>
+	<div class="row">
+		<div class="col-lg-offset-2 col-lg-8 col-md-offset-3 col-md-6 col-sm-12 col-xs-12">
+			<p>These are the Locations Open at this time:</p>
+			<table class="table table-hover table-responsive">
+				<thead>
+					<tr>
+						<th>Description</th>
+						<th>Address</th>
+						<th class="hidden-sm hidden-xs">Miles of Range</th>
+						<th class="hidden-sm hidden-xs">Open for Delivery Method</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for location in locations.Locations %}
+					<tr>
+						<td>{{ location.location.description }}</td>
+						<td>{{ location.address_for_truck }}</td>
+						<td class="hidden-sm hidden-xs">
+							<span class="label label-success">{{ location.max_miles }}</span>
+						</td>
+						<td class="hidden-sm hidden-xs">
+							{% if location.open_for_delivery == True %}
+							<span class="label label-success">Yes</span>
+							{% else %}
+							<span class="label label-danger">No</span>
+							{% endif %}
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>

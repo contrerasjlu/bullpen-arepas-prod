@@ -34,7 +34,7 @@
     <link rel="shortcut icon" href="{% static 'website/img/bullpen.ico' %}">
 </head>
 <body>
-    <header>
+    <header style="background-color: #7d5527;">
         <div class="row bg-green header-menu">
             <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 pull-left">
                 <img src="{% static 'website/img/Logo_mini.png' %}" class="img-responsive logo">
@@ -70,6 +70,7 @@
         </div>
     {% endblock %}
         <div class="row">
+        {% block SM-XS %}
         <!-- Only for sm and xs devices -->
             <div class="hidden-lg hidden-md col-sm-12 col-xs-12">
                 <div class="panel panel-success">
@@ -94,6 +95,7 @@
                                 </div>
                                 <div class="col-sm-6 col-xs-6">
                                     {% block content_left_xs %}
+                                    {% include 'website/wizard/TypeOfSale.html' %}
                                     {% if cart %}
                                         {% include 'website/wizard/cart.html' %}
                                     {% else %}
@@ -107,9 +109,11 @@
                 </div>
             </div>
         </div>
+        {% endblock %}
         <!-- end for only sm and xs devices -->
         <div class="row row-eq-height">
             <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">
+                {% block MenuSide %}
                 <div class="panel panel-success" id="menu-bullpen">
                     <div class="panel-heading">
                         <h4><i class="fa fa-cutlery"></i> On the Game</h4>
@@ -118,12 +122,13 @@
                         {% for category in categories %}
                         <div class="btn-group-vertical btn-block">
                             <a href="{% url 'website:ProductList' category.id %}" class="agencia-bold">
-                                <button type="button" class="btn btn-primary btn-lg btn-block">{{ category.name }}</button>
+                                <button type="button" id="menu-btn" class="btn btn-primary btn-lg btn-block">{{ category.name }}</button>
                             </a>
                         </div>
                         {% endfor %}
                     </div>
                 </div>
+                {% endblock %}
             </div>
 
             <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
@@ -151,10 +156,11 @@
                         <h4><i class="fa fa-shopping-cart"></i> My Order</h4>
                     </div>
                     <div class="panel-body">
+                        {% include 'website/wizard/TypeOfSale.html' %}
                         {% if cart %}
                             {% include 'website/wizard/cart.html' %}
                         {% else %}
-                            You don't have any items in your Order
+                            You don't have any items in your Order yet...
                         {% endif %}
                     </div>
                     {% endblock %}

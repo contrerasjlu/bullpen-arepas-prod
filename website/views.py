@@ -71,7 +71,7 @@ def closed(request):
 
 	context = {'text': WebText.objects.get_text('closed_text')}
 
-	return render(request, 'website/closed.html', context)
+	return render(request, 'website/wizard/closed.html', context)
 
 def cart(cartList):
 
@@ -128,12 +128,10 @@ def cart(cartList):
 
 			subtotal += (subtotal_extras + subtotal_vegetables + subtotal_paid_extras + subtotal_sauces + price)*int(qtty)
 
-		amounts = {
-			'subtotal': subtotal,
-			'delivery' : GenericVariable.objects.val('delivery.cost'),
-		}
+		context['amounts'] = {'subtotal': subtotal,
+							  'delivery' : GenericVariable.objects.val('delivery.cost'),
+							  }
 
-		context['amounts'] = amounts
 		context['cart'] = the_cart
 		context['cart_is_empty'] = False
 
@@ -144,19 +142,152 @@ def cart(cartList):
 ###############################################################################
 # NUEVO #
 ###############################################################################
+class PreCheckoutView(TemplateView):
+	template_name = 'website/wizard/PreCheckout.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(PreCheckoutView, self).get_context_data(**kwargs)
+
+		context['locations'] = PaymentBatch.GetLocationsOpen()
+
+		if context['locations'] is None:
+			return HttpResponseRedirect(reverse('website:closed'))
+
+		return context
+
+class PreCheckoutDelivery(FormView):
+	template_name = 'website/wizard/PreCheckoutDelivery.html'
+	form_class = PreCheckoutForm_Delivery
+	success_url = reverse_lazy('website:menu')
+
+	def get_initial(self):
+		initial = super(PreCheckoutDelivery, self).get_initial()
+		initial['type_of_sale'] = 'D'
+		return initial
+
+	def get_context_data(self, **kwargs):
+		context = super(PreCheckoutDelivery, self).get_context_data(**kwargs)
+
+		if PaymentBatch.objects.BullpenIsOpen() == False:
+			return HttpResponseRedirect(reverse('website:closed'))
+
+		return context
+
+	def form_valid(self, form, **kwargs):
+		'''
+		Return the Form Valid with the Batch that is nearest.
+		All the values are saved in session:
+		1. Batch: The Batch Selected as nearest
+		2. TypeOfSale: with the code and the text to show.
+		3. Dict for TypeOfSale: With values returned by the form.
+
+		*** Al the logic is in the form.py file ***
+		'''
+		self.request.session['Batch'] = form.cleaned_data.get('NearestLocation')
+		self.request.session['TypeOfSale'] = {'code':'D','text':'Delivery','icon':'fa fa-home'}
+		self.request.session['D'] = {'Address':form.cleaned_data.get('address'),
+									 'Address2': form.cleaned_data.get('address2',' '),
+									 'City': form.cleaned_data.get('city'),
+									 'ZipCode': form.cleaned_data.get('zip_code')}
+
+		return super(PreCheckoutDelivery, self).form_valid(form)
+
+class PreCheckoutPickItUp(FormView):
+	template_name = 'website/wizard/PreCheckoutPickItUp.html'
+	form_class = PreCheckoutForm_PickItUp
+	success_url = reverse_lazy('website:menu')
+
+	def get_initial(self):
+		initial = super(PreCheckoutPickItUp, self).get_initial()
+		initial['type_of_sale'] = 'P'
+		return initial
+
+	def get_context_data(self, **kwargs):
+		context = super(PreCheckoutPickItUp, self).get_context_data(**kwargs)
+
+		if PaymentBatch.objects.BullpenIsOpen() == False:
+			return HttpResponseRedirect(reverse('website:closed'))
+
+		return context
+
+	def form_valid(self, form, **kwargs):
+		'''
+		Return the Form Valid with the Batch that is nearest.
+		All the values are saved in session:
+		1. Batch: The Batch Selected by user
+		2. TypeOfSale: with the code and the text to show.
+		3. Dict for TypeOfSale: With values returned by the form.
+
+		*** Al the logic is in the form.py file ***
+		'''
+		Location = form.cleaned_data.get('location')
+		self.request.session['Batch'] = Location.id
+		self.request.session['TypeOfSale'] = {'code':'P','text':'Pick it Up','icon':'fa fa-bicycle'}
+		self.request.session['P'] = {'Time': form.cleaned_data.get('time')}
+
+		return super(PreCheckoutPickItUp, self).form_valid(form)
+
+class PreCheckoutParkingLot(FormView):
+	template_name = 'website/wizard/PreCheckoutParkingLot.html'
+	form_class = PreCheckoutForm_ParkingLot
+	success_url = reverse_lazy('website:menu')
+
+	def get_initial(self):
+		initial = super(PreCheckoutParkingLot, self).get_initial()
+		initial['type_of_sale'] = 'PL'
+		return initial
+
+	def get_context_data(self, **kwargs):
+		context = super(PreCheckoutParkingLot, self).get_context_data(**kwargs)
+
+		if PaymentBatch.objects.BullpenIsOpen() == False:
+			return HttpResponseRedirect(reverse('website:closed'))
+
+		return context
+
+	def form_valid(self, form, **kwargs):
+		'''
+		Return the Form Valid with the Batch that is nearest.
+		All the values are saved in session:
+		1. Batch: The Batch Selected by user
+		2. TypeOfSale: with the code and the text to show.
+		3. Dict for TypeOfSale: With values returned by the form.
+
+		*** Al the logic is in the form.py file ***
+		'''
+		Location = form.cleaned_data.get('location')
+		self.request.session['Batch'] = Location.id
+		self.request.session['TypeOfSale'] = {'code':'PL','text':'Parking Lot','icon':'fa fa-car'}
+		self.request.session['PL'] = {'CarModel':form.cleaned_data.get('car_model'),
+									  'CarBrand':form.cleaned_data.get('car_brand'),
+									  'CarColor':form.cleaned_data.get('car_color'),
+									  'CarLicense': form.cleaned_data.get('car_license')}
+		return super(PreCheckoutParkingLot, self).form_valid(form)
+
 class MenuHome(ListView):
 	model = category
 	template_name = 'website/wizard/step1.html'
 	context_object_name = 'categories'
 
 	def get_queryset(self):
-		return category.objects.filter(Active=True, show_in_menu=True)
+		return category.GetMenu(self.request.session['Batch'])
 
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
 		context = super(MenuHome, self).get_context_data(**kwargs)
 		context['cart'] = cart(self.request.session['cart']) \
 						  if 'cart' in self.request.session else None
+
+		context['Batch'] = PaymentBatch.objects.get(pk=self.request.session['Batch']) \
+						   if 'Batch' in self.request.session else None
+
+		if context['Batch'] == None:
+			return HttpResponseRedirect(reverse('website:PreCheckout'))
+		else:
+			context['TypeOfSale'] = self.request.session['TypeOfSale']
+			TypeOfSale = self.request.session['TypeOfSale']['code']
+			context[TypeOfSale] = self.request.session[TypeOfSale]
+
 		return context
 
 class CategoryProductsList(ListView):
@@ -165,15 +296,30 @@ class CategoryProductsList(ListView):
 	context_object_name = 'categories'
 
 	def get_queryset(self):
-		return category.GetMenu()
+		return category.GetMenu(self.request.session['Batch'])
 
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
 		context = super(CategoryProductsList, self).get_context_data(**kwargs)
-		context['products'] = get_list_or_404(product, Active=True, category=self.kwargs['pk'])
-		context['selected'] = str(self.kwargs['pk'])
+		context['products'] = product.GetProducts(str(self.kwargs['pk']),self.request.session['Batch'])
+		
+		# If there is no Product to Show
+		if context['products'] == None:
+			return HttpResponseRedirect(reverse('website:menu'))
+
+
 		context['cart'] = cart(self.request.session['cart']) \
 						  if 'cart' in self.request.session else None
+
+		context['Batch'] = PaymentBatch.objects.get(pk=self.request.session['Batch']) \
+						   if 'Batch' in self.request.session else None
+		
+		if context['Batch'] == None:
+			return HttpResponseRedirect(reverse('website:PreCheckout'))
+		else:
+			context['TypeOfSale'] = self.request.session['TypeOfSale']
+			TypeOfSale = self.request.session['TypeOfSale']['code']
+			context[TypeOfSale] = self.request.session[TypeOfSale]
 		return context
 
 class MealForm(FormView):
@@ -189,13 +335,21 @@ class MealForm(FormView):
 											   category=self.kwargs['pk_cat'], 
 											   pk=self.kwargs['pk_prod'])
 		
-		context['categories'] = category.GetMenu()
+		context['categories'] = category.GetMenu(self.request.session['Batch'])
 		
-		context['selected'] = str(self.kwargs['pk_cat'])
-		context['wizard'] = product.NeedWizard(self.kwargs['pk_prod'])
 		context['cart'] = cart(self.request.session['cart']) \
 						  if 'cart' in self.request.session else None
-		context['restrictions'] = ProductRestriction.GetProductRestriction(self.kwargs['pk_prod'])
+
+		context['Batch'] = PaymentBatch.objects.get(pk=self.request.session['Batch']) \
+						   if 'Batch' in self.request.session else None
+
+		if context['Batch'] == None:
+			return HttpResponseRedirect(reverse('website:PreCheckout'))
+		else:
+			context['TypeOfSale'] = self.request.session['TypeOfSale']
+			TypeOfSale = self.request.session['TypeOfSale']['code']
+			context[TypeOfSale] = self.request.session[TypeOfSale]
+
 		return context
 
 	def form_valid(self, form, **kwargs):
@@ -217,6 +371,8 @@ class MealForm(FormView):
 		thisProduct = get_object_or_404(product, Active=True, 
 										category=self.kwargs['pk_cat'], 
 										pk=self.kwargs['pk_prod'])
+
+		Restriction = ProductRestriction.GetProductRestriction(thisProduct.id)
 
 		NoVegetables = self.request.POST.get('NoVegetablesCheck', None)
 		vegetables = self.request.POST.getlist('vegetables', None) \
@@ -252,113 +408,31 @@ class MealForm(FormView):
 		self.request.session['cart'] = local_cart
 
 		return super(MealForm, self).form_valid(form)
-		
-@login_required(login_url='website:login-auth')
-def pre_checkout(request):
-	context = {}
-	context['categories'] = category.GetMenu()
 
-	context['cart'] = cart(request.session['cart']) \
-						  if 'cart' in request.session else None
+class ViewCartSummary(TemplateView):
+	template_name = 'website/wizard/ViewCartSummary.html'
 
-	if context['cart'] == None:
-		return HttpResponseRedirect(reverse('website:menu'))
+	def get_context_data(self, **kwargs):
+		context = super(ViewCartSummary, self).get_context_data(**kwargs)
+		context['categories'] = category.GetMenu(self.request.session['Batch'])
 
-	if PaymentBatch.objects.BullpenIsOpen() == False:
-		return HttpResponseRedirect(reverse('website:closed'))
+		if 'cart' in self.request.session:
+			context['cart'] = cart(self.request.session['cart'])
 
-	if 'data_client' in request.session:
-		del request.session['data_client']
+		if context['cart'] == None:
+			return HttpResponseRedirect(reverse('website:menu'))
 
-	if request.POST:
-		if request.POST['type_of_sale'] == 'D':
-			data_client = PreCheckoutForm_Delivery(request.POST)
-			if data_client.is_valid():
-				origins = PaymentBatch.objects.filter(status='O', open_for_delivery=True)
-				addr_compose = "%s, %s, GA, %s" % (request.POST['address'],request.POST['city'],request.POST['zip_code'])
-				near = 0
-				for location in origins:
-					valid = Order.ValidateAddress(GenericVariable.objects.val('google.API.KEY'),
-												  location.address_for_truck, addr_compose, location.max_miles)
-					if not valid == False:
-						if near == 0:
-							near = valid
-							near_batch = location.id
-						elif near > valid:
-							near =  valid
-							near_batch = location.id
-					else:
-						return HttpResponseRedirect(reverse('website:pre_checkout'))	
+		context['Batch'] = PaymentBatch.objects.get(pk=self.request.session['Batch']) \
+						   if 'Batch' in self.request.session else None
 
-				realOrigin = PaymentBatch.objects.get(pk=near_batch)
-				request.session['data_client'] = {
-					'type_of_sale': request.POST['type_of_sale'],
-					'label_for_type_of_sale': 'Delivery',
-					'batch': near_batch,
-					'tax_percent':realOrigin.tax_percent,
-					'address': Order.RewriteAddress(addr_compose, GenericVariable.objects.val('google.API.KEY')),
-					'address2': request.POST['address2']
-				}
-				return HttpResponseRedirect(reverse('website:checkout'))
-			else:
-				context['form_delivery'] = PreCheckoutForm_Delivery(request.POST)
-				context['form_pickitup'] = PreCheckoutForm_PickItUp(initial={ 'type_of_sale': 'P' })
-				context['form_parkinglot'] = PreCheckoutForm_ParkingLot(initial={ 'type_of_sale': 'PL' })
-				context['default_type_of_sale'] = 'D'
-				return render(request, 'website/wizard/pre_checkout.html', context)
-
-		elif request.POST['type_of_sale'] == 'P':
-			data_client = PreCheckoutForm_PickItUp(request.POST)
-			if data_client.is_valid():
-				location_desc =  PaymentBatch.objects.get(location_id=request.POST['location'], status='O')
-
-				request.session['data_client'] = {
-					'type_of_sale': request.POST['type_of_sale'],
-					'label_for_type_of_sale': 'Pick it Up',
-					'location': request.POST['location'],
-					'location_desc' : location_desc.address_for_truck,
-					'tax_percent': location_desc.tax_percent,
-					'time': request.POST['time']
-				}
-				return HttpResponseRedirect(reverse('website:checkout'))
-			else:
-				context['form_pickitup'] = PreCheckoutForm_PickItUp(request.POST)
-				context['form_delivery'] = PreCheckoutForm_Delivery(initial={ 'type_of_sale': 'D' })
-				context['form_parkinglot'] = PreCheckoutForm_ParkingLot(initial={ 'type_of_sale': 'PL' })
-				context['default_type_of_sale'] = 'P'
-				return render(request, 'website/wizard/pre_checkout.html', context)
-		
-		elif request.POST['type_of_sale'] == 'PL':
-			data_client = PreCheckoutForm_ParkingLot(request.POST)
-			if data_client.is_valid():
-				location_desc =  PaymentBatch.objects.get(location_id=request.POST['location'], status='O')
-
-				request.session['data_client'] = {
-					'type_of_sale': request.POST['type_of_sale'],
-					'label_for_type_of_sale': 'I\'m at the Parking Lot',
-					'location': request.POST['location'],
-					'location_desc' : location_desc.address_for_truck,
-					'tax_percent': location_desc.tax_percent,
-					'car_brand' : request.POST['car_brand'],
-					'car_model' : request.POST['car_model'],
-					'car_color' : request.POST['car_color'],
-					'car_license' : request.POST['car_license'],
-				}
-				return HttpResponseRedirect(reverse('website:checkout'))
-			else:
-				context['form_pickitup'] = PreCheckoutForm_PickItUp(initial={ 'type_of_sale': 'P' })
-				context['form_delivery'] = PreCheckoutForm_Delivery(initial={ 'type_of_sale': 'D' })
-				context['form_parkinglot'] = PreCheckoutForm_ParkingLot(request.POST)
-				context['default_type_of_sale'] = 'PL'
-				return render(request, 'website/wizard/pre_checkout.html', context)
+		if context['Batch'] == None:
+			return HttpResponseRedirect(reverse('website:PreCheckout'))
 		else:
-			return Http404("Wrong Way, Bad Request")
-	else:
-		context['form_delivery'] = PreCheckoutForm_Delivery(initial={ 'type_of_sale': 'D' })
-		context['form_pickitup'] = PreCheckoutForm_PickItUp(initial={ 'type_of_sale': 'P' })
-		context['form_parkinglot'] = PreCheckoutForm_ParkingLot(initial={ 'type_of_sale': 'PL' })
-		context['default_type_of_sale'] = 'D'
-		return render(request, 'website/wizard/pre_checkout.html', context)
+			context['TypeOfSale'] = self.request.session['TypeOfSale']
+			TypeOfSale = self.request.session['TypeOfSale']['code']
+			context[TypeOfSale] = self.request.session[TypeOfSale]
+
+		return context
 
 class Checkout(FormView):
 	template_name = 'website/wizard/invoice.html'
@@ -369,35 +443,39 @@ class Checkout(FormView):
 
 		context = super(Checkout, self).get_context_data(**kwargs)
 
-		context['categories'] = category.GetMenu()
-
-		if 'cart' in self.request.session:
-			context['cart'] = cart(self.request.session['cart'])
+		context['cart'] = self.request.session.get('cart',None)
 
 		if context['cart'] == None:
 			return HttpResponseRedirect(reverse('website:menu'))
+		else:
+			context['cart'] = cart(self.request.session['cart'])
 
 		if PaymentBatch.objects.BullpenIsOpen() == False:
 			return HttpResponseRedirect(reverse('website:closed'))
 
-		context['data_client'] = self.request.session['data_client'] \
-								 if 'data_client' in self.request.session \
-								 else HttpResponseRedirect(reverse('website:pre_checkout'))
+		context['Batch'] = PaymentBatch.objects.get(pk=self.request.session['Batch']) \
+						   if 'Batch' in self.request.session else None
+
+		if context['Batch'] == None:
+			return HttpResponseRedirect(reverse('website:PreCheckout'))
+		else:
+			context['TypeOfSale'] = self.request.session['TypeOfSale']
+			TypeOfSale = self.request.session['TypeOfSale']['code']
+			context[TypeOfSale] = self.request.session[TypeOfSale]
+			context['categories'] = category.GetMenu(self.request.session['Batch'])
 
 		context['guest'] = self.request.session['guest'] if 'guest' in self.request.session else False
 
-		context['tax'] = context['data_client']['tax_percent']
-
 		subtotal = Decimal(context['cart']['amounts']['subtotal'])
-		tax = context['data_client']['tax_percent']
+		tax = context['Batch'].tax_percent
 		delivery = int(GenericVariable.objects.val('delivery.cost'))
 
 		context['taxAmt'] = Decimal(tax*(subtotal + delivery))/100 \
-							if context['data_client']['type_of_sale'] == 'D' \
+							if TypeOfSale == 'D' \
 							else Decimal(tax*subtotal)/100
 		
 		context['totalAmt'] = subtotal + context['taxAmt'] + delivery \
-							  if context['data_client']['type_of_sale'] == 'D' \
+							  if TypeOfSale == 'D' \
 							  else subtotal + context['taxAmt']
 
 		if not 'order_number' in self.request.session:
@@ -410,324 +488,19 @@ class Checkout(FormView):
 	def get_form_kwargs(self, **kwargs):
 		kwargs = super(Checkout, self).get_form_kwargs()
 		kwargs['request'] = self.request.session
-		kwargs['cart'] = cart(self.request.session['cart'])
+		kwargs['cart'] = self.request.session.get('cart',None)
+		if not kwargs['cart'] is None:
+			kwargs['cart'] = cart(self.request.session['cart'])
 		kwargs['user'] = self.request.user
 		return kwargs
 
 	def form_valid(self, form, **kwargs):
-		del self.request.session['data_client']
+		del self.request.session['Batch']
+		del self.request.session[self.request.session['TypeOfSale']['code']]
+		del self.request.session['TypeOfSale']
 		del self.request.session['order_number']
 		del self.request.session['cart']
 		return super(Checkout, self).form_valid(form)
-
-@login_required(login_url='website:login-auth')
-def checkout(request):
-	context = {}
-	context['categories'] = category.GetMenu()
-
-	context['cart'] = cart(request.session['cart']) \
-					  if 'cart' in request.session else None
-
-	if context['cart'] == None:
-		return HttpResponseRedirect(reverse('website:menu'))
-
-	if PaymentBatch.objects.BullpenIsOpen() == False:
-		return HttpResponseRedirect(reverse('website:closed'))
-
-	if 'data_client' in request.session:
-		context['data_client'] = request.session['data_client']
-	else:
-		return HttpResponseRedirect(reverse('website:pre_checkout'))
-
-	if 'guest' in request.session:
-		context['guest'] = request.session['guest']
-
-	context['tax'] = context['data_client']['tax_percent']
-
-	subtotal = Decimal(context['cart']['amounts']['subtotal'])
-	tax = context['data_client']['tax_percent']
-	delivery = int(GenericVariable.objects.val('delivery.cost'))
-
-	context['taxAmt'] = Decimal(tax*(subtotal + delivery))/100 \
-						if context['data_client']['type_of_sale'] == 'D' \
-						else Decimal(tax*subtotal)/100
-	
-	context['totalAmt'] = subtotal + context['taxAmt'] + delivery \
-						  if context['data_client']['type_of_sale'] == 'D' \
-						  else subtotal + context['taxAmt']
-
-	if not 'order_number' in request.session:
-		request.session['order_number'] = get_order_number()
-	
-	context['order_number'] = request.session['order_number']
-	context['pay_form'] = PaymentForm()
-
-	if request.POST:
-		payment = PaymentForm(request.POST)
-
-		if payment.is_valid():
-			exp = request.POST['expiry'].replace('/', '')
-			value = round(context['totalAmt'],2)
-			value = str(value)
-			valueTry = str(value).split(".")
-			if len(valueTry[1]) == 1:
-				value += "0"
-			value = value.replace('.','')
-			ref = 'Order #'+str(context['order_number'])
-
-			pay = PaymentRaw(
-							 request.POST['name_on_card'],
-							 request.POST['card_number'],
-							 exp,
-							 value,
-							 request.POST['cvv'],
-							 ref
-							)
-
-			if pay['status'] == False:
-				context['pay_form'] = PaymentForm(request.POST)
-				context['FailTrx'] = "Transaction Fail:"
-				context['FailMsj'] = pay['object']
-				return render(request, 'website/invoice.html', context)
-			else:
-				PayEgg = {}
-
-				try:
-					PayEgg['cardholder_name'] = pay['object'].json()['card']['cardholder_name']
-				except KeyError:
-					PayEgg['cardholder_name'] = 'Not Available'
-
-				try:
-					PayEgg['card_type'] = pay['object'].json()['card']['type']
-				except KeyError:
-					PayEgg['card_type'] = 'Not Available'
-
-				try:
-					PayEgg['card_number'] = pay['object'].json()['card']['card_number']
-				except KeyError:
-					PayEgg['card_number'] = 'Not Available'
-
-				try:
-					PayEgg['exp_date'] = pay['object'].json()['card']['exp_date']
-				except KeyError:
-					PayEgg['exp_date'] = 'Not Available'
-
-				try:
-					PayEgg['gateway_message'] = pay['object'].json()['gateway_message']
-				except KeyError:
-					PayEgg['gateway_message'] = 'Not Available'
-
-				try:
-					PayEgg['bank_message'] = pay['object'].json()['bank_message']
-				except KeyError:
-					PayEgg['bank_message'] = 'Not Available'
-
-				try:
-					PayEgg['bank_resp_code'] = pay['object'].json()['bank_resp_code']
-				except KeyError:
-					PayEgg['bank_resp_code'] = 'Not Available'
-
-				try:
-					PayEgg['gateway_resp_code'] = pay['object'].json()['gateway_resp_code']
-				except KeyError:
-					PayEgg['gateway_resp_code'] = 'Not Available'
-
-				try:
-					PayEgg['cvv2'] = pay['object'].json()['cvv2']
-				except KeyError:
-					PayEgg['cvv2'] = 'Not Available'
-
-				try:
-					PayEgg['amount'] = pay['object'].json()['amount']
-				except KeyError:
-					PayEgg['amount'] = 'Not Available'
-				
-				try:
-					PayEgg['transaction_tag'] = pay['object'].json()['transaction_tag']
-				except KeyError:
-					PayEgg['transaction_tag'] = 'Not Available'
-
-				try:
-					PayEgg['transaction_type'] = pay['object'].json()['transaction_type']
-				except KeyError:
-					PayEgg['transaction_type'] = 'Not Available'
-				
-				try:
-					PayEgg['currency'] = pay['object'].json()['currency']
-				except KeyError:
-					PayEgg['currency'] = 'Not Available'
-
-				try:
-					PayEgg['correlation_id'] = pay['object'].json()['correlation_id']
-				except KeyError:
-					PayEgg['correlation_id'] = pay['object'].json()['correlation_id']
-
-				try:
-					PayEgg['token_type'] = pay['object'].json()['token']['token_type']
-				except KeyError:
-					PayEgg['token_type'] = 'Not Available'
-
-				try:
-					PayEgg['token_value'] = pay['object'].json()['token']['token_data']['value']
-				except KeyError:
-					PayEgg['token_value'] = 'Not Available'
-
-				try:
-					PayEgg['transaction_status'] = pay['object'].json()['transaction_status']
-				except KeyError:
-					PayEgg['transaction_status'] = 'Not Available'
-
-				try:
-					PayEgg['validation_status'] = pay['object'].json()['validation_status']
-				except KeyError:
-					PayEgg['validation_status'] = 'Not Available'
-
-				try:
-					PayEgg['method'] = pay['object'].json()['method']
-				except KeyError:
-					PayEgg['method'] = 'Not Available'
-
-				try:
-					PayEgg['transaction_id'] = pay['object'].json()['transaction_id']
-				except KeyError:
-					PayEgg['transaction_id'] = 'Not Available'
-
-				# Guardar la Orden
-				this_order = Order.SaveOrder(context['data_client'],context['order_number'], 
-											 subtotal, context['taxAmt'], context['totalAmt'], request.user)
-
-				AddressForEmail = this_order.user.email
-
-				if request.user.username == GenericVariable.objects.val('guest.user'):
-					guest = request.session['guest']
-					this_guest = GuestDetail(
-						firstname=guest['firstname'],
-						lastname=guest['lastname'],
-						email=guest['email'],
-						phone=guest['phone'],
-						order=this_order
-						)
-					this_guest.save()
-					AddressForEmail = guest['email']
-					request.session['finish'] = True
-
-				# Almacenar el detalle de la orden
-				the_session_cart = request.session['cart']
-				item_number=1
-				for item in the_session_cart:			
-					if item['type'] == 'Arepa':
-						arepa_type = item['arepa_type'] + ' ' + item['type']
-					else:
-						arepa_type = item['type']
-					a = product.objects.get(pk=item['product_id'])
-					this_detail = OrderDetail(
-						item=item_number,
-						arepa_type=arepa_type,
-						product_selected=a,
-						order_number=this_order,
-						main_product=True,
-					)
-					this_detail.save()
-					
-					if not a.extras == 0:
-						for extra in item['extras']:
-							extras_detail = OrderDetail(
-														item=this_detail.item,
-														arepa_type='With',
-														product_selected=product.objects.get(pk=extra),
-														order_number=Order.objects.get(pk=this_order.id)
-														)
-							extras_detail.save()
-					
-					try:
-						if not item['vegetables'] == None:
-							for vegetable in item['vegetables']:
-								vegetables_detail = OrderDetail(
-																item=this_detail.item,
-																arepa_type='Vegetables',
-																product_selected=product.objects.get(pk=vegetable),
-																order_number=Order.objects.get(pk=this_order.id)
-																)
-								vegetables_detail.save()
-
-					except KeyError:
-						pass
-
-
-					try:
-						if not item['paid_extras'] == None:
-							for paid_extra in item['paid_extras']:
-								paid_extras_detail = OrderDetail(
-																 item=this_detail.item,
-																 arepa_type='Paid Extra',
-																 product_selected=product.objects.get(pk=paid_extra),
-																 order_number=Order.objects.get(pk=this_order.id)
-																)
-								paid_extras_detail.save()
-
-					except KeyError:
-						pass
-
-					try:
-						if not item['sauces'] == None:
-							for sauce in item['sauces']:
-								sauce_detail = OrderDetail(
-														   item=this_detail.item,
-														   arepa_type='Sauces',
-														   product_selected=product.objects.get(pk=sauce),
-														   order_number=Order.objects.get(pk=this_order.id)
-														   )
-								sauce_detail.save()
-					except KeyError:
-						pass
-
-					if a.allow_drinks == True:
-						if not item['soft_drinks'] == '':
-							drink = OrderDetail(
-												item=this_detail.item,
-												arepa_type='Drink',
-												product_selected=product.objects.get(pk=item['soft_drinks']),
-												order_number=Order.objects.get(pk=this_order.id)
-												)
-							drink.save()
-					
-					item_number+=1
-
-				# Almacenar el detalle del pago
-
-				PayEgg_model = OrderPaymentDetail(
-					order_number = this_order,
-					cardholder_name = PayEgg['cardholder_name'],
-					card_type = PayEgg['card_type'],
-					card_number = PayEgg['card_number'],
-					exp_date = PayEgg['exp_date'],
-					gateway_message = PayEgg['gateway_message'],
-					bank_message = PayEgg['bank_message'],
-					bank_resp_code = PayEgg['bank_resp_code'],
-					gateway_resp_code = PayEgg['gateway_resp_code'],
-					cvv2 = PayEgg['cvv2'],
-					amount = PayEgg['amount'],
-					transaction_tag = PayEgg['transaction_tag'],
-					transaction_type = PayEgg['transaction_type'],
-					currency = PayEgg['currency'],
-					correlation_id = PayEgg['correlation_id'],
-					token_type = PayEgg['token_type'],
-					token_value = PayEgg['token_value'],
-					transaction_status = PayEgg['transaction_status'],
-					validation_status = PayEgg['validation_status'],
-					method = PayEgg['method'],
-					transaction_id = PayEgg['transaction_id']
-				)
-				PayEgg_model.save()
-				del request.session['data_client']
-				del request.session['order_number']
-				del request.session['cart']
-				send_invoice_email(this_order,AddressForEmail,context['cart'])
-				return HttpResponseRedirect(reverse('website:thankyou'))
-		else:
-			context['pay_form'] = PaymentForm(request.POST)
-
-	return render(request, 'website/wizard/invoice.html', context)
 
 class GuestLogin(CreateView):
 	model = GuestDetail
@@ -755,7 +528,7 @@ class GuestLogin(CreateView):
 			'phone' : phone
 		}
 
-		return HttpResponseRedirect(self.request.POST.get('next',reverse('website:pre_checkout')))
+		return HttpResponseRedirect(self.request.POST.get('next',reverse('website:PreCheckout')))
 
 class CreateAcct(FormView):
 	template_name = 'website/wizard/create-acct.html'
@@ -781,7 +554,12 @@ class CreateAcct(FormView):
 		user = authenticate(username=username, password=password)
 		if user is not None:
 			login(self.request,user)
-		return HttpResponseRedirect(self.request.POST.get('next',reverse('website:pre_checkout')))
+		return HttpResponseRedirect(self.request.POST.get('next',reverse('website:PreCheckout')))
+
+class ThankYouView(TemplateView):
+	"""Thank You View after a Order is complete"""
+	template_name = 'website/wizard/thankyou.html'
+		
 
 ###############################################################################
 def empty_cart(request):
@@ -791,19 +569,6 @@ def empty_cart(request):
 		del request.session['order_number']
 	return HttpResponseRedirect(reverse('website:menu'))
 
-@login_required(login_url='website:login-auth')
-def ViewCart(request):
-	context = cart(request)
-
-	if context['status']==False:
-		return HttpResponseRedirect(reverse('website:closed'))
-
-	if context['cart_is_empty'] == True:
-		return HttpResponseRedirect(reverse('website:menu'))
-
-	return render(request, 'website/cart-view.html', context)
-
-@login_required(login_url='website:login-auth')
 def DeleteItem(request, item):
 	context = cart(request)
 	if context['status']==False:
@@ -824,24 +589,7 @@ def DeleteItem(request, item):
 		return HttpResponseRedirect(reverse('website:menu'))
 
 @login_required(login_url='website:login-auth')
-def OrderHistory(request):
-	context = cart(request)
-	if context['status']==False:
-		return HttpResponseRedirect(reverse('website:closed'))
-
-	if 'guest' in request.session:
-		return HttpResponseRedirect(reverse('website:menu'))
-
-	context['orders'] = Order.objects.filter(user=request.user).order_by('-id')
-
-	return render(request, 'website/order-history.html', context)
-
-@login_required(login_url='website:login-auth')
 def userLogout(request):
     logout(request)
     next = request.GET.get('next','')
     return HttpResponseRedirect(reverse('website:login-auth'))
-
-@login_required(login_url='website:login-auth')
-def thankyou(request):
-    return render(request,'website/thankyou.html')

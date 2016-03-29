@@ -1,0 +1,21 @@
+{% extends 'website/wizard/step1.html' %}
+{% block right-side %}
+<div class="panel panel-success" id="instructions-bullpen">
+	<div class="panel-heading">
+		<h4>Review your Order</h4>	
+	</div>
+	<div class="panel-body">
+		<p>Please review your items selected and then click on the Continue to Chechout Button</p>
+		<hr>
+		{% include 'website/wizard/CartSummary.html' %}
+		<hr>
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <a href="{% url 'website:checkout' %}">
+            	<button type="button" class="btn btn-primary pull-right">
+            		<i class="fa fa-arrow-circle-right"></i> Continue to Checkout
+            	</button>
+            </a>
+        </div>
+	</div>
+</div>
+{% endblock %}

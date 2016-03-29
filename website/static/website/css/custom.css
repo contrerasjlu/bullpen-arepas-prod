@@ -1,0 +1,21 @@
+body{
+	background-image: url("../img/wood.jpg");
+}
+.header{
+	color:#fff;
+	height:728px;
+}
+
+.affix {
+	top: 0;
+	width: 100%;
+}
+
+.affix + .container-fluid {
+	padding-top: 70px;
+}
+
+.navbar-inverse{
+	background-color: #000;
+	height: 80px;
+}

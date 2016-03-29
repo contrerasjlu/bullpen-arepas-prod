@@ -1,0 +1,44 @@
+{% extends 'website/wizard/step1.html' %}
+{% block SM-XS %}
+{% endblock %}
+{% block MenuSide %}
+<div class="panel panel-success" id="menu-bullpen">
+	<div class="panel-heading">
+		<h4><i class="fa fa-info-circle"></i> Instructions</h4>	
+	</div>
+	<div class="panel-body">
+        <p><i class="fa fa-question-circle"></i> Dear Customer, Please select the <kbd>method</kbd> to deliver your order.</p>
+	</div>
+</div>
+{% endblock %}
+{% block right-side %}
+<div class="panel panel-success" id="instructions-bullpen">
+	<div class="panel-heading">
+		<h4>How do you Want the Order?</h4>	
+	</div>
+	<div class="panel-body">
+		{% if locations.LocationsCount > 0 %}
+			{% include 'website/wizard/Main.html' %}
+		{% else %}
+		{% load staticfiles %}
+		<div class="row">
+			<div class="col-lg-offset-4 col-lg-4 col-md-offset-4 col-md-4 col-sm-12 col-xs-12">
+				<img class="img-responsive" src="{% static 'website/img/closed_bullpenarepas.png' %}" alt="We're Closed">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-offset-4 col-lg-4 col-md-offset-4 col-md-4 col-sm-offset-4 col-sm-4 col-xs-12">
+				<h2 class="text-center">We're Sorry</h2>
+				<a href="{% url 'website:index' %}">
+					<button class="btn btn-block btn-primary">Back to Home Page</button>
+				</a>
+			</div>
+		</div>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}
+{% block left-side %}
+{% load staticfiles %}
+<img src="{% static 'website/v2/images/left-side.png' %}" class="img-responsive" />
+{% endblock %}

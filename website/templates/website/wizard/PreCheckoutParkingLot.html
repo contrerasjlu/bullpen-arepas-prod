@@ -1,0 +1,30 @@
+{% extends 'website/wizard/step1.html' %}
+{% block SM-XS %}
+{% endblock %}
+{% block MenuSide %}
+<div class="panel panel-success" id="menu-bullpen">
+	<div class="panel-heading">
+		<h4><i class="fa fa-info-circle"></i> Instructions</h4>	
+	</div>
+	<div class="panel-body">
+        <p><i class="fa fa-question-circle"></i> Dear Customer, Please complete the form with the description of the car you are in the  <kbd>Parking Lot</kbd>.</p>
+	</div>
+</div>
+{% endblock %}
+{% block right-side %}
+<div class="panel panel-success" id="instructions-bullpen">
+	<div class="panel-heading">
+		<h4><i class="fa fa-car"></i> Parking Lot Form</h4>	
+	</div>
+	<div class="panel-body">
+		<a href="{% url 'website:PreCheckout' %}"><i class="fa fa-arrow-left"></i> Back to Delivery Options</a>
+		<h2>Wich Location do you want to visit?</h2>
+		<p>Please complete the form so we can deliver the order to your Car.</p>
+		{% include 'website/wizard/pre_checkout_parkinglot.html' %}
+	</div>
+</div>
+{% endblock %}
+{% block left-side %}
+{% load staticfiles %}
+<img src="{% static 'website/v2/images/left-side.png' %}" class="img-responsive" />
+{% endblock %}

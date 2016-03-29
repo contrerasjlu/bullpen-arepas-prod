@@ -1,0 +1,30 @@
+{% extends 'website/wizard/step1.html' %}
+{% block SM-XS %}
+{% endblock %}
+{% block MenuSide %}
+<div class="panel panel-success" id="menu-bullpen">
+	<div class="panel-heading">
+		<h4><i class="fa fa-info-circle"></i> Instructions</h4>	
+	</div>
+	<div class="panel-body">
+        <p><i class="fa fa-question-circle"></i> Dear Customer, Please complete the form with the address you want your order to get <kbd>Delivery</kbd>.</p>
+	</div>
+</div>
+{% endblock %}
+{% block right-side %}
+<div class="panel panel-success" id="instructions-bullpen">
+	<div class="panel-heading">
+		<h4><i class="fa fa-bicycle"></i> Pick it Up Form</h4>	
+	</div>
+	<div class="panel-body">
+		<a href="{% url 'website:PreCheckout' %}"><i class="fa fa-arrow-left"></i> Back to Delivery Options</a>
+		<h2>Wich Location do you want to visit?</h2>
+		<p>Please select the Location you are willing to visit and the time you will be there.</p>
+		{% include 'website/wizard/pre_checkout_pickitup.html' %}
+	</div>
+</div>
+{% endblock %}
+{% block left-side %}
+{% load staticfiles %}
+<img src="{% static 'website/v2/images/left-side.png' %}" class="img-responsive" />
+{% endblock %}

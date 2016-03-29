@@ -6,13 +6,32 @@
 {% block Content %}
 <!-- page content -->
             <div class="right_col" role="main">
+                <!--
                 <div class="row">
-                
-                {% for batch in batches %}
-                    <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                         <div class="x_panel tile">
                             <div class="x_title">
-                                <h2>{{ batch }} <small>{{ batch.code }}</small></h2>
+                                Filter the Location to Watch
+                            </div>
+                            <div class="x_content">
+                                <div class="form-group">
+                                    <select class="form-control filter-batch">
+                                        {% for option in batches %}
+                                        <option value="{{ option.id }}">{{ option }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                -->
+                <div class="row">
+                {% for batch in batches %}
+                    <div id="batch-{{ batch.id }}" class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel tile">
+                            <div class="x_title">
+                                <h2>{{ batch }} <small>{{ batch.batch_code }}</small></h2>
                                 <div class="clearfix"></div>
                             </div>
                             <div class="x_content">
@@ -65,4 +84,5 @@
                 </div>
             </div>
 {% endblock %}
-{% block FooterDeclarations %}{% endblock %}
+{% block FooterDeclarations %}
+{% endblock %}

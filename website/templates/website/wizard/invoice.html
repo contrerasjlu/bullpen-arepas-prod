@@ -17,43 +17,43 @@
         </div>
         <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                {% if data_client.type_of_sale == 'D' %}
+                {% if TypeOfSale.code == 'D' %}
                 <ul class="list-group">
                     <li class="list-group-item list-group-item-warning">Address:</li>
-                    <li class="list-group-item">{{ data_client.address }}</li>
+                    <li class="list-group-item">{{ D.Address}}</li>
                 </ul>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                 <ul class="list-group">
                     <li class="list-group-item list-group-item-warning">Address Line 2:</li>
-                    <li class="list-group-item">{{ data_client.address2 }}</li>
+                    <li class="list-group-item">{{ D.Address2 }}</li>
                 </ul>
             </div>
                 {% endif %}
-                {% if data_client.type_of_sale == 'P' %}
+                {% if TypeOfSale.code == 'P' %}
                 <ul class="list-group">
                     <li class="list-group-item list-group-item-warning">Location:</li>
-                    <li class="list-group-item">{{ data_client.location_desc }}</li>
+                    <li class="list-group-item">{{ Batch.address_for_truck }}</li>
                 </ul>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                 <ul class="list-group">
                     <li class="list-group-item list-group-item-warning">Time:</li>
-                    <li class="list-group-item">{{ data_client.time }} min</li>
+                    <li class="list-group-item">{{ P.Time }} min</li>
                 </ul>
             </div>
                 {% endif %}
-                {% if data_client.type_of_sale == 'PL' %}
+                {% if TypeOfSale.code == 'PL' %}
                 <ul class="list-group">
                     <li class="list-group-item list-group-item-warning">Location:</li>
-                    <li class="list-group-item">{{ data_client.location_desc }}</li>
+                    <li class="list-group-item">{{ Batch.address_for_truck }}</li>
                 </ul>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                 <ul class="list-group">
                     <li class="list-group-item list-group-item-warning">Car Description::</li>
                     <li class="list-group-item">
-                        {{ data_client.car_color}}, {{ data_client.car_brand}}, {{ data_client.car_model}}, {{ data_client.car_license}}
+                        {{ PL.CarColor}}, {{ PL.CarBrand }}, {{ PL.CarModel }}, {{ PL.CarLicense }}
                     </li>
                 </ul>
             </div>
@@ -63,75 +63,7 @@
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <button class="btn btn-primary btn-sm" data-toggle="collapse" data-target=".invoice-hide"><i class="fa fa-shopping-cart"></i> Show Deatiled Order</button>
                 <div class="invoice-hide collapse">
-                    <table class="table table-condensed table-bordered">
-                        <thead>
-                            <tr class="warning">
-                                <th>#</th>
-                                <th>Product Description</th>
-                                <th>Code</th>
-                                <th>Quantity</th>
-                                <th width="40%">Description</th>
-                                <th>Unit Price</th>
-                                <th>Subtotal</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in cart.cart %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td>{{ item.product }}</td>
-                                <td>{{ item.product.code }}</td>
-                                <td>{{ item.qtty }}</td>
-                                <td>
-                                {# Main Ingredients #}
-                                {% if item.product.allow_extras == True %}
-                                <b>Main Ingredient(s):</b>
-                                {% for extras in item.extras %}
-                                {{ extras.description }}{% if forloop.last %}/ {% else %}, {% endif %}
-                                {% empty %}No Players Allowed /
-                                {% endfor %}
-                                {% endif %}
-
-                                {# Vegetables #}
-                                {% if item.product.allow_vegetables == True %}
-                                <b>Vegetables:</b>
-                                {% for vegetable in item.vegetables %}
-                                {{ vegetable.description }}{% if forloop.last %}/ {% else %}, {% endif %}
-                                {% empty %}<span class="label label-danger">No Vegetables</span>/
-                                {% endfor %}
-                                {% endif %}
-
-                                {# Paid Extras #}
-                                {% if item.product.allow_paid_extras == True %}
-                                <b>Extras:</b>
-                                {% for paid in item.paid_extras %}
-                                {{ paid.description }}{% if forloop.last %}/ {% else %}, {% endif %}
-                                {% empty %}<span class="label label-danger">No Extras</span>/
-                                {% endfor %}
-                                {% endif %}
-
-                                {# Sauces #}
-                                {% if item.product.allow_sauces == True %}
-                                <b>Sauces:</b>
-                                {% for sauce in item.sauces %}
-                                {{ sauce.description }}{% if forloop.last %}/ {% else %}, {% endif %}
-                                {% empty %}<span class="label label-danger">No Sauces</span>/
-                                {% endfor %}
-                                {% endif %}
-
-                                {# Soft Drink #}
-                                {% if item.product.allow_drinks == True %}
-                                <b>Drink:</b>
-                                {{ item.soft_drinks }}
-                                {% endif %}
-
-                                </td>
-                                <td>${{ item.unit_price }}</td>
-                                <td>${{ item.price }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    {% include 'website/wizard/CartSummary.html' %}
                 </div>
             </div>
         </div>                                

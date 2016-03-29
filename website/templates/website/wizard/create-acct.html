@@ -24,7 +24,7 @@
                         {% if next %}
                             <input type="hidden" name="next" value="{{ next }}">
                         {% else %}
-                            <input type="hidden" name="next" value="{% url 'website:pre_checkout' %}">
+                            <input type="hidden" name="next" value="{% url 'website:PreCheckout' %}">
                         {% endif %}
                         <button class="btn btn-primary" type="submit">Register me</button>
                         <hr>

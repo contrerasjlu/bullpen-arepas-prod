@@ -1,0 +1,69 @@
+<table class="table table-condensed table-bordered">
+    <thead>
+        <tr class="warning">
+            <th>#</th>
+            <th>Product Description</th>
+            <th>Code</th>
+            <th>Quantity</th>
+            <th width="40%">Description</th>
+            <th>Unit Price</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in cart.cart %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.product }}</td>
+            <td>{{ item.product.code }}</td>
+            <td>{{ item.qtty }}</td>
+            <td>
+            {# Main Ingredients #}
+            {% if item.product.allow_extras == True %}
+            <b>Main Ingredient(s):</b>
+            {% for extras in item.extras %}
+            {{ extras.description }}{% if forloop.last %}/ {% else %}, {% endif %}
+            {% empty %}No Players Allowed /
+            {% endfor %}
+            {% endif %}
+
+            {# Vegetables #}
+            {% if item.product.allow_vegetables == True %}
+            <b>Vegetables:</b>
+            {% for vegetable in item.vegetables %}
+            {{ vegetable.description }}{% if forloop.last %}/ {% else %}, {% endif %}
+            {% empty %}<span class="label label-danger">No Vegetables</span>/
+            {% endfor %}
+            {% endif %}
+
+            {# Paid Extras #}
+            {% if item.product.allow_paid_extras == True %}
+            <b>Extras:</b>
+            {% for paid in item.paid_extras %}
+            {{ paid.description }}{% if forloop.last %}/ {% else %}, {% endif %}
+            {% empty %}<span class="label label-danger">No Extras</span>/
+            {% endfor %}
+            {% endif %}
+
+            {# Sauces #}
+            {% if item.product.allow_sauces == True %}
+            <b>Sauces:</b>
+            {% for sauce in item.sauces %}
+            {{ sauce.description }}{% if forloop.last %}/ {% else %}, {% endif %}
+            {% empty %}<span class="label label-danger">No Sauces</span>/
+            {% endfor %}
+            {% endif %}
+
+            {# Soft Drink #}
+            {% if item.product.allow_drinks == True %}
+            <b>Drink:</b>
+            {{ item.soft_drinks }}
+            {% endif %}
+
+            </td>
+            <td>${{ item.unit_price }}</td>
+            <td>${{ item.price }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
