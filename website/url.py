@@ -6,8 +6,12 @@ from website import views
 urlpatterns = [
     url(r'^$', views.index, name="index"),
 
+    url(r'^website/aboutus/$', views.AboutUsView.as_view(), name="AboutUsView"),
+
+    url(r'^website/ourproducts/$', views.OurProductsView.as_view(), name="OurProductsView"),
+
     # Vistas autogeneradas
-    url(r'^login/$', auth_views.login,
+    url(r'^accounts/login/$', auth_views.login,
         {'template_name': 'website/wizard/login.html'}, name='login-auth'),
     
     url(r'^login/guest/$', views.GuestLogin.as_view(), name="guest-login"),

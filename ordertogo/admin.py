@@ -9,14 +9,43 @@ class categoryAdmin(admin.ModelAdmin):
 admin.site.register(category, categoryAdmin)
 
 class productAdmin(admin.ModelAdmin):
-    list_display = ['category','code','name','description', 'price','order_in_menu']
+    list_display = ['name', 'category','code','description', 'price','order_in_menu','Active']
     search_fields = ['category__name','code','name','description','price','order_in_menu']
+    list_filter = ['category__name', 'Active', 'price']
+    actions = ['InactivateSelection','ActivateSelection']
+
+    def InactivateSelection(self, request, queryset):
+
+    	if queryset.count() == 0:
+    		self.message_user(request, "You must select at least one product to inactivate",level=40)
+
+    	for Product in queryset:
+    		Product.Active = False
+    		Product.save()
+
+    	self.message_user(request, '%d items were Inactivated' % (queryset.count()))
+
+    InactivateSelection.short_description = "Inactivate Selected Products"
+
+    def ActivateSelection(self, request, queryset):
+    	if queryset.count() == 0:
+    		self.message_user(request, "You must select at least one product to activate",level=40)
+
+    	for Product in queryset:
+    		Product.Active = True
+    		Product.save()
+
+    	self.message_user(request, '%d item were Activated' % (queryset.count()))
+
+    ActivateSelection.short_description = "Activate Selected Products"
+
 
 admin.site.register(product, productAdmin)
 
 class PaymentBatchAdmin(admin.ModelAdmin):
 	list_display = ['date', 'location','max_miles','batch_code','status']
 	search_fields = ['date', 'location__description', 'max_miles','batch_code','status']
+	list_filter = ['date', 'status', 'location__description']
 
 admin.site.register(PaymentBatch, PaymentBatchAdmin)
 
@@ -35,6 +64,7 @@ admin.site.register(LocationsAvailable, locationsAdmin)
 class OrdersAdmin(admin.ModelAdmin):
 	list_display = ['order_number','order_type','user','batch','address','time']
 	search_fields = ['order_number','order_type','user','batch','address','time']
+	list_filter = ['order_type']
 
 admin.site.register(Order, OrdersAdmin)
 

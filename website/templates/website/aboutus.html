@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+{% load staticfiles %}
+  <title>Bullpen Arepas - The Taste of Home Run</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{% static 'website/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/custom.css' %}">
+  <link rel="shortcut icon" href="{% static 'website/img/favicon.png' %}">
+</hed>
+<body>
+    {% block menu %}
+        {% include 'website/nav-menu.html' with aboutus="active" %}
+    {% endblock menu %}
+    
+    {% block inner %}
+    <div class="clearfix"></div>
+    <div class="container" id="menu-section">
+        <div class="row">
+            <div class="col-lg-4">
+                <img src="{% static 'website/img/aboutus-text.png' %}" class="img-responsive">
+                <hr>
+            </div>
+        </div>
+        <div class="row" id="about-us-panel">
+            <div class="panel panel-default">
+                <div class="col-lg-7 img-truck">
+                    <blockquote>
+                        <p>{% lorem ipsum %}</p>
+                    </blockquote>
+                </div>
+                <div class="col-lg-5 img-truck">
+                    <img src="{% static 'website/img/truck.jpg' %}" class="img-responsive img-rounded">
+                    <hr>
+                    <blockquote cite="Georgia, USA">
+                        <p>Enjoy the best tasting Venezuelan food aboard our Food Truck Bullpen Arepas. We prepare Arepas that are gluten free, and that filled with fresh ingredients.</p>
+                    </blockquote>
+                    <span class="ga"><img src="{% static 'website/img/map-location.png' %}" alt="Map-Location"> Georgia, USA</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+    {% include 'website/footer.html' %}
+
+    <script src="{% static 'website/js/jquery.min.js' %}"></script>
+    <script src="{% static 'website/js/bootstrap.min.js' %}"></script>
+</body>
+</html>

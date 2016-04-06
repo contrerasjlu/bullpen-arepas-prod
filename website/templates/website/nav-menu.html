@@ -1,0 +1,23 @@
+{% load staticfiles %}
+<nav class="navbar navbar-inverse navbar-fixed-top" id="bullpen-menu">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{% url 'website:index' %}">
+                <img src="{% static 'website/img/mini-logo.png' %}" class="img-responsive">
+            </a>
+        </div>
+        <ul class="nav navbar-nav navbar-right bullpen-menu-list">
+            <li class="bullpen-menu"><a href="{% url 'website:index' %}">Home</a></li>
+            <li class="divider-vertical"></li>
+            <li class="{{ aboutus|default:''}} bullpen-menu"><a href="{% url 'website:AboutUsView' %}">About Us</a></li>
+            <li class="divider-vertical"></li>
+            <li class="{{ ourproducts|default:''}} bullpen-menu"><a href="{% url 'website:OurProductsView' %}">Our Products</a></li> 
+            <li class="divider-vertical"></li>
+            <li class="bullpen-menu"><a href="http://events.bullpenarepas.com">Events</a></li>
+            {% if status == True %}
+            <li class="divider-vertical"></li>
+            <li class="bullpen-menu"><a href="{% url 'website:PreCheckout' %}">Order OnLine</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>

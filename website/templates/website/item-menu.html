@@ -1,0 +1,8 @@
+{% load staticfiles %}
+<div class="row item-panel">
+	<div class="col-lg-12">
+		<img src="{% static image %}" alt="{{ name }}" class="img-responsive img-rounded">
+	</div>
+	<div class="col-lg-8">{{ name }}</div>
+	<div class="col-lg-4 pull-right">$ {{ price }}</div>
+</div>

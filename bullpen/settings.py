@@ -112,10 +112,11 @@ DATABASES = {
     }
 }
 '''
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pruebas_bullpenarepas',
+        'NAME': 'pruebas_bullpenarepas2',
         'USER': 'bullpen_db_test',
         'PASSWORD': '$omosEquip0',
         'HOST': 'db.bullpenarepas.com',
@@ -123,7 +124,6 @@ DATABASES = {
     }
 }
 '''
-
 
 
 # Internationalization

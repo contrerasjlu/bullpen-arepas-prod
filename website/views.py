@@ -5,8 +5,6 @@ from django.contrib.auth import authenticate, login, logout, user_logged_in
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.generic.edit import FormView
 from django.views.generic import CreateView, ListView, TemplateView
-from django.core.mail import send_mail, BadHeaderError
-from django.template.loader import render_to_string
 from random import randint
 from datetime import *
 from decimal import Decimal
@@ -28,6 +26,22 @@ def get_order_number():
 			sure = True
 	return order
 
+class AboutUsView(TemplateView):
+	template_name = 'website/aboutus.html'
+
+	def get_context_data(self, **kwargs):
+	    context = super(AboutUsView, self).get_context_data(**kwargs)
+	    context['status'] = PaymentBatch.objects.BullpenIsOpen()
+	    return context
+
+class OurProductsView(TemplateView):
+	template_name = 'website/ourproducts.html'
+
+	def get_context_data(self, **kwargs):
+	    context = super(OurProductsView, self).get_context_data(**kwargs)
+	    context['status'] = PaymentBatch.objects.BullpenIsOpen()
+	    return context
+
 def index(request):
 	context = {}
 
@@ -39,6 +53,9 @@ def index(request):
 	
 	# Collecting Texts
 	texts = WebText.objects.filter(active=True)
+
+	#Collect the Opens Locations
+	context['locations'] = PaymentBatch.GetLocationsOpen()
 	
 	# Wrapping the text out
 	for text in texts:
@@ -514,6 +531,7 @@ class GuestLogin(CreateView):
 	    return context
 
 	def form_valid(self, form):
+		logout(self.request)
 		username = GenericVariable.objects.val('guest.user')
 		password = GenericVariable.objects.val('guest.password')
 

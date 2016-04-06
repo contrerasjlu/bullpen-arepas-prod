@@ -306,13 +306,13 @@ class PaymentBatch(models.Model):
 
 	#Fecha de la apertura del lote de pago
 	date = models.DateTimeField(
-		verbose_name="Fecha de Lote",
+		verbose_name="Open Date",
 		auto_now_add=True, 
 		help_text="Fecha en la que se Aperturó el Truck"
 		)
 
 	close_date = models.DateTimeField(
-		verbose_name="Fecha y Hora de Cierre", 
+		verbose_name="Close Date", 
 		auto_now=True
 	)
 
@@ -370,7 +370,7 @@ class PaymentBatch(models.Model):
 
 	#Estado del Lote de Pago
 	status = models.CharField(
-		verbose_name="Estado",
+		verbose_name="State",
 		help_text="Indica el Estado Actual del Lote, Debe estar Abierto para Aceptar Pedidos", 
 		max_length=1,
 		default="O",
@@ -418,7 +418,7 @@ class PaymentBatch(models.Model):
 		else:
 			ForDelivery = Locations.filter(open_for_delivery=True)
 			Object = { 'Locations': Locations, 
-						'LocationsCount': len(Locations),
+					   'LocationsCount': len(Locations),
 					   'ForDelivery': len(ForDelivery), 
 					   'ForDeliveryQry': ForDelivery }
 			return Object
