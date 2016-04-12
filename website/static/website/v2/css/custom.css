@@ -6523,3 +6523,7 @@ table{
 #menu-btn{
     box-shadow: 3px 5px 5px #888;
 }
+
+.arepa-label{
+    font-size: 10px;
+}

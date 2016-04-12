@@ -131,7 +131,7 @@ class BatchesList(ListView):
 
 class BatchesCreate(CreateView):
 	model = PaymentBatch
-	fields = ['location', 'address_for_truck', 'zip_code_for_truck', 'tax_percent', 'max_miles', 'batch_code', 'notifier', 'open_for_delivery', 'Group']
+	fields = ['location', 'address_for_truck', 'zip_code_for_truck', 'tax_percent', 'max_miles', 'batch_code', 'notifier', 'open_for_delivery']
 	success_url = reverse_lazy('LocationManager:batches-list')
 	template_name = 'LocationManager/paymentbatch_form.html'
 
@@ -249,6 +249,20 @@ class HandleOrderDetail(ListView):
 			else:
 				EXTRAS = 'Nothing'
 
+			this_additionals = OrderDetail.objects.filter(
+				order_number_id=item.order_number_id,
+				item=item.item,
+				main_product=False,
+				arepa_type='Additionals'
+			)
+
+			if len(this_additionals) > 0:
+				ADDITIONALS = ''
+				for additional in this_additionals:
+					ADDITIONALS += additional.product_selected.name + ', '
+			else:
+				ADDITIONALS = 'Nothing'
+
 			this_vegetables = OrderDetail.objects.filter(
 				order_number_id=item.order_number_id,
 				item=item.item,
@@ -316,7 +330,7 @@ class HandleOrderDetail(ListView):
 			'item': item.item,
 			'product':item.product_selected.name,
 			'code': item.product_selected.code,
-			'description': item.arepa_type + ' WITH: ' + EXTRAS + ' VEGETABLES: ' + VEGETABLES + ' EXTRAS: ' + PAID_EXTRAS + ' SAUCES: ' + SAUCES + ' DRINK: ' + DRINK,
+			'description': item.arepa_type + ' WITH: ' + EXTRAS + ' ADDITIONALS: ' + ADDITIONALS + ' VEGETABLES: ' + VEGETABLES + ' EXTRAS: ' + PAID_EXTRAS + ' SAUCES: ' + SAUCES + ' DRINK: ' + DRINK,
 			'subtotal' : sub
 			}
 			cart_for_context.append(this_item)

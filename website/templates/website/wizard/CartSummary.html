@@ -18,6 +18,11 @@
             <td>{{ item.product.code }}</td>
             <td>{{ item.qtty }}</td>
             <td>
+            {# Arepa Type #}
+            {% if item.product.allow_type == True %}
+            <span class="label label-warning arepa-label">{{ item.type }} Arepa</span> / 
+            {% endif %}
+
             {# Main Ingredients #}
             {% if item.product.allow_extras == True %}
             <b>Main Ingredient(s):</b>
@@ -27,12 +32,21 @@
             {% endfor %}
             {% endif %}
 
+            {# Additionals Ingredients #}
+            {% if item.product.allow_additionals == True %}
+            <b>Additionals Ingredient(s):</b>
+            {% for additional in item.additionals %}
+            {{ additional.description }}{% if forloop.last %}/ {% else %}, {% endif %}
+            {% empty %}<span class="label label-danger arepa-label">No Additionals Players</span>/
+            {% endfor %}
+            {% endif %}
+
             {# Vegetables #}
             {% if item.product.allow_vegetables == True %}
             <b>Vegetables:</b>
             {% for vegetable in item.vegetables %}
             {{ vegetable.description }}{% if forloop.last %}/ {% else %}, {% endif %}
-            {% empty %}<span class="label label-danger">No Vegetables</span>/
+            {% empty %}<span class="label label-danger arepa-label">No Vegetables</span>/
             {% endfor %}
             {% endif %}
 
@@ -41,7 +55,7 @@
             <b>Extras:</b>
             {% for paid in item.paid_extras %}
             {{ paid.description }}{% if forloop.last %}/ {% else %}, {% endif %}
-            {% empty %}<span class="label label-danger">No Extras</span>/
+            {% empty %}<span class="label label-danger arepa-label">No Extras</span>/
             {% endfor %}
             {% endif %}
 
@@ -50,14 +64,14 @@
             <b>Sauces:</b>
             {% for sauce in item.sauces %}
             {{ sauce.description }}{% if forloop.last %}/ {% else %}, {% endif %}
-            {% empty %}<span class="label label-danger">No Sauces</span>/
+            {% empty %}<span class="label label-danger arepa-label">No Sauces</span>/
             {% endfor %}
             {% endif %}
 
             {# Soft Drink #}
             {% if item.product.allow_drinks == True %}
             <b>Drink:</b>
-            {{ item.soft_drinks }}
+            {{ item.drink.name }} ({{ item.drink.description }})
             {% endif %}
 
             </td>

@@ -1,14 +1,14 @@
 <div class="form-group">
     <div class="form-inline">
-    <h2>Meats</h2>
-    {% for field in form.extras %}
+    <h2>Additionals</h2>
+    {% for field in form.additionals %}
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
             {{ field }}
         </div>
     {% endfor %}
         <div class="form-group has-error">
-        {% if form.extras.errors %}
-            {% for error in form.extras.errors %}
+        {% if form.additionals.errors %}
+            {% for error in form.additionals.errors %}
             <span class="label label-danger">{{ error }}</span>
             {% endfor %}                                        
         {% endif %}
@@ -16,7 +16,7 @@
     </div>
     <div class="row">
     	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-    		<p>{{ form.extras.help_text }}</p>
+    		<p>{{ form.additionals.help_text }}</p>
     	</div>
     </div>
 </div>

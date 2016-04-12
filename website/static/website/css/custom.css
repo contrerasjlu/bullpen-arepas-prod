@@ -134,3 +134,18 @@ border-right: 1px solid #FFF;
 .product-bullpen{
 	bottom: -45px;
 }
+
+.btn-primary{
+	background-color: #417240;
+	border-color: #417240;
+}
+
+.btn-primary:hover{
+	background-color: #fff;
+	color: #417240;
+	border-color: #417240;
+}
+
+#last-section{
+	margin-bottom: 50px;
+}

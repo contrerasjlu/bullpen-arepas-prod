@@ -5,15 +5,11 @@ from website import views
 
 urlpatterns = [
     url(r'^$', views.index, name="index"),
+    url(r'^pages/aboutus/$', views.AboutUsView.as_view(), name="AboutUsView"),
+    url(r'^pages/ourproducts/$', views.OurProductsView.as_view(), name="OurProductsView"),
 
-    url(r'^website/aboutus/$', views.AboutUsView.as_view(), name="AboutUsView"),
-
-    url(r'^website/ourproducts/$', views.OurProductsView.as_view(), name="OurProductsView"),
-
-    # Vistas autogeneradas
-    url(r'^accounts/login/$', auth_views.login,
+    url(r'^login/$', auth_views.login,
         {'template_name': 'website/wizard/login.html'}, name='login-auth'),
-    
     url(r'^login/guest/$', views.GuestLogin.as_view(), name="guest-login"),
     url(r'^signup/$', views.CreateAcct.as_view(), name="new-account"),
     url(r'^logout/$', views.userLogout, name="userlogout"),
@@ -38,11 +34,9 @@ urlpatterns = [
     # Resumen de Carro
     url(r'^menu/checkout/view-cart/$', views.ViewCartSummary.as_view(), name="ViewCartSummary"),
 
-    url(r'^menu/checkout/payment/$',
-        login_required(views.Checkout.as_view()), name="checkout"),
+    url(r'^menu/checkout/payment/$', login_required(views.Checkout.as_view(), login_url='website:login-auth'), name="checkout"),
 
-    url(r'^menu/checkout/thankyou/$', 
-        login_required(views.ThankYouView.as_view()), name="thankyou"),
+    url(r'^menu/checkout/thankyou/$', login_required(views.ThankYouView.as_view(), login_url='website:login-auth'), name="thankyou"),
     
     url(r'^menu/view-cart/delete-item/(?P<item>[0-9]+)/$', views.DeleteItem, name="delete-item"),
     url(r'^menu/empty-cart/$', views.empty_cart, name="empty_cart"),

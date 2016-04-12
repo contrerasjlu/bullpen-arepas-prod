@@ -3,8 +3,9 @@ from .models import *
 
 # Register your models here.
 class categoryAdmin(admin.ModelAdmin):
-    list_display = ['code','name','description','Active']
+    list_display = ['code','name','description','show_in_menu','order','Active']
     search_fields = ['code','name','description']
+    list_filter = ['Active', 'show_in_menu']
 
 admin.site.register(category, categoryAdmin)
 
@@ -12,6 +13,17 @@ class productAdmin(admin.ModelAdmin):
     list_display = ['name', 'category','code','description', 'price','order_in_menu','Active']
     search_fields = ['category__name','code','name','description','price','order_in_menu']
     list_filter = ['category__name', 'Active', 'price']
+    fieldsets = [
+        (None,          {'fields': ['category','code','name','description','allow_type','Active']}),
+        ('Meats',       {'fields': ['allow_extras','extras'], 'classes': ['collapse']}),
+        ('Additionals', {'fields': ['allow_additionals','max_additionals'], 'classes': ['collapse']}),
+        ('Vegetables',  {'fields': ['allow_vegetables','max_vegetables'], 'classes': ['collapse']}),
+        ('Extras',      {'fields': ['allow_paid_extras','max_paid_extras'], 'classes': ['collapse']}),
+        ('Sauces',      {'fields': ['allow_sauces','max_sauces'], 'classes': ['collapse']}),
+        ('Drinks',      {'fields': ['allow_drinks'], 'classes': ['collapse']}),
+        ('Quantity',    {'fields': ['allow_qtty','max_qtty']}),
+        ('Price & Menu',{'fields': ['price','order_in_menu','image']}),
+    ]
     actions = ['InactivateSelection','ActivateSelection']
 
     def InactivateSelection(self, request, queryset):

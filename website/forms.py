@@ -39,7 +39,7 @@ class ArepaForm(forms.Form):
                                                     ),
                                                 queryset=product.objects.filter(
                                                     Active=True,category=category.objects.get(
-                                                        code='vegetables'
+                                                        code='system.vegetables'
                                                         )
                                                     ).order_by('order_in_menu'),
                                                 help_text="Wich vegetables do you want on your item"
@@ -53,7 +53,14 @@ class ArepaForm(forms.Form):
         label="Choose the Players with your Arepa...",
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={'class': attr3}),
-        queryset=product.objects.filter(Active=True,category=category.objects.get(code='extras')).order_by('order_in_menu')
+        queryset=product.objects.filter(Active=True,category=category.objects.get(code='system.meats')).order_by('order_in_menu')
+    )
+
+    additionals = forms.ModelMultipleChoiceField(
+        label="Choose the Additionals Players with your Arepa...",
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': attr3}),
+        queryset=product.objects.filter(Active=True,category=category.objects.get(code='system.additionals')).order_by('order_in_menu')
     )
 
     paid_extras = forms.ModelMultipleChoiceField(
@@ -61,7 +68,7 @@ class ArepaForm(forms.Form):
         help_text="Choose as much as 4 additional players for your item ($1.00 each)",
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={'class': attr3}),
-        queryset=product.objects.filter(Active=True,category=category.objects.get(code='paid.extras')).order_by('order_in_menu')
+        queryset=product.objects.filter(Active=True,category=category.objects.get(code='system.paid.extras')).order_by('order_in_menu')
     )
 
     NoSaucesCheck = forms.BooleanField(initial=False, 
@@ -74,15 +81,14 @@ class ArepaForm(forms.Form):
         help_text="Select the sauces thet you want.",
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={'class': attr3}),
-        queryset=product.objects.filter(Active=True,category=category.objects.get(code='sauces')).order_by('order_in_menu')
+        queryset=product.objects.filter(Active=True,category=category.objects.get(code='system.sauces')).order_by('order_in_menu')
     )
 
     soft_drinks = forms.ModelChoiceField(
         label="Soft Drinks",
         required=False,
         widget=forms.Select(attrs={'class': attr2}),
-        queryset=product.objects.filter(Active=True,category=category.objects.get(code='drinks')).order_by('order_in_menu'),
-        empty_label="I don't want any Drink"
+        queryset=product.objects.filter(Active=True,category=category.objects.get(code='system.drinks')).order_by('order_in_menu')
     )
 
     qtty = forms.IntegerField(
@@ -96,24 +102,55 @@ class ArepaForm(forms.Form):
     def clean(self):
         cleaned_data = super(ArepaForm, self).clean()
         id_for_product = cleaned_data.get("id_for_product")
+        additionals = cleaned_data.get("additionals")
         extras = cleaned_data.get('extras')
-        paid_extras = cleaned_data.get("paid_extras")
+        paid_extras = cleaned_data.get("paid_extras",0)
+        vegetables = cleaned_data.get("vegetables",0)
+        sauces = cleaned_data.get("sauces",0)
+        soft_drinks = cleaned_data.get("soft_drinks")
         qtty = cleaned_data.get("qtty")
-        MaxExtras = GenericVariable.objects.val('max_extras')
 
-        this_product = product.objects.get(pk=id_for_product)
+        ThisProduct = product.objects.get(pk=id_for_product)
 
-        if (not this_product.extras == len(extras)) and this_product.allow_extras == True:
-            msg = "You must select %d Players for this product" % this_product.extras
+        if (ThisProduct.allow_extras == True) and not (len(extras) == ThisProduct.extras):
+            msg = "You must select %d Players for this product" % ThisProduct.extras
             self.add_error('extras', msg)
 
-        if this_product.allow_qtty == True and (qtty < 1):
-            msg = "You must enter a valid Quantty"
-            self.add_error('qtty', msg)
+        if (ThisProduct.allow_additionals == True) and not (len(additionals) == ThisProduct.max_additionals):
+            msg = "You must select %d Additional Players for this product" % ThisProduct.max_additionals
+            self.add_error('additionals', msg)
 
-        if (len(paid_extras) > int(MaxExtras)) and this_product.allow_paid_extras == True:
-            msg = "You can't select more the %s Extras for your item" % MaxExtras
-            self.add_error('paid_extras', msg)
+        if ThisProduct.allow_vegetables == True:
+            if  not len(vegetables) == 0:
+                if len(vegetables) > ThisProduct.max_vegetables:
+                    msg = "You must select max %d Vegetables for this product" % ThisProduct.max_vegetables
+                    self.add_error('vegetables', msg)
+
+        if ThisProduct.allow_paid_extras == True:
+            if not len(paid_extras) == 0:
+                if len(paid_extras) >= ThisProduct.max_paid_extras:
+                    msg = "You can't select more than %s Extras for your item" % ThisProduct.max_paid_extras
+                    self.add_error('paid_extras', msg)
+
+        if ThisProduct.allow_sauces == True:
+            if not len(sauces) == 0:
+                if len(sauces) > ThisProduct.max_sauces:
+                    msg = "You can't select more than %s Sauces for your item" % ThisProduct.max_sauces
+                    self.add_error('sauces', msg)
+
+        if ThisProduct.allow_drinks == True and not soft_drinks:
+            msg = "You must selct a Drink for your meal"
+            self.add_error('soft_drinks', msg)
+
+
+        if ThisProduct.allow_qtty == True:
+            if qtty < 1:
+                msg = "You must enter a valid Quantty"
+                self.add_error('qtty', msg)
+
+            if qtty > ThisProduct.max_qtty:
+                msg = "You can't choose more than %s item for this request" % ThisProduct.max_qtty
+                self.add_error('qtty', msg)
 
 class CreateAccountForm(forms.Form):
     firstname = forms.CharField(

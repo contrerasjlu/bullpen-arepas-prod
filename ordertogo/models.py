@@ -66,48 +66,73 @@ class product(models.Model):
 	#Descripcion, creado para almacenar el contenido del producto
 	description = models.TextField(max_length=500)
 
-	#Extras, cantidad de extras permitidos por cada producto
-	#Cada extra debe estar en la capacidad de seleccionarse y no mas
-	extras = models.IntegerField(default=1, 
-								 help_text='This item will not count if allow \
-								 extras is not checked')
-
 	#Puede Seleccionar Tipo? True or False
-	allow_type = models.BooleanField(default=True, verbose_name='Baked or Fries')
-
-	allow_vegetables = models.BooleanField(default=True)
+	allow_type = models.BooleanField(default=False, verbose_name='Baked or Fried')
 
 	# Puede Tener Extras? True or False
-	allow_extras = models.BooleanField(default=True, 
-									   verbose_name='Allow Players?',
+	allow_extras = models.BooleanField(default=False, 
+									   verbose_name='Meats?',
 									   help_text='This indicates that the item \
 									              will display the Players \
 									              Category')
 
+	#Extras, cantidad de extras permitidos por cada producto
+	#Cada extra debe estar en la capacidad de seleccionarse y no mas
+	extras = models.IntegerField(default=1, 
+								 verbose_name="Max Meats",
+								 help_text='This item will not count if allow \
+								 extras is not checked')
+
+	
+	allow_additionals = models.BooleanField(default=False,
+											verbose_name='Additionals?',
+											help_text='This Indicates that \
+													   the item will display \
+													   the additionals category')
+
+	max_additionals = models.PositiveIntegerField(default=1, 
+												  help_text='This item will not \
+												  			 count if Additionals \
+												  			 is not checked')
+
+	allow_vegetables = models.BooleanField(default=False)
+
+	max_vegetables = models.PositiveIntegerField(default=1,
+												 help_text='Maximum numer of \
+												            vegeatbles for the item')
+
 	#Puede tener extras pagos? True or False
-	allow_paid_extras = models.BooleanField(default=True,
-											verbose_name='Allow "On the Bench"?',
+	allow_paid_extras = models.BooleanField(default=False,
+											verbose_name='Paid Extras?',
 											help_text='This indicates that the \
 											item will display the "On The Bench \
 											Category')
 
+	max_paid_extras = models.PositiveIntegerField(default=1, help_text="Maximum number of paid extras for teh item")
+
 	#Puede Tener Salsas? True or False
-	allow_sauces = models.BooleanField(default=True, 
+	allow_sauces = models.BooleanField(default=False,
+									   verbose_name='Sauces?',
 									   help_text='This indicates \
 									   that the item will display the "Sauces" \
 									   category')
 
+	max_sauces = models.PositiveIntegerField(default=1, help_text="Maximum number of sauces for teh item")
+
 	# Puede tener Bebidas? True or False
-	allow_drinks = models.BooleanField(default=True, 
+	allow_drinks = models.BooleanField(default=False, 
+									   verbose_name='Drinks?',
 									   help_text='This indicates that the item \
 									              will be a Meal with Soft Drinks\
 									              (Category "Soft Drinks")')
 
 	#Puede tener Quantty
-	allow_qtty = models.BooleanField(default=False, 
+	allow_qtty = models.BooleanField(default=True, 
 									 verbose_name='Allow Quantty?', 
 									 help_text='This indicates that the item \
 									            will have a quantity field')
+
+	max_qtty = models.PositiveIntegerField(default=99, verbose_name="Max Quantity", help_text="Maximum number of items in a request")
 
 	#Precio
 	price = models.DecimalField(max_digits=19, decimal_places=2,
@@ -418,8 +443,8 @@ class PaymentBatch(models.Model):
 		else:
 			ForDelivery = Locations.filter(open_for_delivery=True)
 			Object = { 'Locations': Locations, 
-					   'LocationsCount': len(Locations),
-					   'ForDelivery': len(ForDelivery), 
+					   'LocationsCount': Locations.count(),
+					   'ForDelivery': ForDelivery.count(), 
 					   'ForDeliveryQry': ForDelivery }
 			return Object
 
@@ -556,6 +581,7 @@ class Order(models.Model):
 
 		LocationMatrix = []
 		for Origin in OpenBatches['ForDeliveryQry']:
+
 			Result = GoogleObject.directions(Origin.address_for_truck,CustomerAddress)
 
 			Distance = Result[0]['legs'][0]['distance']['text'].split(' ')
@@ -778,11 +804,12 @@ class OrderDetail(models.Model):
 				Vegetables = item['vegetables']
 				PaidExtras = item['paid_extras']
 				Sauces = item['sauces']
-				Drink = [item['soft_drinks'],]
+				Drink = product.objects.get(pk=item['soft_drinks']) if item['soft_drinks'] is not None else None
+				ArepaType = item.get('arepa_type',ThisProduct.category.name)
 
 				ThisItem = OrderDetail(
 					item=item_number,
-					arepa_type=ThisProduct.category.name,
+					arepa_type=ArepaType,
 					product_selected=ThisProduct,
 					order_number=ThisOrder,
 					main_product=True,
@@ -791,6 +818,9 @@ class OrderDetail(models.Model):
 
 				if ThisProduct.allow_extras == True:
 					OrderDetail.SaveExtraDetail(item['extras'],ThisItem.item,ThisOrder, 'With')
+
+				if ThisProduct.allow_additionals == True:
+					OrderDetail.SaveExtraDetail(item['additionals'],ThisItem.item,ThisOrder, 'Additionals')
 				
 				if ThisProduct.allow_vegetables == True and not Vegetables == None:
 					OrderDetail.SaveExtraDetail(Vegetables, ThisItem.item, ThisOrder, 'Vegetables')
@@ -801,8 +831,12 @@ class OrderDetail(models.Model):
 				if ThisProduct.allow_sauces == True and not Sauces == None:
 					OrderDetail.SaveExtraDetail(Sauces, ThisItem.item, ThisOrder, 'Sauces')
 
-				if ThisProduct.allow_drinks == True and not Drink == '':
-					OrderDetail.SaveExtraDetail(Drink, ThisItem.item, ThisOrder, 'Drink')
+				if ThisProduct.allow_drinks == True:
+					ThisProductDrink = OrderDetail(item=item_number,
+												   arepa_type='Drink',
+												   product_selected=Drink,
+												   order_number=ThisOrder)
+					ThisProductDrink.save()
 				
 				item_number+=1
 

@@ -16,7 +16,7 @@
     {% for item in cart.cart %}
     <div class="panel panel-warning">
         <div class="panel-heading">
-            {{ item.product.category.name }} <small>({{ item.product.name }})</small> x {{ item.qtty }}
+            {{ item.product.name }} <small>({{ item.product.category.name }})</small> x {{ item.qtty }}
             <div class="pull-right">$ {{ item.price }}</div>
         </div>
         <div class="panel-body">
@@ -34,11 +34,23 @@
                             </div>
                             <div class="modal-body">
                                 <p>{{ item.product.description }}</p>
-                                <div class="container">
+                                <div class="container-fluid">
+                                    {# Arepa Type #}
+                                    {% if item.product.allow_type == True %}
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                                            <ul class="list-group">
+                                                <li class="list-group-item">
+                                                    <h2>{{ item.type }} Arepa</h2>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    {% endif %}
                                     <div class="row">
                                         {# Main Ingredients #}
                                         {% if not item.extras == 0 and item.product.allow_extras == True %}
-                                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+                                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
                                             <h4>Main Ingredients</h4>
                                             <ul class="list-group">
                                                 {% for extras in item.extras %}
@@ -48,9 +60,23 @@
                                         </div>
                                         {% endif %}
 
+                                        {# Additionals Ingredient #}
+                                        {% if item.product.allow_additionals == True %}
+                                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
+                                            <h4>Additionals Ingredients</h4>
+                                            <ul class="list-group">
+                                                {% for additional in item.additionals %}
+                                                <li class="list-group-item">{{ additional.description }}</li>
+                                                {% empty %}
+                                                <li class="list-group-item">No Additionals Ingredients</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        {% endif %}
+
                                         {# Vegetables #}
                                         {% if item.product.allow_vegetables == True %}
-                                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+                                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
                                             <h4>Vegetables</h4>
                                             <ul class="list-group">
                                                 {% for vegetable in item.vegetables %}
@@ -64,7 +90,7 @@
 
                                         {# Paid Extras #}
                                         {% if item.product.allow_paid_extras == True %}
-                                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+                                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
                                             <h4>Extras</h4>
                                             <ul class="list-group">
                                                 {% for paid_extras in item.paid_extras %}
@@ -78,7 +104,7 @@
 
                                         {# Sauces #}
                                         {% if item.product.allow_sauces == True %}
-                                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+                                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
                                             <h4>Sauces</h4>
                                             <ul class="list-group">
                                                 {% for sauces in item.sauces %}
@@ -89,16 +115,19 @@
                                             </ul>
                                         </div>
                                         {% endif %}
+
+                                        {# Drink Meal #}
+                                        {% if item.product.allow_drinks == True %}
+                                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
+                                            <h4>Drink</h4>
+                                            <ul class="list-group">
+                                                <li class="list-group-item">{{ item.drink }}</li>
+                                            </ul>
+                                        </div>
+                                        {% endif %}
+                                        
                                     </div>
                                 </div>
-
-                                {# Drink Meal #}
-                                {% if item.product.allow_drinks == True %}
-                                <h4>Drink</h4>
-                                <ul class="list-group">
-                                    <li class="list-group-item">{{ item.soft_drinks }}</li>
-                                </ul>
-                                {% endif %}
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>

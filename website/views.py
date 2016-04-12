@@ -83,12 +83,12 @@ def index(request):
 	return render(request, 'website/index.html', context)
 
 def closed(request):
-	if PaymentBatch.objects.BullpenIsOpen() == True:
-		return HttpResponseRedirect(reverse('website:menu'))
-
-	context = {'text': WebText.objects.get_text('closed_text')}
-
-	return render(request, 'website/wizard/closed.html', context)
+	Batches = PaymentBatch.GetLocationsOpen()
+	if not Batches['LocationsCount'] == 0:
+		return HttpResponseRedirect(reverse('website:PreCheckout'))
+	else:
+		context = {'text': WebText.objects.get_text('closed_text')}
+		return render(request, 'website/wizard/closed.html', context)
 
 def cart(cartList):
 
@@ -120,6 +120,9 @@ def cart(cartList):
 			extras = AppendItems(item['extras']) \
 					 if item['extras'] and a.allow_extras else None
 
+			additionals = AppendItems(item['additionals']) \
+						  if item['additionals'] and a.allow_additionals else None
+
 			vegetables = AppendItems(item['vegetables']) \
 						 if item['vegetables'] and a.allow_vegetables == True else None
 
@@ -129,21 +132,37 @@ def cart(cartList):
 			sauces = AppendItems(item['sauces']) \
 					 if item['sauces'] and a.allow_sauces else None
 
+			drink = product.objects.get(pk=item['soft_drinks']) if item['soft_drinks'] is not None else None
+
 			subtotal_extras = SumItems(extras) if not extras == None else 0
+			subtotal_additionals = SumItems(additionals) if not additionals == None else 0
 			subtotal_vegetables = SumItems(vegetables) if not vegetables == None else 0
 			subtotal_paid_extras = SumItems(paid_extras) if not paid_extras == None else 0
 			subtotal_sauces = SumItems(sauces) if not sauces == None else 0
 
 			the_cart.append({
-				'product': a,'type': item['type'],'extras' : extras,
+				'product': a,'type': item['type'],'extras' : extras,'additionals':additionals,
 				'vegetables': vegetables,'paid_extras': paid_extras,
-				'sauces': sauces, 'drink': item['soft_drinks'],
+				'sauces': sauces, 'drink': drink,
 				'qtty': qtty,
-				'price': int(qtty)*(subtotal_extras + subtotal_vegetables + subtotal_paid_extras + subtotal_sauces + price),
-				'unit_price':subtotal_extras + subtotal_vegetables + subtotal_paid_extras + subtotal_sauces + price
+				'price': int(qtty)*(subtotal_extras + 
+									subtotal_additionals +
+									subtotal_vegetables + 
+									subtotal_paid_extras + 
+									subtotal_sauces + 
+									price),
+				'unit_price':subtotal_extras + 
+							 subtotal_additionals +
+							 subtotal_vegetables + 
+							 subtotal_paid_extras + 
+							 subtotal_sauces + price
 			})
 
-			subtotal += (subtotal_extras + subtotal_vegetables + subtotal_paid_extras + subtotal_sauces + price)*int(qtty)
+			subtotal += (subtotal_additionals + 
+						 subtotal_extras + 
+						 subtotal_vegetables + 
+						 subtotal_paid_extras + 
+						 subtotal_sauces + price)*int(qtty)
 
 		context['amounts'] = {'subtotal': subtotal,
 							  'delivery' : GenericVariable.objects.val('delivery.cost'),
@@ -156,6 +175,14 @@ def cart(cartList):
 		context['cart_is_empty'] = True
 
 	return context
+
+def IsOpen(TheView, self, *args, **kwargs):
+	Batches = PaymentBatch.GetLocationsOpen()
+	if not Batches['LocationsCount'] == 0:
+		return super(TheView, self).dispatch(*args, **kwargs)
+	else:
+		return HttpResponseRedirect(reverse('website:closed'))
+
 ###############################################################################
 # NUEVO #
 ###############################################################################
@@ -164,13 +191,11 @@ class PreCheckoutView(TemplateView):
 
 	def get_context_data(self, **kwargs):
 		context = super(PreCheckoutView, self).get_context_data(**kwargs)
-
 		context['locations'] = PaymentBatch.GetLocationsOpen()
-
-		if context['locations'] is None:
-			return HttpResponseRedirect(reverse('website:closed'))
-
 		return context
+
+	def dispatch(self, *args, **kwargs):
+		return IsOpen(PreCheckoutView, self, *args, **kwargs)
 
 class PreCheckoutDelivery(FormView):
 	template_name = 'website/wizard/PreCheckoutDelivery.html'
@@ -182,13 +207,12 @@ class PreCheckoutDelivery(FormView):
 		initial['type_of_sale'] = 'D'
 		return initial
 
-	def get_context_data(self, **kwargs):
-		context = super(PreCheckoutDelivery, self).get_context_data(**kwargs)
-
-		if PaymentBatch.objects.BullpenIsOpen() == False:
-			return HttpResponseRedirect(reverse('website:closed'))
-
-		return context
+	def dispatch(self, *args, **kwargs):
+		Batches = PaymentBatch.GetLocationsOpen()
+		if not Batches['ForDelivery'] == 0:
+			return super(PreCheckoutDelivery, self).dispatch(*args, **kwargs)
+		else:
+			return HttpResponseRedirect(reverse('website:PreCheckout'))
 
 	def form_valid(self, form, **kwargs):
 		'''
@@ -219,13 +243,8 @@ class PreCheckoutPickItUp(FormView):
 		initial['type_of_sale'] = 'P'
 		return initial
 
-	def get_context_data(self, **kwargs):
-		context = super(PreCheckoutPickItUp, self).get_context_data(**kwargs)
-
-		if PaymentBatch.objects.BullpenIsOpen() == False:
-			return HttpResponseRedirect(reverse('website:closed'))
-
-		return context
+	def dispatch(self, *args, **kwargs):
+		return IsOpen(PreCheckoutPickItUp, self, *args, **kwargs)
 
 	def form_valid(self, form, **kwargs):
 		'''
@@ -254,13 +273,8 @@ class PreCheckoutParkingLot(FormView):
 		initial['type_of_sale'] = 'PL'
 		return initial
 
-	def get_context_data(self, **kwargs):
-		context = super(PreCheckoutParkingLot, self).get_context_data(**kwargs)
-
-		if PaymentBatch.objects.BullpenIsOpen() == False:
-			return HttpResponseRedirect(reverse('website:closed'))
-
-		return context
+	def dispatch(self, *args, **kwargs):
+		return IsOpen(PreCheckoutParkingLot, self, *args, **kwargs)
 
 	def form_valid(self, form, **kwargs):
 		'''
@@ -289,6 +303,9 @@ class MenuHome(ListView):
 	def get_queryset(self):
 		return category.GetMenu(self.request.session['Batch'])
 
+	def dispatch(self, *args, **kwargs):
+		return IsOpen(MenuHome, self, *args, **kwargs)
+
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
 		context = super(MenuHome, self).get_context_data(**kwargs)
@@ -314,6 +331,9 @@ class CategoryProductsList(ListView):
 
 	def get_queryset(self):
 		return category.GetMenu(self.request.session['Batch'])
+
+	def dispatch(self, *args, **kwargs):
+		return IsOpen(CategoryProductsList, self, *args, **kwargs)
 
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
@@ -343,6 +363,9 @@ class MealForm(FormView):
 	template_name = 'website/wizard/step3_new2.html'
 	form_class = ArepaForm
 	success_url = reverse_lazy('website:menu')
+
+	def dispatch(self, *args, **kwargs):
+		return IsOpen(MealForm, self, *args, **kwargs)
 
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
@@ -389,8 +412,6 @@ class MealForm(FormView):
 										category=self.kwargs['pk_cat'], 
 										pk=self.kwargs['pk_prod'])
 
-		Restriction = ProductRestriction.GetProductRestriction(thisProduct.id)
-
 		NoVegetables = self.request.POST.get('NoVegetablesCheck', None)
 		vegetables = self.request.POST.getlist('vegetables', None) \
 					 if not NoVegetables == 'on' else None
@@ -411,6 +432,7 @@ class MealForm(FormView):
 			'arepa_type':self.request.POST.get('arepa_type', thisProduct.category.name),
 			'vegetables':vegetables,
 			'extras':self.request.POST.getlist('extras', None),
+			'additionals': self.request.POST.getlist('additionals',None),
 			'paid_extras':extras,
 			'sauces':sauces,
 			'soft_drinks':self.request.POST.get('soft_drinks', None),
@@ -428,6 +450,9 @@ class MealForm(FormView):
 
 class ViewCartSummary(TemplateView):
 	template_name = 'website/wizard/ViewCartSummary.html'
+
+	def dispatch(self, *args, **kwargs):
+		return IsOpen(ViewCartSummary, self, *args, **kwargs)
 
 	def get_context_data(self, **kwargs):
 		context = super(ViewCartSummary, self).get_context_data(**kwargs)
@@ -456,6 +481,9 @@ class Checkout(FormView):
 	form_class = PaymentForm
 	success_url = reverse_lazy('website:thankyou')
 
+	def dispatch(self, *args, **kwargs):
+		return IsOpen(Checkout, self, *args, **kwargs)
+
 	def get_context_data(self, **kwargs):
 
 		context = super(Checkout, self).get_context_data(**kwargs)
@@ -466,9 +494,6 @@ class Checkout(FormView):
 			return HttpResponseRedirect(reverse('website:menu'))
 		else:
 			context['cart'] = cart(self.request.session['cart'])
-
-		if PaymentBatch.objects.BullpenIsOpen() == False:
-			return HttpResponseRedirect(reverse('website:closed'))
 
 		context['Batch'] = PaymentBatch.objects.get(pk=self.request.session['Batch']) \
 						   if 'Batch' in self.request.session else None
@@ -580,6 +605,7 @@ class ThankYouView(TemplateView):
 		
 
 ###############################################################################
+@login_required(login_url='website:login-auth')
 def empty_cart(request):
 	if 'cart' in request.session:
 		del request.session['cart']
@@ -587,6 +613,7 @@ def empty_cart(request):
 		del request.session['order_number']
 	return HttpResponseRedirect(reverse('website:menu'))
 
+@login_required(login_url='website:login-auth')
 def DeleteItem(request, item):
 	context = cart(request)
 	if context['status']==False:
