@@ -233,105 +233,52 @@ class HandleOrderDetail(ListView):
 		if context['Order'].user.username == GenericVariable.objects.val('guest.user'):
 			context['guest'] = get_object_or_404(GuestDetail, order=context['Order'])
 
+		
+		def MakeDescription(Separator, Item):
+			ThisSeparatorQuery = Item.filter(arepa_type=Separator)
+			SeparatorList = ()
+			if ThisSeparatorQuery.count() == 0:
+				return ' | %s: No %s' % (Separator.upper(), Separator)
+			for ThisSeparator in ThisSeparatorQuery:
+				SeparatorList += ThisSeparator.product_selected.name,
+			return ' | %s: %s' % (Separator.upper(),(', ').join(SeparatorList))
+
 		cart_for_context = []
 
 		for item in cart:
-			this_extras = OrderDetail.objects.filter(
-				order_number_id=item.order_number_id,
-				item=item.item,
-				main_product=False,
-				arepa_type='With'
-			)
-			if len(this_extras) > 0:
-				EXTRAS = ''
-				for extras in this_extras:
-					EXTRAS = EXTRAS + extras.product_selected.name + ', '
-			else:
-				EXTRAS = 'Nothing'
+			ItemDescription = ''
+			Subtotal = OrderDetail.objects.filter(order_number_id=item.order_number_id, item=item.item).aggregate(total=Sum('product_selected__price'))
+			ThisItem = OrderDetail.objects.filter(item=item.item, order_number_id=item.order_number_id)
 
-			this_additionals = OrderDetail.objects.filter(
-				order_number_id=item.order_number_id,
-				item=item.item,
-				main_product=False,
-				arepa_type='Additionals'
-			)
+			# Select Meats
+			if item.product_selected.allow_extras:
+				ItemDescription += '%s ' % MakeDescription('With',ThisItem)
 
-			if len(this_additionals) > 0:
-				ADDITIONALS = ''
-				for additional in this_additionals:
-					ADDITIONALS += additional.product_selected.name + ', '
-			else:
-				ADDITIONALS = 'Nothing'
+			# Select Additionals
+			if item.product_selected.allow_additionals:
+				ItemDescription += '%s ' % MakeDescription('Additionals', ThisItem)
 
-			this_vegetables = OrderDetail.objects.filter(
-				order_number_id=item.order_number_id,
-				item=item.item,
-				main_product=False,
-				arepa_type='Vegetables'
-				)
+			# Select Vegetables
+			if item.product_selected.allow_vegetables:
+				ItemDescription += '%s ' % MakeDescription('Vegetables', ThisItem)
 
-			VEGETABLES = ''
-			if len(this_vegetables) > 0:
-				for vegetable in this_vegetables:
-					VEGETABLES = VEGETABLES + vegetable.product_selected.name + ', '
-			else:
-				VEGETABLES = 'No Vegetables'
+			# Select Paid Extras
+			if item.product_selected.allow_paid_extras:
+				ItemDescription += '%s ' % MakeDescription('Extras', ThisItem)
 
-			this_paid_extras = OrderDetail.objects.filter(
-				order_number_id=item.order_number_id,
-				item=item.item,
-				main_product=False,
-				arepa_type='Extras'
-			)
+			# Select Sauces
+			if item.product_selected.allow_sauces:
+				ItemDescription += '%s ' % MakeDescription('Sauces', ThisItem)
 
-			subtotal = OrderDetail.objects.filter(
-				order_number_id=item.order_number_id,
-				item=item.item,
-				main_product=False,
-				arepa_type='Paid Extra'
-			).aggregate(total=Sum('product_selected__price'))
+			if item.product_selected.allow_drinks:
+				ItemDescription += '%s ' % MakeDescription('Drink', ThisItem)
 
-			PAID_EXTRAS = ''
-			if len(this_paid_extras) > 0:
-				for paid in this_paid_extras:
-					PAID_EXTRAS = PAID_EXTRAS + paid.product_selected.name + ', '
-
-			this_sauces = OrderDetail.objects.filter(
-				order_number_id=item.order_number_id,
-				item=item.item,
-				main_product=False,
-				arepa_type='Sauces'
-			)
-			if len(this_sauces) > 0:
-				SAUCES = ''
-				for sauce in this_sauces:
-					SAUCES = SAUCES + sauce.product_selected.name + ', '
-			else:
-				SAUCES = 'No Sauce'
-
-			try:
-				this_drinks = OrderDetail.objects.get(
-					order_number_id=item.order_number_id,
-					item=item.item,
-					main_product=False,
-					arepa_type='Drink'
-				)
-			except OrderDetail.DoesNotExist:
-				DRINK = 'No Drink'
-				drink_price = 0
-			else:
-				DRINK = this_drinks.product_selected.name
-				drink_price = Decimal(this_drinks.product_selected.price)
-
-			sub = Decimal(item.product_selected.price) + drink_price
-			if subtotal['total']:
-				sub += Decimal(subtotal['total'])
 			this_item = {
 			'item': item.item,
 			'product':item.product_selected.name,
 			'code': item.product_selected.code,
-			'description': item.arepa_type + ' WITH: ' + EXTRAS + ' ADDITIONALS: ' + ADDITIONALS + ' VEGETABLES: ' + VEGETABLES + ' EXTRAS: ' + PAID_EXTRAS + ' SAUCES: ' + SAUCES + ' DRINK: ' + DRINK,
-			'subtotal' : sub
+			'description': '%s %s' % (item.arepa_type, ItemDescription),
+			'subtotal' : Subtotal['total']
 			}
 			cart_for_context.append(this_item)
 
