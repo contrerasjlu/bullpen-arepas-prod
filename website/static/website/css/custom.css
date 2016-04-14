@@ -14,11 +14,41 @@ body{
     background-position: center top;
     background-attachment: fixed;
     background-size: contain;
-    height: 539px;
+    height: 133px;
     padding: 0;
     margin: 0;
     overflow: hidden;
 }
+
+/* Extra small devices (phones, less than 768px) */
+/* No media query since this is the default in Bootstrap */
+@media (min-width: 425px){
+	#header{
+		height: 176px;
+	}
+}
+
+/* Small devices (tablets, 768px and up) */
+@media (min-width: 768px) { 
+	#header{
+		height: 312px;
+	}
+ }
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: 992px) { 
+	#header{
+		height: 414px;
+	}
+ }
+
+/* Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) { 
+	#header{
+		background-color: #a32000;
+		height: 539px;
+	}
+ }
 
 .myNav{
 	margin: 0;
@@ -27,11 +57,11 @@ body{
     background: -o-linear-gradient(#000, rgba(255,0,0,0)); /* For Opera 11.1 to 12.0 */
     background: -moz-linear-gradient(#000, rgba(255,0,0,0)); /* For Firefox 3.6 to 15 */
     background: linear-gradient(#000, rgba(255,0,0,0)); /* Standard syntax */
-    height: 200px;
+    height: 50px;
 }
 
 .header-navbar{
-	padding-top: 50px;
+	padding-top: 10px;
 }
 
 #bullpen-menu {
@@ -44,9 +74,40 @@ body{
 
 .header-navbar .list-inline, .bullpen-menu{
 	color: #fff;
-	font-size: 26px;
+	font-size: 7px;
 	text-transform: uppercase;
 	font-weight: bolder;
+}
+
+@media (min-width: 425px){
+	.header-navbar .list-inline, .bullpen-menu{
+		font-size: 10px;
+	}
+	.header-navbar{
+		padding-top: 15px;
+	}
+}
+
+
+@media (min-width: 768px) { 
+	.header-navbar .list-inline, .bullpen-menu{
+		font-size: 16px;
+	}
+}
+
+@media (min-width: 992px){
+	.header-navbar .list-inline, .bullpen-menu{
+		font-size: 20px;
+	}	
+}
+
+@media (min-width: 1200px){
+	.header-navbar .list-inline, .bullpen-menu{
+		font-size: 26px;
+	}
+	.myNav{
+		height: 200px;
+	}
 }
 
 .header-navbar .list-inline a, li.bullpen-menu{

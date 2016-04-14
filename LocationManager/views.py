@@ -144,7 +144,7 @@ class BatchesCreate(CreateView):
 
 class BatchesUpdate(UpdateView):
 	model = PaymentBatch
-	fields = ['status', 'location', 'address_for_truck', 'zip_code_for_truck', 'tax_percent', 'max_miles', 'batch_code', 'notifier', 'open_for_delivery', 'Group', 'status']
+	fields = ['status', 'location', 'address_for_truck', 'zip_code_for_truck', 'tax_percent', 'max_miles', 'batch_code', 'notifier', 'open_for_delivery', 'status']
 	success_url = reverse_lazy('LocationManager:batches-list')
 	template_name = 'LocationManager/paymentbatch_form.html'
 
@@ -182,7 +182,16 @@ class orders(ListView):
 		context = super(orders, self).get_context_data(**kwargs)
 		# Add Menu
 		context['menu'] = load_menu()
+		context['SelectedFilter'] = self.request.session.get('SelectedFilter',None)
 		return context
+
+def GetSelectedFilter(request):
+	import json
+	if request.is_ajax():
+		request.session['SelectedFilter'] = request.GET['SelectedFilter']
+		response_data = {}
+		response_data['result'] = '200 OK'
+		return HttpResponse(json.dumps(response_data),content_type="application/json")
 
 class HandleOrders(ListView):
 	template_name = 'LocationManager/orders_filtered.html'

@@ -79,4 +79,6 @@ urlpatterns = [
     url(r'^orders/update/(?P<pk>[0-9]+)/$', 
         views.OrderUpdate, name="order-update"),
 
+    url(r'^orders/selectedfilter/$', views.GetSelectedFilter, name='GetSelectedFilterView'),
+
 ]

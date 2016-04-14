@@ -218,7 +218,8 @@ class PaymentForm(forms.Form):
         max_length=16,
         min_length=15,
         label="Card Number",
-        help_text="Please Insert your card number"
+        help_text="Please Insert your card number",
+        widget=forms.TextInput(attrs={'type':'number'})
     )
 
     expiry = forms.CharField(
@@ -232,7 +233,8 @@ class PaymentForm(forms.Form):
         max_length=4,
         min_length=3,
         label="CVV",
-        help_text="This code is in the front side of your American Express Card, and in the back side of your Visa or Master Card"
+        help_text="This code is in the front side of your American Express Card, and in the back side of your Visa or Master Card",
+        widget=forms.TextInput(attrs={'type':'number'})
     )
 
     def __init__(self, *args, **kwargs):
