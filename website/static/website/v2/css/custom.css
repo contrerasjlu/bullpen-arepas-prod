@@ -2348,6 +2348,31 @@ button,
     margin-right: 0;
 }
 
+@media (min-width: 320px){
+    #collapse1 .btn-group-vertical .btn-block, #type-of-sale-btn{
+        font-size: 9px;
+    }
+}
+
+@media (min-width: 375px){
+    #collapse1 .btn-group-vertical .btn-block, #type-of-sale-btn{
+        font-size: 11px;
+    }
+}
+
+@media (min-width: 425px){
+    #collapse1 .btn-group-vertical .btn-block, #type-of-sale-btn{
+        font-size: 13px;
+    }
+}
+
+/* Small devices (tablets, 768px and up) */
+@media (min-width: 768px) { 
+    #collapse1 .btn-group-vertical .btn-block, #type-of-sale-btn{
+        font-size: 15px;
+    }
+ }
+
 .mail_list_column {
     border-left: 1px solid #DBDBDB;
 }

@@ -301,7 +301,10 @@ class MenuHome(ListView):
 	context_object_name = 'categories'
 
 	def get_queryset(self):
-		return category.GetMenu(self.request.session['Batch'])
+		try:
+			return category.GetMenu(self.request.session['Batch'])
+		except KeyError:
+			return HttpResponseRedirect(reverse('website:PreCheckout'))
 
 	def dispatch(self, *args, **kwargs):
 		return IsOpen(MenuHome, self, *args, **kwargs)
@@ -485,11 +488,8 @@ class Checkout(FormView):
 		return IsOpen(Checkout, self, *args, **kwargs)
 
 	def get_context_data(self, **kwargs):
-
 		context = super(Checkout, self).get_context_data(**kwargs)
-
 		context['cart'] = self.request.session.get('cart',None)
-
 		if context['cart'] == None:
 			return HttpResponseRedirect(reverse('website:menu'))
 		else:
@@ -556,6 +556,11 @@ class GuestLogin(CreateView):
 	    return context
 
 	def form_valid(self, form):
+		TheCart = self.request.session.get('cart',None)
+		Batch = self.request.session.get('Batch',None)
+		TypeOfSale = self.request.session.get('TypeOfSale',None)
+		TypeOfSaleDict = self.request.session.get(TypeOfSale['code'],None)
+
 		logout(self.request)
 		username = GenericVariable.objects.val('guest.user')
 		password = GenericVariable.objects.val('guest.password')
@@ -571,6 +576,11 @@ class GuestLogin(CreateView):
 			'phone' : phone
 		}
 
+		self.request.session['cart'] = TheCart
+		self.request.session['Batch'] = Batch
+		self.request.session['TypeOfSale'] = TypeOfSale
+		self.request.session[TypeOfSale['code']] = TypeOfSaleDict
+
 		return HttpResponseRedirect(self.request.POST.get('next',reverse('website:PreCheckout')))
 
 class CreateAcct(FormView):
@@ -583,6 +593,11 @@ class CreateAcct(FormView):
 	    return context
 
 	def form_valid(self, form, **kwargs):
+		TheCart = self.request.session.get('cart',None)
+		Batch = self.request.session.get('Batch',None)
+		TypeOfSale = self.request.session.get('TypeOfSale',None)
+		TypeOfSaleDict = self.request.session.get(TypeOfSale['code'],None)
+
 		from django.contrib.auth.models import User
 		user = User.objects.create_user(
 			username = self.request.POST['username'],
@@ -597,6 +612,12 @@ class CreateAcct(FormView):
 		user = authenticate(username=username, password=password)
 		if user is not None:
 			login(self.request,user)
+
+		self.request.session['cart'] = TheCart
+		self.request.session['Batch'] = Batch
+		self.request.session['TypeOfSale'] = TypeOfSale
+		self.request.session[TypeOfSale['code']] = TypeOfSaleDict
+
 		return HttpResponseRedirect(self.request.POST.get('next',reverse('website:PreCheckout')))
 
 class ThankYouView(TemplateView):

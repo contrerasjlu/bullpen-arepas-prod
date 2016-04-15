@@ -4,6 +4,7 @@
 
 from django.forms import ModelForm, widgets, NumberInput, TextInput, EmailInput
 from django.contrib.auth.models import User
+from django.forms import ModelMultipleChoiceField
 from requests import ConnectionError
 from django import forms
 from ordertogo.models import *
@@ -12,6 +13,10 @@ from website.models import WebInfo, WebText
 attr  = 'form-control has-feedback-left agencia-regular'
 attr2 = 'form-control agencia-regular'
 attr3 = 'flat'
+
+class CustomPaidExtrasField(ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return "%s ($ %.2f)" % (obj.name,obj.price)
 
 class ArepaForm(forms.Form):
 
@@ -63,9 +68,8 @@ class ArepaForm(forms.Form):
         queryset=product.objects.filter(Active=True,category=category.objects.get(code='system.additionals')).order_by('order_in_menu')
     )
 
-    paid_extras = forms.ModelMultipleChoiceField(
+    paid_extras = CustomPaidExtrasField(
         label="Additional Players",
-        help_text="Choose as much as 4 additional players for your item ($1.00 each)",
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={'class': attr3}),
         queryset=product.objects.filter(Active=True,category=category.objects.get(code='system.paid.extras')).order_by('order_in_menu')
@@ -96,7 +100,7 @@ class ArepaForm(forms.Form):
         required=False,
         help_text='How many do you Want?',
         initial=1,
-        widget=forms.NumberInput(attrs={'class':attr2})
+        widget=forms.NumberInput(attrs={'class':attr2, 'min':1})
         )
 
     def clean(self):
@@ -218,8 +222,7 @@ class PaymentForm(forms.Form):
         max_length=16,
         min_length=15,
         label="Card Number",
-        help_text="Please Insert your card number",
-        widget=forms.TextInput(attrs={'type':'number'})
+        help_text="Please Insert your card number"
     )
 
     expiry = forms.CharField(
@@ -233,8 +236,7 @@ class PaymentForm(forms.Form):
         max_length=4,
         min_length=3,
         label="CVV",
-        help_text="This code is in the front side of your American Express Card, and in the back side of your Visa or Master Card",
-        widget=forms.TextInput(attrs={'type':'number'})
+        help_text="This code is in the front side of your American Express Card, and in the back side of your Visa or Master Card"
     )
 
     def __init__(self, *args, **kwargs):

@@ -90,7 +90,13 @@
 {% block FooterDeclarations %}
 <script type="text/javascript">
     var SelectedFilter = $('#batch-selector option:selected').val()
-    $("div[id^='batch-']").not('#batch-'+SelectedFilter).hide();
+    
+    if (SelectedFilter == 1) {
+        $("div[id^='batch-']").show();
+    } else {
+        $("div[id^='batch-']").not('#batch-'+SelectedFilter).hide();
+    }
+
     $("#batch-selector").change(function(){
         if ($(this).val() == 1) {
             $("div[id^='batch-']").show();

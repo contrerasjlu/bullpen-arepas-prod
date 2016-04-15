@@ -3,9 +3,8 @@
         <tr class="warning">
             <th>#</th>
             <th>Product Description</th>
-            <th>Code</th>
             <th>Quantity</th>
-            <th width="40%">Description</th>
+            <th>Description</th>
             <th>Unit Price</th>
             <th>Subtotal</th>
         </tr>
@@ -15,7 +14,6 @@
         <tr>
             <td>{{ forloop.counter }}</td>
             <td>{{ item.product }}</td>
-            <td>{{ item.product.code }}</td>
             <td>{{ item.qtty }}</td>
             <td>
             {# Arepa Type #}

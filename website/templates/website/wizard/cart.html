@@ -2,10 +2,24 @@
     {% if not guest %}
     <li class="list-group-item">
         <div class="btn-group btn-group-sm btn-group-justified">
-            <div class="btn-group">
+            <div class="btn-group hidden-sm hidden-xs">
                 <a href="{% url 'website:empty_cart' %}"><button type="button" class="btn btn-sm btn-primary">Empty Cart</button></a>
             </div>
-            <div class="btn-group">
+            <div class="btn-group hidden-lg hidden-md">
+                <a href="{% url 'website:empty_cart' %}">
+                    <button type="button" class="btn btn-sm btn-primary">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </a>
+            </div>
+            <div class="btn-group hidden-lg hidden-md">
+                <a href="{% url 'website:ViewCartSummary' %}">
+                    <button type="button" class="btn btn-sm btn-primary">
+                        <i class="fa fa-shopping-cart"></i>
+                    </button>
+                </a>
+            </div>
+            <div class="btn-group hidden-sm hidden-xs">
                 <a href="{% url 'website:ViewCartSummary' %}"><button type="button" class="btn btn-sm btn-primary">Checkout</button></a></a>
             </div>
         </div>
