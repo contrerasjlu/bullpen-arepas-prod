@@ -559,7 +559,8 @@ class GuestLogin(CreateView):
 		TheCart = self.request.session.get('cart',None)
 		Batch = self.request.session.get('Batch',None)
 		TypeOfSale = self.request.session.get('TypeOfSale',None)
-		TypeOfSaleDict = self.request.session.get(TypeOfSale['code'],None)
+		if TypeOfSale is not None:
+			TypeOfSaleDict = self.request.session.get(TypeOfSale['code'],None)
 
 		logout(self.request)
 		username = GenericVariable.objects.val('guest.user')
@@ -575,11 +576,12 @@ class GuestLogin(CreateView):
 			'email' : self.request.POST['email'],
 			'phone' : phone
 		}
-
-		self.request.session['cart'] = TheCart
+		if TheCart is not None:
+			self.request.session['cart'] = TheCart
 		self.request.session['Batch'] = Batch
 		self.request.session['TypeOfSale'] = TypeOfSale
-		self.request.session[TypeOfSale['code']] = TypeOfSaleDict
+		if TypeOfSale is not None:
+			self.request.session[TypeOfSale['code']] = TypeOfSaleDict
 
 		return HttpResponseRedirect(self.request.POST.get('next',reverse('website:PreCheckout')))
 
@@ -596,7 +598,8 @@ class CreateAcct(FormView):
 		TheCart = self.request.session.get('cart',None)
 		Batch = self.request.session.get('Batch',None)
 		TypeOfSale = self.request.session.get('TypeOfSale',None)
-		TypeOfSaleDict = self.request.session.get(TypeOfSale['code'],None)
+		if TypeOfSale is not None:
+			TypeOfSaleDict = self.request.session.get(TypeOfSale['code'],None)
 
 		from django.contrib.auth.models import User
 		user = User.objects.create_user(
@@ -613,10 +616,12 @@ class CreateAcct(FormView):
 		if user is not None:
 			login(self.request,user)
 
-		self.request.session['cart'] = TheCart
+		if TheCart is not None:
+			self.request.session['cart'] = TheCart
 		self.request.session['Batch'] = Batch
 		self.request.session['TypeOfSale'] = TypeOfSale
-		self.request.session[TypeOfSale['code']] = TypeOfSaleDict
+		if TypeOfSale is not None:
+			self.request.session[TypeOfSale['code']] = TypeOfSaleDict
 
 		return HttpResponseRedirect(self.request.POST.get('next',reverse('website:PreCheckout')))
 

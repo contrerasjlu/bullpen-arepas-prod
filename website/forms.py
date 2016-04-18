@@ -16,7 +16,7 @@ attr3 = 'flat'
 
 class CustomPaidExtrasField(ModelMultipleChoiceField):
     def label_from_instance(self, obj):
-        return "%s ($ %.2f)" % (obj.name,obj.price)
+        return "%s (+ $ %.2f)" % (obj.name,obj.price)
 
 class ArepaForm(forms.Form):
 

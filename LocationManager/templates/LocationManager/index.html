@@ -163,6 +163,21 @@
                         </div>
                     </div>
                 </div>
+                <!--
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Sales Graph <small>Truck</small></h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content2">
+                                <div id="graph_line" style="width:100%; height:300px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                -->
 
                 <!-- footer content -->
 {% endblock %}
@@ -198,6 +213,30 @@
     <script src="{% static 'LocationManager/js/icheck/icheck.min.js' %}"></script>
 
     <script src="{% static 'LocationManager/js/custom.js' %}"></script>
+    <!-- moris js -->
+    <script src="{% static 'LocationManager/js/moris/raphael-min.js' %}"></script>
+    <script src="{% static 'LocationManager/js/moris/morris.js' %}"></script>
+    <script>
+        $(function () {
+
+            new Morris.Line({
+                element: 'graph_line',
+                xkey: 'year',
+                ykeys: ['value'],
+                labels: ['Value'],
+                hideHover: 'auto',
+                lineColors: ['#26B99A', '#34495E', '#ACADAC', '#3498DB'],
+                data: [
+                    {year: '2008', value: 20},
+                    {year: '2009', value: 10},
+                    {year: '2010', value: 5},
+                    {year: '2011', value: 5},
+                    {year: '2012', value: 20}
+                ]
+            });
+
+        });
+    </script>
     {% block FooterDeclarations %}{% endblock %}
 </body>
 
