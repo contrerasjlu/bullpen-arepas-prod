@@ -132,7 +132,7 @@ class ArepaForm(forms.Form):
 
         if ThisProduct.allow_paid_extras == True:
             if not len(paid_extras) == 0:
-                if len(paid_extras) >= ThisProduct.max_paid_extras:
+                if len(paid_extras) > ThisProduct.max_paid_extras:
                     msg = "You can't select more than %s Extras for your item" % ThisProduct.max_paid_extras
                     self.add_error('paid_extras', msg)
 

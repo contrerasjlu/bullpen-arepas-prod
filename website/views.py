@@ -642,6 +642,7 @@ def empty_cart(request):
 @login_required(login_url='website:login-auth')
 def DeleteItem(request, item):
 	context = cart(request)
+	PathToReturn = request.GET.get('next','website:menu')
 	if context['status']==False:
 		return HttpResponseRedirect(reverse('website:closed'))
 
@@ -650,14 +651,18 @@ def DeleteItem(request, item):
 
 	the_session_cart = request.session['cart']
 	item = int(item) - 1
-	del the_session_cart[item]
+	try:
+		del the_session_cart[item]
+	except:
+		return HttpResponseRedirect(reverse(PathToReturn))
+
 	request.session['cart'] = the_session_cart
 
 	if len(the_session_cart) == 0:
 		del request.session['cart']
-		return HttpResponseRedirect(reverse('website:menu'))
+		return HttpResponseRedirect(PathToReturn)
 	else:
-		return HttpResponseRedirect(reverse('website:menu'))
+		return HttpResponseRedirect(PathToReturn)
 
 @login_required(login_url='website:login-auth')
 def userLogout(request):
