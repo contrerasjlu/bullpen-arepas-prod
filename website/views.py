@@ -225,7 +225,7 @@ class PreCheckoutDelivery(FormView):
 		*** Al the logic is in the form.py file ***
 		'''
 		self.request.session['Batch'] = form.cleaned_data.get('NearestLocation')
-		self.request.session['TypeOfSale'] = {'code':'D','text':'Delivery','icon':'fa fa-home'}
+		self.request.session['TypeOfSale'] = {'code':'D','text':'Delivery','icon':'fa fa-bicycle'}
 		self.request.session['D'] = {'Address':form.cleaned_data.get('address'),
 									 'Address2': form.cleaned_data.get('address2',' '),
 									 'City': form.cleaned_data.get('city'),
@@ -258,7 +258,7 @@ class PreCheckoutPickItUp(FormView):
 		'''
 		Location = form.cleaned_data.get('location')
 		self.request.session['Batch'] = Location.id
-		self.request.session['TypeOfSale'] = {'code':'P','text':'Pick it Up','icon':'fa fa-bicycle'}
+		self.request.session['TypeOfSale'] = {'code':'P','text':'Pick it Up','icon':'fa fa-male'}
 		self.request.session['P'] = {'Time': form.cleaned_data.get('time')}
 
 		return super(PreCheckoutPickItUp, self).form_valid(form)
