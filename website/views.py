@@ -628,6 +628,12 @@ class CreateAcct(FormView):
 class ThankYouView(TemplateView):
 	"""Thank You View after a Order is complete"""
 	template_name = 'website/wizard/thankyou.html'
+
+	def get_context_data(self, **kwargs):
+	    context = super(ThankYouView, self).get_context_data(**kwargs)
+	    if self.request.user.username == GenericVariable.objects.val('guest.user'):
+	    	logout(request)
+	    return context
 		
 
 ###############################################################################

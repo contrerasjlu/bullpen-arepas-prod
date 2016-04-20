@@ -42,7 +42,7 @@ def auth(request):
 				login(request, user)
 				return HttpResponseRedirect(reverse('LocationManager:index'))
 		else:
-			msg = loadMsj("invalid.credential")
+			msg = "Invalid Credentials"
 			return render(request, 'LocationManager/login.html', {'msg': msg})
 
 	return render(request, 'LocationManager/login.html')
