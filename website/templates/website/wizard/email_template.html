@@ -1,4 +1,10 @@
-<h1>Greeting {{ order.user }}</h1>
+{% if order.user.username == 'guest' %}
+    {% for data in order.guestdetail_set.all %}
+        <h1>Greetings {{ data.firstname }} {{ data.lastname }}</h1>
+    {% endfor %}
+{% else %}
+<h1>Greetings {{ order.user }}</h1>
+{% endif %}
 <p>Your Order #{{ order.order_number }} have been recived...</p>
 <h2>Summary</h2>
 <table width="50%" cellpadding="0" cellspacing="0" border="1">

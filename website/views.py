@@ -363,7 +363,7 @@ class CategoryProductsList(ListView):
 		return context
 
 class MealForm(FormView):
-	template_name = 'website/wizard/step3_new2.html'
+	template_name = 'website/wizard/step3.html'
 	form_class = ArepaForm
 	success_url = reverse_lazy('website:menu')
 
