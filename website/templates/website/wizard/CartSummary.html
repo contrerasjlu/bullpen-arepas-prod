@@ -66,10 +66,16 @@
             {% endfor %}
             {% endif %}
 
+            {# Sour Cream #}
+            {% if item.product.allow_sour_cream == True %}
+            <b>Sour Cream:</b>
+            {{ item.sour_cream }}
+            {% endif %}
+
             {# Soft Drink #}
             {% if item.product.allow_drinks == True %}
             <b>Drink:</b>
-            {{ item.drink.name }} ({{ item.drink.description }})
+            / {{ item.drink.name }} ({{ item.drink.description }})
             {% endif %}
 
             </td>

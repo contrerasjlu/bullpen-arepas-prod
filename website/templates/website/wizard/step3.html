@@ -40,7 +40,11 @@
 		
 	        {# Si el producto permite la seleccion de Vegetales #}
 	        {% if product.allow_vegetables == True %}
-	        	{% include 'website/wizard/step3_vegetables.html' %}
+	        	{% if product.type_of_vegetables == 'T' %}
+	        		{% include 'website/wizard/step3_vegetables-traditional.html' %}
+	        	{% elif product.type_of_vegetables == 'P' %}
+	        		{% include 'website/wizard/step3_vegetables-roosterpeek.html' %}
+	        	{% endif %}
 	        {% endif %}
 
 	        {# Si el producto permite la seleccion de Paid Extras #}
@@ -53,11 +57,16 @@
 	        	{% include 'website/wizard/step3_sauces.html' %}
 	        {% endif %}
 
+	        {# Si el producto tiene Natilla, tener la posibilidad de quitarla #}
+	        {% if product.allow_sour_cream ==  True %}
+	        	{% include 'website/wizard/step3_sour_cream.html' %}
+	        {% endif %}
+
 	        {# Si el producto permite la seleccion de Bebidas #}
 	        {% if product.allow_drinks ==  True %}
 	        	{% include 'website/wizard/step3_drinks.html' %}
 	        {% endif %}
-
+			<hr>
 	        {# Si el producto acepta cantidades #}
 	        {% if product.allow_qtty ==  True %}
 	        	{% include 'website/wizard/step3_qtty.html' %}
@@ -76,24 +85,25 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$('.vgch').on('ifChecked', function(event){
-  		$('.vegetables-btn').addClass('disabled');
+  		$('.veggie-list').addClass('hidden');
 	});
 	$('.vgch').on('ifUnchecked', function(event){
-		$('.vegetables-btn').removeClass('disabled');
+		$('.veggie-list').removeClass('hidden');
 	});
 	$('.sach').on('ifChecked', function(event){
-  		$('.sauces-btn').addClass('disabled');
+  		$('.sauces-list').addClass('hidden');
 	});
 	$('.sach').on('ifUnchecked', function(event){
-		$('.sauces-btn').removeClass('disabled');
+		$('.sauces-list').removeClass('hidden');
 	});
 
 	$('.extras-id').on('ifChecked', function(event){
-  		$('.extras-btn').addClass('disabled');
+  		$('.extras-list').addClass('hidden');
 	});
 	$('.extras-id').on('ifUnchecked', function(event){
-		$('.extras-btn').removeClass('disabled');
+		$('.extras-list').removeClass('hidden');
 	});
+
 })
 </script>
 {% endblock %}

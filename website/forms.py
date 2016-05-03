@@ -35,20 +35,35 @@ class ArepaForm(forms.Form):
     NoVegetablesCheck = forms.BooleanField(initial=False, 
                                            widget=forms.CheckboxInput(attrs={'class':attr3 + ' vgch'}),
                                            required=False, 
-                                           label="No, I don't want Vegetables")
+                                           label="No, I don't want vegetables")
 
-    vegetables = forms.ModelMultipleChoiceField(label='Vegetables',
+    vegetablesT = forms.ModelMultipleChoiceField(label='Vegetables',
                                                 required=False,
                                                 widget=forms.CheckboxSelectMultiple(
-                                                    attrs={'class': attr3}
+                                                    attrs={'class': attr3 }
                                                     ),
                                                 queryset=product.objects.filter(
                                                     Active=True,category=category.objects.get(
-                                                        code='system.vegetables'
+                                                        code='system.vegetables.t'
                                                         )
                                                     ).order_by('order_in_menu'),
-                                                help_text="Wich vegetables do you want on your item"
+                                                help_text=""
         )
+
+    vegetablesP = forms.ModelMultipleChoiceField(label='Vegetables',
+                                                required=False,
+                                                widget=forms.CheckboxSelectMultiple(
+                                                    attrs={'class': attr3 }
+                                                    ),
+                                                queryset=product.objects.filter(
+                                                    Active=True,category=category.objects.get(
+                                                        code='system.vegetables.p'
+                                                        )
+                                                    ).order_by('order_in_menu'),
+                                                help_text=""
+        )
+
+
     NoExtrasCheck = forms.BooleanField(initial=False, 
                                        widget=forms.CheckboxInput(attrs={'class':attr3 + ' extras-id'}),
                                        required=False, 
@@ -82,11 +97,16 @@ class ArepaForm(forms.Form):
 
     sauces = forms.ModelMultipleChoiceField(
         label="Sauces",
-        help_text="Select the sauces thet you want.",
+        help_text="",
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={'class': attr3}),
         queryset=product.objects.filter(Active=True,category=category.objects.get(code='system.sauces')).order_by('order_in_menu')
     )
+
+    SourCream = forms.BooleanField(initial=False, 
+                                   widget=forms.CheckboxInput(attrs={'class':attr3}),
+                                   required=False, 
+                                   label="No, I don't want Sour Cream")
 
     soft_drinks = forms.ModelChoiceField(
         label="Soft Drinks",
@@ -109,7 +129,8 @@ class ArepaForm(forms.Form):
         additionals = cleaned_data.get("additionals")
         extras = cleaned_data.get('extras')
         paid_extras = cleaned_data.get("paid_extras",0)
-        vegetables = cleaned_data.get("vegetables",0)
+        TraditionalVegetables = cleaned_data.get("vegetablesT",0)
+        PicoDeGalloVegetables = cleaned_data.get("vegetablesP", 0)
         sauces = cleaned_data.get("sauces",0)
         soft_drinks = cleaned_data.get("soft_drinks")
         qtty = cleaned_data.get("qtty")
@@ -125,10 +146,16 @@ class ArepaForm(forms.Form):
             self.add_error('additionals', msg)
 
         if ThisProduct.allow_vegetables == True:
-            if  not len(vegetables) == 0:
-                if len(vegetables) > ThisProduct.max_vegetables:
-                    msg = "You must select max %d Vegetables for this product" % ThisProduct.max_vegetables
-                    self.add_error('vegetables', msg)
+            if ThisProduct.type_of_vegetables == 'T':
+                if  not len(TraditionalVegetables) == 0:
+                    if len(TraditionalVegetables) > ThisProduct.max_vegetables:
+                        msg = "You must select max %d Vegetables for this product" % ThisProduct.max_vegetables
+                        self.add_error('vegetablesT', msg)
+            if ThisProduct.type_of_vegetables == 'P':
+                if  not len(PicoDeGalloVegetables) == 0:
+                    if len(PicoDeGalloVegetables) > ThisProduct.max_vegetables:
+                        msg = "You must select max %d Vegetables for this product" % ThisProduct.max_vegetables
+                        self.add_error('vegetablesP', msg)
 
         if ThisProduct.allow_paid_extras == True:
             if not len(paid_extras) == 0:

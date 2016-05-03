@@ -1,49 +1,32 @@
 <div class="form-group">
-    <div class="row">
+    <div class="row green-back">
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-            <h2>Do you want extras with your item?</h2>
-            <div class="form-group has-error">
-            {% if form.paid_extras.errors %}
-                {% for error in form.paid_extras.errors %}
-                <span class="label label-danger">{{ error }}</span>
-                {% endfor %}
-            {% endif %}
-            </div>
+            <h2>Do you want extras with your item?<br>
+            <small>You can choose as much as {{ product.max_paid_extras }} extras for your item</small></h2>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-            <div class="form-inline">
+            <h2>
                 <label for="{{ form.NoExtrasCheck.id_for_label }}" id="{{ form.NoExtrasCheck.id_for_label }}">{{ form.NoExtrasCheck }} {{ form.NoExtrasCheck.label }}</label>
-                <div>
-                    <button type="button" data-toggle="modal" data-target=".paid-extras-modal" data-keyboard="true" class="btn btn-primary extras-btn">Yes, let me Choose</button>
-                </div>
-                <div id="" class="modal fade paid-extras-modal" role="dialog" aria-hidden="true">
-                    <div class="modal-dialog modal-md">
-                    <!-- Modal content-->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">
-                                    {{ form.paid_extras.label }}<br>
-                                    <small>Choose as much as {{ product.max_paid_extras }} extras for your item</small>
-                                </h4>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row">
-                                {% for field in form.paid_extras %}
-                                    <div class="col-offset-lg-4 col-lg-10 col-offset-md-4 col-md-10 col-offset-sm-4 col-sm-10 col-offset-xs-4 col-xs-10">
-                                        {{ field }}
-                                    </div>
-                                {{ field.field }}
-                                {% endfor %}
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </h2>
+        </div>
+    </div>
+    <div class="form-inline">
+        <div class="extras-list">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <h2>{{ form.paid_extras.help_text }}</h2>
+        </div>
+    {% for field in form.paid_extras %}
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            {{ field }}
+        </div>
+    {% endfor %}
+        </div>
+        <div class="form-group has-error">
+        {% if form.paid_extras.errors %}
+            {% for error in form.paid_extras.errors %}
+            <span class="label label-danger">{{ error }}</span>
+            {% endfor %}                                        
+        {% endif %}
         </div>
     </div>
 </div>

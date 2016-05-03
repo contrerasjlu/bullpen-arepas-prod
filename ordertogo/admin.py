@@ -17,9 +17,10 @@ class productAdmin(admin.ModelAdmin):
         (None,          {'fields': ['category','code','name','description','allow_type','Active']}),
         ('Meats',       {'fields': ['allow_extras','extras'], 'classes': ['collapse']}),
         ('Additionals', {'fields': ['allow_additionals','max_additionals'], 'classes': ['collapse']}),
-        ('Vegetables',  {'fields': ['allow_vegetables','max_vegetables'], 'classes': ['collapse']}),
+        ('Vegetables',  {'fields': ['allow_vegetables','type_of_vegetables','max_vegetables'], 'classes': ['collapse']}),
         ('Extras',      {'fields': ['allow_paid_extras','max_paid_extras'], 'classes': ['collapse']}),
         ('Sauces',      {'fields': ['allow_sauces','max_sauces'], 'classes': ['collapse']}),
+        ('Sour Cream',  {'fields': ['allow_sour_cream'], 'classes': ['collapse']}),
         ('Drinks',      {'fields': ['allow_drinks'], 'classes': ['collapse']}),
         ('Quantity',    {'fields': ['allow_qtty','max_qtty']}),
         ('Price & Menu',{'fields': ['price','order_in_menu','image']}),
@@ -91,6 +92,12 @@ class OrderPaymentAdmin(admin.ModelAdmin):
 	search_fields = ['order_number','cardholder_name']
 
 admin.site.register(OrderPaymentDetail, OrderPaymentAdmin)
+
+class PaymentRequestAdmin(admin.ModelAdmin):
+    list_display = ['RequestDate', 'OrderNumber','CreditCardType', 'CardHolderName']
+    search_fields = ['OrderNumber','CreditCardType', 'CardHolderName']
+
+admin.site.register(PaymentRequest, PaymentRequestAdmin)
 
 class RelatedImagesAdmin(admin.ModelAdmin):
 	list_display = ['product','description']

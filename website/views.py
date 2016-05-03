@@ -132,6 +132,13 @@ def cart(cartList):
 			sauces = AppendItems(item['sauces']) \
 					 if item['sauces'] and a.allow_sauces else None
 
+			SourCream = item.get('sour_cream', None)
+
+			if SourCream is None:
+				SourCream = 'No'
+			else:
+				SourCream = 'Yes'
+			
 			drink = product.objects.get(pk=item['soft_drinks']) if item['soft_drinks'] is not None else None
 
 			subtotal_extras = SumItems(extras) if not extras == None else 0
@@ -143,7 +150,7 @@ def cart(cartList):
 			the_cart.append({
 				'product': a,'type': item['type'],'extras' : extras,'additionals':additionals,
 				'vegetables': vegetables,'paid_extras': paid_extras,
-				'sauces': sauces, 'drink': drink,
+				'sauces': sauces, 'sour_cream': SourCream, 'drink': drink,
 				'qtty': qtty,
 				'price': int(qtty)*(subtotal_extras + 
 									subtotal_additionals +
@@ -416,7 +423,8 @@ class MealForm(FormView):
 										pk=self.kwargs['pk_prod'])
 
 		NoVegetables = self.request.POST.get('NoVegetablesCheck', None)
-		vegetables = self.request.POST.getlist('vegetables', None) \
+		TypeOfVegetables = 'vegetablesT' if thisProduct.type_of_vegetables == 'T' else 'vegetablesP'
+		vegetables = self.request.POST.getlist(TypeOfVegetables, None) \
 					 if not NoVegetables == 'on' else None
 		
 		NoSauce = self.request.POST.get('NoSaucesCheck', False)
@@ -438,6 +446,7 @@ class MealForm(FormView):
 			'additionals': self.request.POST.getlist('additionals',None),
 			'paid_extras':extras,
 			'sauces':sauces,
+			'sour_cream': self.request.POST.get('SourCream',None),
 			'soft_drinks':self.request.POST.get('soft_drinks', None),
 			'main_product':main_product,
 			'qtty': self.request.POST.get('qtty',1)

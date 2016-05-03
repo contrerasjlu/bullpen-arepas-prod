@@ -130,6 +130,16 @@
                                         </div>
                                         {% endif %}
 
+                                        {# Sour Cream #}
+                                        {% if item.product.allow_sour_cream == True %}
+                                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
+                                            <h4>Sour Cream</h4>
+                                            <ul class="list-group">
+                                                <li class="list-group-item">{{ item.sour_cream }}</li>
+                                            </ul>
+                                        </div>
+                                        {% endif %}
+
                                         {# Drink Meal #}
                                         {% if item.product.allow_drinks == True %}
                                         <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">

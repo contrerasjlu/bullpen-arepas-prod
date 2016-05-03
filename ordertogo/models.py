@@ -9,26 +9,15 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail, BadHeaderError
 from decimal import Decimal
 
-#Modelo para almacenar las categorias de las comidas ofrecidas
 class category(models.Model):
-	#Codigo --  Esta en veremos si tengo chance de catchar el ID adios al codigo
-	#           pudiera necesitar esto para algun parametro a tomar en cuenta
+	'''
+	Model for configuring the categories for the Menu
+	'''
 	code = models.CharField(max_length=50, unique=True)
-
-	#Nombre de la categoria Ej Suggested Plays, Baked or Fries Arepas, etc
-	#Este es el string que se muestra al publico
 	name = models.CharField(max_length=50)
-
-	#Descripcion de la categoria -- Tal vez no se necesite
 	description = models.TextField(max_length=500)
-
-	#Indicador de estado
 	Active = models.BooleanField(default=True)
-
-	#Indica si se muestra en el menu o no
 	show_in_menu = models.BooleanField(default=True)
-
-	#Indica el orden en el menu
 	order = models.IntegerField(default=0)
 
 	def __unicode__(self):
@@ -36,6 +25,9 @@ class category(models.Model):
 
 	@classmethod
 	def GetMenu(self, Batch):
+		'''
+		Method to get the men[u available, is directly conbined with GetProducts Methods
+		'''
 		Categories = category.objects.filter(Active=True,show_in_menu=True)
 		CategoryMatrix = []
 		for Category in Categories:
@@ -52,6 +44,8 @@ class category(models.Model):
 
 #Modelo para almacenar los productos asociados a una categoria
 class product(models.Model):
+	TypeOfVegetables = (("T", "Traditionals (System - Vegetables)"),("P", "Pico de Gallo"),)
+
 	#Clave foranea de la categoria -- Obligada
 	category = models.ForeignKey(category)
 
@@ -97,6 +91,8 @@ class product(models.Model):
 
 	allow_vegetables = models.BooleanField(default=False)
 
+	type_of_vegetables = models.CharField(default='T',choices=TypeOfVegetables, max_length=1)
+
 	max_vegetables = models.PositiveIntegerField(default=1,
 												 help_text='Maximum numer of \
 												            vegeatbles for the item')
@@ -116,6 +112,8 @@ class product(models.Model):
 									   help_text='This indicates \
 									   that the item will display the "Sauces" \
 									   category')
+
+	allow_sour_cream = models.BooleanField(default=False,help_text='This Indicates if the Product can be served with Sour Cream')
 
 	max_sauces = models.PositiveIntegerField(default=1, help_text="Maximum number of sauces for teh item")
 
@@ -151,33 +149,7 @@ class product(models.Model):
 
 	def __unicode__(self):
 		return self.name + ' (' + self.description + ')'
-	'''
-	Este metodo esta deprecado por que fue creado para los wizard de productos.
-	@classmethod
-	def NeedWizard(self, pk):
-		this = product.objects.get(pk=pk)
-		wizard = []
-		i = 0
-		def AppendWizard(misc, section_name, i):
-			i += 1
-			wizard.append({'section_number':i,
-						  'section_name':section_name,
-						  str(misc):True})
-			return i
 
-		i = AppendWizard('type','Baked or Fry',i) if this.allow_type == True else i
-		i = AppendWizard('vegetables','Vegetables',i) if this.allow_vegetables == True else i
-		i = AppendWizard('players','Players',i) if this.allow_extras == True else i
-		i = AppendWizard('extras','Extras',i) if this.allow_paid_extras == True else i
-		i = AppendWizard('sauces','Sauces',i) if this.allow_sauces == True else i
-		i = AppendWizard('drinks','Drinks',i) if this.allow_drinks == True else i
-		i = AppendWizard('qtty','Quantity',i) if this.allow_qtty == True else i
-
-		if i == 0 or i<= 3:
-			return False
-		else:
-			return wizard
-	'''
 	class Meta:
 		verbose_name = "Product"
 		verbose_name_plural = "Products"
@@ -683,6 +655,12 @@ class Order(models.Model):
 				   				  }
 				   }
 		payload = json.dumps(payload)
+		MaskedCard = '%s****%s' % (card[0:4],card[len(card)-4:len(card)])
+		ThisRequest = PaymentRequest(OrderNumber=ref,
+									 CreditCardType=cardT,
+									 CreditCardNumber=MaskedCard,
+									 CardHolderName=name,
+									 Amount=amt)
 
 		# Crypographically strong random number
 		nonce = str(int(os.urandom(16).encode('hex'),16)) 
@@ -719,6 +697,7 @@ class Order(models.Model):
 		except KeyError:
 			response['status'] = True
 			response['object'] = payment
+			ThisRequest.save()
 		else:
 			Error = payment.json()['Error']['messages']
 			response['status'] = False
@@ -768,7 +747,7 @@ class OrderDetail(models.Model):
 	#Baked or Fried
 	arepa_type = models.CharField(verbose_name="Baked or Fried", 
 								  default="Baked", 
-								  max_length=15, 
+								  max_length=100, 
 								  blank=True)
 
 	#Producto que solicito
@@ -807,6 +786,13 @@ class OrderDetail(models.Model):
 				Drink = product.objects.get(pk=item['soft_drinks']) if item['soft_drinks'] is not None else None
 				ArepaType = item.get('arepa_type',ThisProduct.category.name)
 
+				if ThisProduct.allow_sour_cream == True:
+					if item['sour_cream'] is None:
+						SourCream = 'With No Sour Cream'
+					else:
+						SourCream = 'With Sour Cream'
+					ArepaType += ' ' + SourCream
+
 				ThisItem = OrderDetail(
 					item=item_number,
 					arepa_type=ArepaType,
@@ -839,6 +825,23 @@ class OrderDetail(models.Model):
 					ThisProductDrink.save()
 				
 				item_number+=1
+
+class PaymentRequest(models.Model):
+	RequestDate = models.DateTimeField(verbose_name='Request Date',auto_now=True)
+	OrderNumber = models.CharField(max_length=20, verbose_name='Order Number')
+	CreditCardType = models.CharField(max_length=20, verbose_name='Credit Card Type')
+	CreditCardNumber = models.CharField(max_length=12, verbose_name='Credit Card Number')
+	CardHolderName = models.CharField(max_length=50, verbose_name='Cardholder Name')
+	Amount = models.CharField(max_length=17, verbose_name='Amount')
+
+	class Meta:
+		verbose_name = "Payment Request"
+		verbose_name_plural = "Payment Requests"
+
+	def __unicode__(self):
+		return self.OrderNumber
+    
+		
 
 #Modelo de Detalle del pago de la orden (Tarjeta, etc)
 class OrderPaymentDetail(models.Model):

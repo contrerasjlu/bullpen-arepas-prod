@@ -6482,6 +6482,13 @@ h1.agencia-bold{
 
 .navbar-header{
     background-color: #417240;
+    color: #fff;
+}
+
+.green-back{
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
 }
 
 a.white {
