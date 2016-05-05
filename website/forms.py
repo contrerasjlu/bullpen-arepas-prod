@@ -254,7 +254,7 @@ class PaymentForm(forms.Form):
 
     expiry = forms.CharField(
         required=True,
-        label="Expiricy Date",
+        label="Expiration Date",
         max_length=5,
         help_text="Ex: 06/16" )
 
