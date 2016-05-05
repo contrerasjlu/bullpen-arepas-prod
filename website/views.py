@@ -135,9 +135,9 @@ def cart(cartList):
 			SourCream = item.get('sour_cream', None)
 
 			if SourCream is None:
-				SourCream = 'No'
-			else:
 				SourCream = 'Yes'
+			else:
+				SourCream = 'No'
 			
 			drink = product.objects.get(pk=item['soft_drinks']) if item['soft_drinks'] is not None else None
 
@@ -575,6 +575,8 @@ class GuestLogin(CreateView):
 		username = GenericVariable.objects.val('guest.user')
 		password = GenericVariable.objects.val('guest.password')
 
+		print '%s y %s', (username, password)
+
 		user = authenticate(username=username, password=password)
 		login(self.request,user)
 
@@ -641,7 +643,7 @@ class ThankYouView(TemplateView):
 	def get_context_data(self, **kwargs):
 	    context = super(ThankYouView, self).get_context_data(**kwargs)
 	    if self.request.user.username == GenericVariable.objects.val('guest.user'):
-	    	logout(request)
+	    	logout(self.request)
 	    return context
 		
 

@@ -77,10 +77,10 @@
 					<tr>
 						<td>{{ location.location.description }}</td>
 						<td>{{ location.address_for_truck }}</td>
-						<td class="hidden-sm hidden-xs">
+						<td>
 							<span class="label label-success">{{ location.max_miles }}</span>
 						</td>
-						<td class="hidden-sm hidden-xs">
+						<td>
 							{% if location.open_for_delivery == True %}
 							<span class="label label-success">Yes</span>
 							{% else %}

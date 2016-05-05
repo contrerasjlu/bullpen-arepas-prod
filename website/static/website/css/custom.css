@@ -69,29 +69,43 @@ body{
 }
 
 .bullpen-menu-list{
-	padding-top: 15px;
+	padding-top: 0px;
 }
 
-.header-navbar .list-inline, .bullpen-menu{
+.header-navbar .list-inline{
 	color: #fff;
 	font-size: 7px;
 	text-transform: uppercase;
 	font-weight: bolder;
 }
 
+.bullpen-menu{
+	color: #fff;
+	font-size: 13px;
+	text-transform: uppercase;
+	font-weight: bolder;
+}
+
 @media (min-width: 425px){
-	.header-navbar .list-inline, .bullpen-menu{
+	.bullpen-menu{
+		font-size: 13px;
+	}
+	.header-navbar .list-inline{
 		font-size: 10px;
 	}
 	.header-navbar{
 		padding-top: 15px;
 	}
+	.bullpen-menu-list{
+		padding-top: 15px;
+	}
+
 }
 
 
 @media (min-width: 768px) { 
 	.header-navbar .list-inline, .bullpen-menu{
-		font-size: 16px;
+		font-size: 13px;
 	}
 }
 
@@ -209,4 +223,8 @@ border-right: 1px solid #FFF;
 
 #last-section{
 	margin-bottom: 50px;
+}
+
+.navbar-toggle{
+	margin-top: 25px;
 }

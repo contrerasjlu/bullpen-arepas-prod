@@ -130,7 +130,7 @@ class product(models.Model):
 									 help_text='This indicates that the item \
 									            will have a quantity field')
 
-	max_qtty = models.PositiveIntegerField(default=99, verbose_name="Max Quantity", help_text="Maximum number of items in a request")
+	max_qtty = models.PositiveIntegerField(default=5, verbose_name="Max Quantity", help_text="Maximum number of items in a request")
 
 	#Precio
 	price = models.DecimalField(max_digits=19, decimal_places=2,
@@ -788,9 +788,9 @@ class OrderDetail(models.Model):
 
 				if ThisProduct.allow_sour_cream == True:
 					if item['sour_cream'] is None:
-						SourCream = 'With No Sour Cream'
-					else:
 						SourCream = 'With Sour Cream'
+					else:
+						SourCream = 'With No Sour Cream'
 					ArepaType += ' ' + SourCream
 
 				ThisItem = OrderDetail(
