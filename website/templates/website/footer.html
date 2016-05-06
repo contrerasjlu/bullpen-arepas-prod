@@ -1,0 +1,17 @@
+{% load staticfiles %}
+<footer class="row">
+	<div class="divider"></div>
+	<div class="col-lg-4" style="color: #fff;">
+		© Bullpenarepas.com {% now 'Y' %}. All Rights Reserved.
+	</div>
+	<div class="col-lg-4">
+		<a href="https://twitter.com/Bullpenarepas" class="twitter-follow-button" data-lang="es" data-show-screen-name="true" data-size="medium"></a>
+	</div>
+	<div class="col-lg-4 text-right">
+		<ul class="list-inline">
+			<li class="social"><img src="{% static 'website/img/instagram.png' %}" class="img-responsive"></li>
+			<li class="social"><img src="{% static 'website/img/facebook.png' %}" class="img-responsive"></li>
+			<li class="social"><img src="{% static 'website/img/twitter.png' %}" class="img-responsive"></li>
+		</ul>
+	</div>
+</footer>

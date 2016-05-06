@@ -1,3 +1,4 @@
+/*
 @font-face{
   font-family: 'Agency Bold';
   src:url(../fonts/fonts/AGENCYB.TTF);
@@ -16,12 +17,12 @@
 .agencia-regular{
     font-family: 'Agency Regular';
     font-size: 18px;
-}
+}*/
 
 .floating-div{
     position: fixed;
-    top: 175px;
-    left: 45px;
+    top: 0px;
+    left: 0px;
 }
 
 .white{
@@ -351,8 +352,11 @@ dark,
 }
 
 .bg-green {
-    background: #417240 !important;
-    border: 1px solid #7d5527 !important;
+    background: #417240; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(left, #417240 , #7d5527); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, #417240 , #7d5527); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, #417240 , #7d5527); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, #417240 , #7d5527); /* Standard syntax */
     color: #fff;
 }
 
@@ -604,6 +608,10 @@ table.no-margin .progress {
 .row {
     margin-right: -10px;
     /*margin-left: -10px;*/
+}
+
+.panel .row{
+    margin-right: 0px;
 }
 
 .grid_slider .col-md-6 {
@@ -2186,7 +2194,7 @@ h4.graph_title {
 .tile-stats .icon {
     color: #BAB8B8;
     position: absolute;
-    right: 53px;
+    right: 65px;
     top: 22px;
     z-index: 1;
 }
@@ -2339,6 +2347,31 @@ button,
     margin-bottom: 0;
     margin-right: 0;
 }
+
+@media (min-width: 320px){
+    #collapse1 .btn-group-vertical .btn-block, #type-of-sale-btn{
+        font-size: 9px;
+    }
+}
+
+@media (min-width: 375px){
+    #collapse1 .btn-group-vertical .btn-block, #type-of-sale-btn{
+        font-size: 11px;
+    }
+}
+
+@media (min-width: 425px){
+    #collapse1 .btn-group-vertical .btn-block, #type-of-sale-btn{
+        font-size: 13px;
+    }
+}
+
+/* Small devices (tablets, 768px and up) */
+@media (min-width: 768px) { 
+    #collapse1 .btn-group-vertical .btn-block, #type-of-sale-btn{
+        font-size: 15px;
+    }
+ }
 
 .mail_list_column {
     border-left: 1px solid #DBDBDB;
@@ -4017,8 +4050,8 @@ html > body > .ui-pnotify {
 }
 
 .btn-primary.btn-outline {
-  background: #f0ad4e;
-    border-color: #f0ad4e;
+  background: #417240;
+    border-color: #417240;
 }
 
 .btn-default.btn-outline {
@@ -4066,9 +4099,9 @@ html > body > .ui-pnotify {
 .btn-primary:active,
 .btn-primary.active,
 .open .dropdown-toggle.btn-primary {
-    background-color: #d58512;
-    border-color: #d58512;
-    color: #FFFFFF;
+    background-color: #fff;
+    border-color: #417240;
+    color: #417240;
 }
 
 .btn-success:hover,
@@ -4106,9 +4139,9 @@ html > body > .ui-pnotify {
 .btn-primary:active,
 .btn-primary.active,
 .open .dropdown-toggle.btn-primary {
-    background-color: #d58512;
-    border-color: #d58512;
-    color: #FFFFFF;
+    background-color: #fff;
+    border-color: #417240;
+    color: #417240;
 }
 
 .btn-danger:hover,
@@ -6401,7 +6434,7 @@ padding-left: -45px;
 }
 
 h1.agencia-bold{
-    font-size: 24px;
+    font-size: 23px;
 }
 
 .img-responsive{
@@ -6449,6 +6482,13 @@ h1.agencia-bold{
 
 .navbar-header{
     background-color: #417240;
+    color: #fff;
+}
+
+.green-back{
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
 }
 
 a.white {
@@ -6457,4 +6497,65 @@ a.white {
 
 .plain{
     color: #000;
+}
+
+#menu-bullpen, #instructions-bullpen, #cart-bullpen{
+    height: auto;
+    min-height: 400px;
+}
+
+#login-login, #login-social{
+    height: auto;
+    min-height: 200px;
+}
+
+.btn-primary.disabled{
+    background-color: #417240;
+    border-color: #417240;
+}
+
+table{
+    font-size: 10px;
+}
+
+.summary-table{
+    font-size: 13px;
+}
+
+.face{
+    background-color: #3b5998;
+    border-color: #3b5998;
+}
+
+.face:hover{
+    color: #3b5998;
+    border-color: #3b5998;
+}
+
+.tweet{
+    background-color: #0084b4;
+    border-color: #0084b4;
+}
+
+.tweet:hover{
+    color: #0084b4;
+    border-color: #0084b4;
+}
+
+.google{
+    background-color: #d34836;
+    border-color: #d34836;
+}
+
+.google:hover{
+    color: #d34836;
+    border-color: #d34836;
+}
+
+#menu-btn{
+    box-shadow: 3px 5px 5px #888;
+}
+
+.arepa-label{
+    font-size: 10px;
 }

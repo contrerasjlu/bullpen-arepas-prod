@@ -1,0 +1,134 @@
+{% extends 'website/wizard/step1.html' %}
+{% block right-side %}
+{% load static %}
+<div class="panel panel-success" id="instructions-bullpen">
+    <div class="panel-heading">
+        <h4>Your Order Details</h4> 
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                {% if guest %}
+                <h5><b>Guest Client:</b> {{ guest.firstname }} {{ guest.lastname }} <a href="{% url 'website:login-auth' %}?next={% url 'website:checkout' %}">(Not {{ guest.firstname }}?)</a></h5>
+                {% else %}
+                <h5><b>Client:</b> {{ user.first_name }} {{ user.last_name }} <a href="{% url 'website:login-auth' %}?next={% url 'website:checkout' %}">(Not {{ user.first_name }}?)</a></h5>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                {% if TypeOfSale.code == 'D' %}
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-warning">Address:</li>
+                    <li class="list-group-item">{{ D.Address}}</li>
+                </ul>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-warning">Address Line 2:</li>
+                    <li class="list-group-item">{{ D.Address2 }}</li>
+                </ul>
+            </div>
+                {% endif %}
+                {% if TypeOfSale.code == 'P' %}
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-warning">Location:</li>
+                    <li class="list-group-item">{{ Batch.address_for_truck }}</li>
+                </ul>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-warning">Time:</li>
+                    <li class="list-group-item">{{ P.Time }} min</li>
+                </ul>
+            </div>
+                {% endif %}
+                {% if TypeOfSale.code == 'PL' %}
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-warning">Location:</li>
+                    <li class="list-group-item">{{ Batch.address_for_truck }}</li>
+                </ul>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-warning">Car Description::</li>
+                    <li class="list-group-item">
+                        {{ PL.CarColor}}, {{ PL.CarBrand }}, {{ PL.CarModel }}, {{ PL.CarLicense }}
+                    </li>
+                </ul>
+            </div>
+                {% endif %}
+        </div>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <button class="btn btn-primary btn-sm" data-toggle="collapse" data-target=".invoice-hide"><i class="fa fa-shopping-cart"></i> Show Deatiled Order</button>
+                <div class="invoice-hide collapse">
+                    {% include 'website/wizard/CartSummary.html' %}
+                </div>
+            </div>
+        </div>                                
+        <div class="row">
+            <!-- accepted payments column -->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <p class="lead">Cards Accepted:</p>
+                <img src="{% static 'website/v2/images/visa.png' %}" alt="Visa">
+                <img src="{% static 'website/v2/images/mastercard.png' %}" alt="Mastercard">
+                <img src="{% static 'website/v2/images/american-express.png' %}" alt="American Express">
+            </div>
+        </div>
+
+        <form class="form-horizontal form-label-left input_mask" method="post">
+        {% csrf_token %}
+            <div class="row">
+                {% for field in form %}
+                    {% if field.is_hidden %}
+                        {{ field }}
+                    {% endif %}
+                {% endfor %}
+                {% for field in form %}
+                {% if not field.is_hidden %}
+                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <label class="control-label">{{field.label}}</label>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            {{field}}
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <i class="fa fa-info-circle"></i> {{field.help_text}}
+                        </div>
+                        {% if field.errors %}
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            {% for msj in field.errors %}
+                            <span class="label label-danger">{{ msj }}</span>    
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <hr>
+                    <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-credit-card"></i> Submit Payment</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block left-side %}
+<div class="panel-heading">
+    <h4><i class="fa fa-shopping-cart"></i> Summary</h4>
+</div>
+<div class="panel-body">
+    {% include 'website/wizard/summary.html' %}
+</div>
+{% endblock %}
+{% block tittle_up_xs %}Summary{% endblock %}
+{% block content_left_xs %}
+    {% include 'website/wizard/summary.html' %}
+{% endblock %}
+{% block userinfo %}{% endblock %}

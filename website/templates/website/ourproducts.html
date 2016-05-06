@@ -1,0 +1,108 @@
+{% extends 'website/aboutus.html' %}
+{% load staticfiles %}
+
+{% block menu %}
+
+	{% include 'website/nav-menu.html' with ourproducts="active" %}
+
+{% endblock %}
+
+{% block inner %}
+<div class="clearfix"></div>
+<div class="container-fluid" id="aboutus-section">
+	<div class="row">
+        <div class="col-lg-4">
+            <img src="{% static 'website/img/menu-text.png' %}" class="img-responsive">
+            <hr>
+        </div>
+    </div>
+    <div id="1stCarousel" class="carousel slide" data-ride="carousel">
+		<!-- Indicators -->
+		<ol class="carousel-indicators product-bullpen">
+			<li data-target="#1stCarousel" data-slide-to="0" class="active"></li>
+			<li data-target="#1stCarousel" data-slide-to="1"></li>
+			<li data-target="#1stCarousel" data-slide-to="2"></li>
+		</ol>
+
+		<!-- Wrapper for slides -->
+		<div class="carousel-inner" role="listbox">
+			<div class="item active">
+				<div class="col-lg-4">
+					{% include 'website/item-menu.html' with image="website/img/slider-menu/1-1.jpg" name="Reina Pepiada (Chicken Salad)" price="0.00" %}
+				</div>
+				<div class="col-lg-4">
+					{% include 'website/item-menu.html' with image="website/img/slider-menu/1-2.jpg" name="Double with Shredded Beef" price="0.00" %}
+				</div>
+				<div class="col-lg-4">
+					{% include 'website/item-menu.html' with image="website/img/slider-menu/1-3.jpg" name="Double With Chicken" price="0.00" %}
+				</div>
+			</div>
+
+			<div class="item">
+				<div class="col-lg-4">
+					{% include 'website/item-menu.html' with image="website/img/slider-menu/1-4.jpg" name="Grand Slam" price="0.00" %}
+				</div>
+				<div class="col-lg-4">
+					{% include 'website/item-menu.html' with image="website/img/slider-menu/1-5.jpg" name="Shredded Beef Hit" price="0.00" %}
+				</div>
+				<div class="col-lg-4">
+					{% include 'website/item-menu.html' with image="website/img/slider-menu/1-6.jpg" name="Pork Hit" price="0.00" %}
+				</div>
+			</div>
+
+			<div class="item">
+				<div class="col-lg-3">
+					{% include 'website/item-menu.html' with image="website/img/slider-menu/1-7.jpg" name="Chicken Hit" price="0.00" %}
+				</div>
+				<div class="col-lg-3">
+					{% include 'website/item-menu.html' with image="website/img/slider-menu/1-8.jpg" name="Home Run Pabellon" price="0.00" %}
+				</div>
+				<div class="col-lg-3">
+					{% include 'website/item-menu.html' with image="website/img/slider-menu/1-9.jpg" name="Home Run" price="0.00" %}
+				</div>
+				<div class="col-lg-3">
+					{% include 'website/item-menu.html' with image="website/img/slider-menu/1-10.jpg" name="Triple" price="0.00" %}
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+        <div class="col-lg-4">
+            <img src="{% static 'website/img/specials-text.png' %}" class="img-responsive">
+            <hr>
+        </div>
+    </div>
+	<div id="2ndCarousel" class="carousel slide" data-ride="carousel">
+		<!-- Indicators -->
+		<ol class="carousel-indicators product-bullpen">
+			<li data-target="#2ndCarousel" data-slide-to="0" class="active"></li>
+			<li data-target="#2ndCarousel" data-slide-to="1"></li>
+		</ol>
+
+		<!-- Wrapper for slides -->
+		<div class="carousel-inner" role="listbox">
+			<div class="item active">
+				<div class="col-lg-4">
+					{% include 'website/item-menu.html' with image="website/img/slider-menu/2-1.jpg" name="Cachapas" price="0.00" %}
+				</div>
+				<div class="col-lg-4">
+					{% include 'website/item-menu.html' with image="website/img/slider-menu/2-2.jpg" name="Empanadas" price="0.00" %}
+				</div>
+				<div class="col-lg-4">
+					{% include 'website/item-menu.html' with image="website/img/slider-menu/2-3.jpg" name="Patacones" price="0.00" %}
+				</div>
+			</div>
+
+			<div class="item">
+				<div class="col-lg-6">
+					{% include 'website/item-menu.html' with image="website/img/slider-menu/2-4.jpg" name="Mini Bats" price="0.00" %}
+				</div>
+				<div class="col-lg-6">
+					{% include 'website/item-menu.html' with image="website/img/slider-menu/2-5.jpg" name="Mini Balls" price="0.00" %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+{% load staticfiles %}
+    <title>Bullpen Arepas - The Taste of Home Run</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'website/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/custom.css' %}">
+    <link rel="shortcut icon" href="{% static 'website/img/favicon.png' %}">
+</head>
+<body>
+<body>
+    <div class="row">
+        <div class="col-lg-offset-4 col-lg-4 col-md-offset-4 col-md-4 col-sm-12 col-xs-12">
+            <img class="img-responsive" src="{% static 'website/img/closed_bullpenarepas.png' %}" alt="We're Closed">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-offset-4 col-lg-4 col-md-offset-4 col-md-4 col-sm-offset-4 col-sm-4 col-xs-12">
+            <h2 class="text-center">We're Sorry</h2>
+            <a href="{% url 'website:index' %}">
+                <button class="btn btn-block btn-primary">Back to Home Page</button>
+            </a>
+        </div>
+        <div class="col-lg-offset-4 col-lg-4 col-md-offset-4 col-md-4 col-sm-offset-4 col-sm-4 col-xs-12" id="last-section">
+            <hr>
+            <h2 class="text-center">When are we going to open?</h2>
+            <a href="http://events.bullpenarepas.com">
+                <button class="btn btn-block btn-primary">Visit the Events Page</button>
+            </a>
+        </div>
+    </div>
+
+    {% include 'website/footer.html' %}
+    <script type="text/javascript" src="{% static 'website/js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'website/js/bootstrap.min.js' %}"></script>
+</html>

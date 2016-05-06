@@ -1,0 +1,64 @@
+body {
+	font: 20px Montserrat, sans-serif;
+	line-height: 1.8;
+	color: #f5f6f7;
+  }
+
+.centered{
+	float: none;
+	margin: 0 auto;
+}
+  p {font-size: 16px;}
+  .margin {margin-bottom: 45px;}
+  .home-section { 
+	background-color: #1abc9c; /* Green */
+	background-image: url("../img/wood.jpg");
+	color: #ffffff;
+	padding-top: 45px;
+	padding-bottom: 45px;
+  }
+  .bg-2 { 
+	background-color: #474e5d; /* Dark Blue */
+	color: #ffffff;
+  }
+  .bg-3 { 
+	background-color: #ffffff; /* White */
+	color: #555555;
+  }
+  .bg-4 { 
+	background-color: #2f2f2f; /* Black Gray */
+	color: #fff;
+  }
+  .navbar {
+	padding-top: 15px;
+	padding-bottom: 15px;
+	border: 0;
+	border-radius: 0;
+	margin-bottom: 0;
+	color: #fff;
+	font-size: 15px;
+	font-weight: bolder;
+	letter-spacing: 2px;
+	background-color: #000;
+  }
+  .navbar-nav  li a:hover {
+	color: #FCEE21 !important;
+  }
+
+  .navbar-brand{
+  	padding-top: 0px;
+  }
+
+.force-height{
+	min-height: 472px;
+}
+
+.carousel-left{
+	border-radius: 5px;
+	border-color: #754C24;
+	border-style: solid;
+}
+
+.order{
+	background-color: #754C24;
+}

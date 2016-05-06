@@ -1,0 +1,31 @@
+<div class="group-for-delivery">
+    <form class="" method="post" role="form">
+        {% csrf_token %}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+        <div class="form-group">
+            {% for formD in form.visible_fields %}
+                {# Field #}
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-home"></i></span>{{ formD }}
+                </div>
+                    <p><span class="fa fa-info-circle" aria-describedby="basic-addon1"></span> {{formD.help_text}}</p>
+                {% if formD.errors %}
+                <div class="row">
+                    <div class="col-md-6 col-sm-6 col-xs-6 col-lg-6">
+                        {% for msj in formD.errors %}
+                            <span class="label label-danger">{{ msj }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 form-group has-feedback text-right">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-arrow-circle-right"></i> Continue to Menu</button>
+            </div>
+        </div>
+    </form>
+</div>

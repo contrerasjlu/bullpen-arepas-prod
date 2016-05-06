@@ -1,157 +1,109 @@
 {% extends 'website/wizard/step1.html' %}
 {% block right-side %}
-<div class="panel panel-success">
+<div class="panel panel-success" id="instructions-bullpen">
 	<div class="panel-heading">
-		<h1 class="agencia-bold"><i class="fa fa-info-circle"></i> Instructions</h1>	
+		<h4><i class="fa fa-info-circle"></i> Instructions</h4>	
 	</div>
 	<div class="panel-body">
-		<h2 class="agencia-regular"><kbd>Step 3:</kbd> How do you want your Meal?</h2>
-		<p class="agencia-regular">Please select the ingredients for tour product</p>
-		<blockquote class="agencia-regular">{{ product.description }}</blockquote>
-		{% if not wizard == False %}
-		<div id="wizard" class="form_wizard wizard_horizontal">
-			<ul class="list-unstyled wizard_steps">
-				{% for step in wizard %}
-				<li>
-					<a href="#step-{{ step.section_number }}">
-						<span class="step_no">{{ step.section_number }}</span>
-					</a>
-				</li>
-				{% endfor %}
-			</ul>
-			
-			<form id="product-form{{product.id}}" method="post" action="">
-			{% csrf_token %}
-			<input id="id_id_for_product" name="id_for_product" type="hidden" value="{{ product.id}}" />
-			
-			{% for step in wizard %}
-			<div id="step-{{ step.section_number }}">
-				{# Si el producto permite la seleccion de Type (Solo Para Arepas) #}
-				{% if product.allow_type == True and step.type == True %}
-					{% include 'website/wizard/step3_type.html' %}
-				{% endif %}
-			
-		        {# Si el producto permite la seleccion de Vegetales #}
-		        {% if product.allow_vegetables == True and step.vegetables == True %}
-		        	{% include 'website/wizard/step3_vegetables.html' %}
-		        {% endif %}
-
-		        {# Si el producto permite la seleccion Extras (Players) #}
-		        {% if product.allow_extras ==  True and step.players == True %}
-	        		{% include 'website/wizard/step3_players.html' %}
-	        	{% endif %}
-
-		        {# Si el producto permite la seleccion de Paid Extras #}
-		        {% if product.allow_paid_extras ==  True and step.extras == True %}
-		        	{% include 'website/wizard/step3_extras.html' %}
-		        {% endif %}
-
-		        {# Si el producto permite la seleccion de Salsas #}
-		        {% if product.allow_sauces ==  True and step.sauces == True %}
-		        	{% include 'website/wizard/step3_sauces.html' %}
-		        {% endif %}
-
-		        {# Si el producto permite la seleccion de Bebidas #}
-		        {% if product.allow_drinks ==  True and step.drinks == True %}
-		        	{% include 'website/wizard/step3_drinks.html' %}
-		        {% endif %}
-
-		        {# Si el producto acepta cantidades #}
-		        {% if product.allow_qtty ==  True and step.qtty == True %}
-		        	{% include 'website/wizard/step3_qtty.html' %}
-		        {% endif %}
-	        </div>
-	        {% endfor %}
-	        </form>
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<h2><kbd>Step 3:</kbd> How do you want your Meal?</h2>
+				<p>Please select the ingredients for your product</p>
+				<blockquote>
+					<h1>{{ product.name }}</h1>
+					<small>{{ product.description }}</small>
+				</blockquote>	
+			</div>
 		</div>
-		{% else %}
-			<form id="product-form{{product.id}}" method="post" action="">
-			{% csrf_token %}
-				<input id="id_id_for_product" name="id_for_product" type="hidden" value="{{ product.id}}" />
-				{# Si el producto permite la seleccion de Type (Solo Para Arepas) #}
-				{% if product.allow_type == True %}
-					{% include 'website/wizard/step3_type.html' %}
-				{% endif %}
-			
-		        {# Si el producto permite la seleccion de Vegetales #}
-		        {% if product.allow_vegetables == True %}
-		        	{% include 'website/wizard/step3_vegetables.html' %}
-		        {% endif %}
+		{% if product.image %}
+		<hr>
+		<img src="/media/{{ product.image }}" style="width:200px;">
+		<hr>
+		{% endif %}
+		<form id="product-form{{product.id}}" method="post" action="">
+		{% csrf_token %}
+			<input id="id_id_for_product" name="id_for_product" type="hidden" value="{{ product.id}}" />
+			{# Si el producto permite la seleccion de Type (Solo Para Arepas) #}
+			{% if product.allow_type == True %}
+				{% include 'website/wizard/step3_type.html' %}
+			{% endif %}
 
-		        {# Si el producto permite la seleccion Extras (Players) #}
-		        {% if product.allow_extras ==  True %}
-	        		{% include 'website/wizard/step3_players.html' %}
+			{# Si el producto permite la seleccion Extras (Players) #}
+	        {% if product.allow_extras ==  True %}
+        		{% include 'website/wizard/step3_players.html' %}
+        	{% endif %}
+
+        	{# Si el producto permite additionals #}
+			{% if product.allow_additionals == True %}
+				{% include 'website/wizard/step3_additionals.html' %}
+			{% endif %}
+		
+	        {# Si el producto permite la seleccion de Vegetales #}
+	        {% if product.allow_vegetables == True %}
+	        	{% if product.type_of_vegetables == 'T' %}
+	        		{% include 'website/wizard/step3_vegetables-traditional.html' %}
+	        	{% elif product.type_of_vegetables == 'P' %}
+	        		{% include 'website/wizard/step3_vegetables-roosterpeek.html' %}
 	        	{% endif %}
+	        {% endif %}
 
-		        {# Si el producto permite la seleccion de Paid Extras #}
-		        {% if product.allow_paid_extras ==  True %}
-		        	{% include 'website/wizard/step3_extras.html' %}
-		        {% endif %}
+	        {# Si el producto permite la seleccion de Paid Extras #}
+	        {% if product.allow_paid_extras ==  True %}
+	        	{% include 'website/wizard/step3_extras.html' %}
+	        {% endif %}
 
-		        {# Si el producto permite la seleccion de Salsas #}
-		        {% if product.allow_sauces ==  True %}
-		        	{% include 'website/wizard/step3_sauces.html' %}
-		        {% endif %}
+	        {# Si el producto permite la seleccion de Salsas #}
+	        {% if product.allow_sauces ==  True %}
+	        	{% include 'website/wizard/step3_sauces.html' %}
+	        {% endif %}
 
-		        {# Si el producto permite la seleccion de Bebidas #}
-		        {% if product.allow_drinks ==  True %}
-		        	{% include 'website/wizard/step3_drinks.html' %}
-		        {% endif %}
+	        {# Si el producto tiene Natilla, tener la posibilidad de quitarla #}
+	        {% if product.allow_sour_cream ==  True %}
+	        	{% include 'website/wizard/step3_sour_cream.html' %}
+	        {% endif %}
 
-		        {# Si el producto acepta cantidades #}
-		        {% if product.allow_qtty ==  True %}
-		        	{% include 'website/wizard/step3_qtty.html' %}
-		        {% endif %}
-		        <div class="">
-                    <button type="submit" form="product-form{{product.id}}" class="btn btn-default btn-lg">Add to Cart</button>
-                </div>
-		    </form>
-		{% endif %} {# Si utiliza Wizard #}
+	        {# Si el producto permite la seleccion de Bebidas #}
+	        {% if product.allow_drinks ==  True %}
+	        	{% include 'website/wizard/step3_drinks.html' %}
+	        {% endif %}
+			<hr>
+	        {# Si el producto acepta cantidades #}
+	        {% if product.allow_qtty ==  True %}
+	        	{% include 'website/wizard/step3_qtty.html' %}
+	        {% endif %}
+	        <hr>
+	        <div class="pull-right">
+                <button type="submit" form="product-form{{product.id}}" class="btn btn-primary btn-lg">
+                	<i class="fa fa-shopping-cart"></i> Add to Cart
+                </button>
+            </div>
+	    </form>
 	</div>
 </div>
 {% endblock %}
-
 {% block FooterDeclaration %}
-{% load staticfiles %}
-<!-- form wizard -->
-    <script type="text/javascript" src="{% static 'website/v2/js/wizard/jquery.smartWizard.js' %}"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            // Smart Wizard 	
-            $('#wizard').smartWizard({
-            	transitionEffect: 'slide',
-            	labelNext:'Next', // label for Next button
-    			labelPrevious:'Previous', // label for Previous button
-    			labelFinish:'Add to Cart',  // label for Finish button
-    			onLeaveStep:leaveAStepCallback,
-        		onFinish:onFinishCallback     
-            });
-            
-            function leaveAStepCallback(obj, context){
-        		return validateSteps(context.fromStep); // return false to stay on step and true to continue navigation 
-    		}
+<script type="text/javascript">
+$(document).ready(function(){
+	$('.vgch').on('ifChecked', function(event){
+  		$('.veggie-list').addClass('hidden');
+	});
+	$('.vgch').on('ifUnchecked', function(event){
+		$('.veggie-list').removeClass('hidden');
+	});
+	$('.sach').on('ifChecked', function(event){
+  		$('.sauces-list').addClass('hidden');
+	});
+	$('.sach').on('ifUnchecked', function(event){
+		$('.sauces-list').removeClass('hidden');
+	});
 
-    		function onFinishCallback(objs, context){
-        		if(validateAllSteps()){
-            		$('form').submit();
-        		}
-    		}
+	$('.extras-id').on('ifChecked', function(event){
+  		$('.extras-list').addClass('hidden');
+	});
+	$('.extras-id').on('ifUnchecked', function(event){
+		$('.extras-list').removeClass('hidden');
+	});
 
-    		// Your Step validation logic
-    		function validateSteps(stepnumber){
-        		var isStepValid = true;
-        		// validate step 1
-        		{% if product.allow_extras ==  True and step.players == True %}
-	        		isStepValid = true
-	        	{% endif %}
-        		return isStepValid
-    		}
-    		function validateAllSteps(){
-        		var isStepValid = true;
-        		// all step validation logic     
-        		return isStepValid;
-    		}          
-        });
-    </script>
+})
+</script>
 {% endblock %}
-        

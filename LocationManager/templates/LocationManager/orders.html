@@ -1,15 +1,40 @@
 {% extends 'LocationManager/index.html' %}
+{% block HeaderAditionals %}
+    <meta http-equiv="refresh" content="60; url={{ request.path }}">
+{% endblock %}
 {% block WindowTittle %}| Orders {% endblock %}
 {% block Content %}
 <!-- page content -->
             <div class="right_col" role="main">
                 <div class="row">
-                
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel tile">
+                        <div class="x_title">
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
+                                    <h2>Show only Batch From:</h2>
+                                    <input type="hidden" id='SelectedFilter' value="{{ SelectedFilter }}">
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
+                                    <select class="form-control" id="batch-selector">
+                                        <option value="1" {% if SelectedFilter == 1 %}selected{% endif %}>All</option>
+                                        {% for batch in batches %}
+                                        <option value="{{ batch.batch_code }}" {% if SelectedFilter == batch.batch_code %}selected{% endif %}>{{ batch }}</option>
+                                        {% empty %}
+                                        <option>No Orders or No Batches Open</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
                 {% for batch in batches %}
-                    <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div id="batch-{{ batch.batch_code }}" class="col-md-12 col-sm-12 col-xs-12">
                         <div class="x_panel tile">
                             <div class="x_title">
-                                <h2>{{ batch }} <small>{{ batch.code }}</small></h2>
+                                <h2>{{ batch }} <small>{{ batch.batch_code }}</small></h2>
                                 <div class="clearfix"></div>
                             </div>
                             <div class="x_content">
@@ -61,4 +86,29 @@
                     {% endfor %}
                 </div>
             </div>
+{% endblock %}
+{% block FooterDeclarations %}
+<script type="text/javascript">
+    var SelectedFilter = $('#batch-selector option:selected').val()
+    
+    if (SelectedFilter == 1) {
+        $("div[id^='batch-']").show();
+    } else {
+        $("div[id^='batch-']").not('#batch-'+SelectedFilter).hide();
+    }
+
+    $("#batch-selector").change(function(){
+        if ($(this).val() == 1) {
+            $("div[id^='batch-']").show();
+        } else {
+            $("div[id^='batch-']").show();
+            $("div[id^='batch-']").not("#batch-"+$(this).val()).hide();
+        }
+        $.ajax({
+            url : "{% url 'LocationManager:GetSelectedFilterView' %}",
+            type : "GET", // http method
+            data : { 'SelectedFilter' : $(this).val() },
+        });
+    })
+</script>
 {% endblock %}

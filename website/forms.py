@@ -4,13 +4,19 @@
 
 from django.forms import ModelForm, widgets, NumberInput, TextInput, EmailInput
 from django.contrib.auth.models import User
+from django.forms import ModelMultipleChoiceField
+from requests import ConnectionError
 from django import forms
 from ordertogo.models import *
 from website.models import WebInfo, WebText
 
 attr  = 'form-control has-feedback-left agencia-regular'
 attr2 = 'form-control agencia-regular'
-attr3 = 'flat agencia-regular'
+attr3 = 'flat'
+
+class CustomPaidExtrasField(ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return "%s (+ $ %.2f)" % (obj.name,obj.price)
 
 class ArepaForm(forms.Form):
 
@@ -27,59 +33,86 @@ class ArepaForm(forms.Form):
                                    help_text="We can Fry your Arepa or make it in the Oven"
     )
     NoVegetablesCheck = forms.BooleanField(initial=False, 
-                                           widget=forms.CheckboxInput(attrs={'class':attr3, 'id':'vgch'}),
+                                           widget=forms.CheckboxInput(attrs={'class':attr3 + ' vgch'}),
                                            required=False, 
-                                           label="No, I don't want Vegetables")
+                                           label="No, I don't want vegetables")
 
-    vegetables = forms.ModelMultipleChoiceField(label='Vegetables',
+    vegetablesT = forms.ModelMultipleChoiceField(label='Vegetables',
                                                 required=False,
                                                 widget=forms.CheckboxSelectMultiple(
-                                                    attrs={'class': attr3}
+                                                    attrs={'class': attr3 }
                                                     ),
                                                 queryset=product.objects.filter(
                                                     Active=True,category=category.objects.get(
-                                                        code='vegetables'
+                                                        code='system.vegetables.t'
                                                         )
                                                     ).order_by('order_in_menu'),
-                                                help_text="Please select \
-                                                           wich vegetables do you \
-                                                           want with your selected \
-                                                           product"
+                                                help_text=""
         )
+
+    vegetablesP = forms.ModelMultipleChoiceField(label='Vegetables',
+                                                required=False,
+                                                widget=forms.CheckboxSelectMultiple(
+                                                    attrs={'class': attr3 }
+                                                    ),
+                                                queryset=product.objects.filter(
+                                                    Active=True,category=category.objects.get(
+                                                        code='system.vegetables.p'
+                                                        )
+                                                    ).order_by('order_in_menu'),
+                                                help_text=""
+        )
+
+
+    NoExtrasCheck = forms.BooleanField(initial=False, 
+                                       widget=forms.CheckboxInput(attrs={'class':attr3 + ' extras-id'}),
+                                       required=False, 
+                                       label="No, I don't want Extras")
 
     extras = forms.ModelMultipleChoiceField(
         label="Choose the Players with your Arepa...",
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={'class': attr3}),
-        queryset=product.objects.filter(Active=True,category=category.objects.get(code='extras')).order_by('order_in_menu')
+        queryset=product.objects.filter(Active=True,category=category.objects.get(code='system.meats')).order_by('order_in_menu')
     )
 
-    paid_extras = forms.ModelMultipleChoiceField(
-        label="On The Bench",
-        help_text="Choose as much players as you want for $0.99 each",
+    additionals = forms.ModelMultipleChoiceField(
+        label="Choose the Additionals Players with your Arepa...",
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={'class': attr3}),
-        queryset=product.objects.filter(Active=True,category=category.objects.get(code='paid.extras')).order_by('order_in_menu')
+        queryset=product.objects.filter(Active=True,category=category.objects.get(code='system.additionals')).order_by('order_in_menu')
+    )
+
+    paid_extras = CustomPaidExtrasField(
+        label="Additional Players",
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': attr3}),
+        queryset=product.objects.filter(Active=True,category=category.objects.get(code='system.paid.extras')).order_by('order_in_menu')
     )
 
     NoSaucesCheck = forms.BooleanField(initial=False, 
-                                       widget=forms.CheckboxInput(attrs={'class':attr3,'id':'sach'}),
+                                       widget=forms.CheckboxInput(attrs={'class':attr3 + ' sach'}),
                                        required=False, 
                                        label="No, I don't want Sauces")
 
     sauces = forms.ModelMultipleChoiceField(
         label="Sauces",
+        help_text="",
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={'class': attr3}),
-        queryset=product.objects.filter(Active=True,category=category.objects.get(code='sauces')).order_by('order_in_menu')
+        queryset=product.objects.filter(Active=True,category=category.objects.get(code='system.sauces')).order_by('order_in_menu')
     )
+
+    SourCream = forms.BooleanField(initial=False, 
+                                   widget=forms.CheckboxInput(attrs={'class':attr3}),
+                                   required=False, 
+                                   label="No, I don't want Sour Cream")
 
     soft_drinks = forms.ModelChoiceField(
         label="Soft Drinks",
         required=False,
         widget=forms.Select(attrs={'class': attr2}),
-        queryset=product.objects.filter(Active=True,category=category.objects.get(code='drinks')).order_by('order_in_menu'),
-        empty_label="I don't want any Drink"
+        queryset=product.objects.filter(Active=True,category=category.objects.get(code='system.drinks')).order_by('order_in_menu')
     )
 
     qtty = forms.IntegerField(
@@ -87,29 +120,68 @@ class ArepaForm(forms.Form):
         required=False,
         help_text='How many do you Want?',
         initial=1,
-        widget=forms.NumberInput(attrs={'class':attr2})
+        widget=forms.NumberInput(attrs={'class':attr2, 'min':1})
         )
 
     def clean(self):
         cleaned_data = super(ArepaForm, self).clean()
         id_for_product = cleaned_data.get("id_for_product")
-        arepa_type = cleaned_data.get("arepa_type")
-        vegetables = cleaned_data.get("vegetables")
-        extras = cleaned_data.get("extras")
-        paid_extras = cleaned_data.get("paid_extras")
-        sauces = cleaned_data.get("sauces")
+        additionals = cleaned_data.get("additionals")
+        extras = cleaned_data.get('extras')
+        paid_extras = cleaned_data.get("paid_extras",0)
+        TraditionalVegetables = cleaned_data.get("vegetablesT",0)
+        PicoDeGalloVegetables = cleaned_data.get("vegetablesP", 0)
+        sauces = cleaned_data.get("sauces",0)
         soft_drinks = cleaned_data.get("soft_drinks")
         qtty = cleaned_data.get("qtty")
 
-        this_product = product.objects.get(pk=id_for_product)
+        ThisProduct = product.objects.get(pk=id_for_product)
 
-        if (not this_product.extras == len(extras)) and this_product.allow_extras == True:
-            msg = "You must select %d Players for this product" % this_product.extras
+        if (ThisProduct.allow_extras == True) and not (len(extras) == ThisProduct.extras):
+            msg = "You must select %d Players for this product" % ThisProduct.extras
             self.add_error('extras', msg)
 
-        if this_product.allow_qtty == True and (qtty < 1):
-            msg = "You must enter a valid Quantty"
-            self.add_error('qtty', msg)
+        if (ThisProduct.allow_additionals == True) and not (len(additionals) == ThisProduct.max_additionals):
+            msg = "You must select %d Additional Players for this product" % ThisProduct.max_additionals
+            self.add_error('additionals', msg)
+
+        if ThisProduct.allow_vegetables == True:
+            if ThisProduct.type_of_vegetables == 'T':
+                if  not len(TraditionalVegetables) == 0:
+                    if len(TraditionalVegetables) > ThisProduct.max_vegetables:
+                        msg = "You must select max %d Vegetables for this product" % ThisProduct.max_vegetables
+                        self.add_error('vegetablesT', msg)
+            if ThisProduct.type_of_vegetables == 'P':
+                if  not len(PicoDeGalloVegetables) == 0:
+                    if len(PicoDeGalloVegetables) > ThisProduct.max_vegetables:
+                        msg = "You must select max %d Vegetables for this product" % ThisProduct.max_vegetables
+                        self.add_error('vegetablesP', msg)
+
+        if ThisProduct.allow_paid_extras == True:
+            if not len(paid_extras) == 0:
+                if len(paid_extras) > ThisProduct.max_paid_extras:
+                    msg = "You can't select more than %s Extras for your item" % ThisProduct.max_paid_extras
+                    self.add_error('paid_extras', msg)
+
+        if ThisProduct.allow_sauces == True:
+            if not len(sauces) == 0:
+                if len(sauces) > ThisProduct.max_sauces:
+                    msg = "You can't select more than %s Sauces for your item" % ThisProduct.max_sauces
+                    self.add_error('sauces', msg)
+
+        if ThisProduct.allow_drinks == True and not soft_drinks:
+            msg = "You must selct a Drink for your meal"
+            self.add_error('soft_drinks', msg)
+
+
+        if ThisProduct.allow_qtty == True:
+            if qtty < 1:
+                msg = "You must enter a valid Quantty"
+                self.add_error('qtty', msg)
+
+            if qtty > ThisProduct.max_qtty:
+                msg = "You can't choose more than %s item for this request" % ThisProduct.max_qtty
+                self.add_error('qtty', msg)
 
 class CreateAccountForm(forms.Form):
     firstname = forms.CharField(
@@ -164,15 +236,16 @@ class CreateAccountForm(forms.Form):
         else:
             raise forms.ValidationError("Email Taken")
 
-
 class PaymentForm(forms.Form):
     name_on_card = forms.CharField(
+        required=True,
         max_length=80,
         label="Name on Card",
         help_text="Ex: Jhon D Lopez"
     )
 
     card_number = forms.CharField(
+        required=True,
         max_length=16,
         min_length=15,
         label="Card Number",
@@ -180,16 +253,24 @@ class PaymentForm(forms.Form):
     )
 
     expiry = forms.CharField(
-        label="Expiricy Date",
+        required=True,
+        label="Expiration Date",
         max_length=5,
         help_text="Ex: 06/16" )
 
     cvv = forms.CharField(
+        required=True,
         max_length=4,
         min_length=3,
         label="CVV",
         help_text="This code is in the front side of your American Express Card, and in the back side of your Visa or Master Card"
     )
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
+        self.cart = kwargs.pop('cart')
+        self.user = kwargs.pop('user')
+        super(PaymentForm, self).__init__(*args, **kwargs)
 
     def clean_name_on_card(self):
         name_on_card = self.cleaned_data.get('name_on_card')
@@ -262,7 +343,64 @@ class PaymentForm(forms.Form):
         else:
             raise forms.ValidationError("The Expiricy Date is not Valid")
 
-        return expiry
+        return expiry.replace('/', '')
+
+    def clean(self, **kwargs):
+        cleaned_data = super(PaymentForm, self).clean()
+        name_on_card = cleaned_data.get("name_on_card")
+        card_number = cleaned_data.get("card_number")
+        expiry = cleaned_data.get("expiry")
+        cvv = cleaned_data.get("cvv")
+
+        ############################################
+        OrderNumber = self.request['order_number']
+        ref = 'Order #'+str(OrderNumber)
+        DataClient = {'Location': PaymentBatch.objects.get(pk=self.request['Batch']),
+                      'TypeOfSale': self.request['TypeOfSale']['code'],
+                      'Object':self.request[self.request['TypeOfSale']['code']]}
+        Amounts = Order.GetAmts(self.cart['amounts']['subtotal'], DataClient['Location'].tax_percent, self.request['TypeOfSale']['code'])
+        TotalAmt = Amounts['TotalAmt']
+        TaxAmt = Amounts['TaxAmt']
+        Subtotal = self.cart['amounts']['subtotal']
+
+        value = round(TotalAmt,2)
+        value = str(value)
+        valueTry = str(value).split(".")
+        if len(valueTry[1]) == 1:
+            value += "0"
+        value = value.replace('.','')
+        try:
+            pay = Order.Payment(name_on_card,card_number,expiry,value,cvv,ref)
+
+        except ConnectionError:
+            msj = "Something went wrong with the Payment Gateway, Try Again Later"
+            self.add_error('card_number',msj)
+        else:
+            if pay['status'] == False:
+                for error in pay['object']:
+                    msj = "%s - %s" % (error['code'],error['description'])
+                    self.add_error('card_number',msj)
+            else:
+                ThisOrder = Order.SaveOrder(DataClient,OrderNumber,Subtotal,TaxAmt,TotalAmt, self.user)
+                
+                OrderPaymentDetail.SaveOrderPaymentDetail(pay, ThisOrder)
+
+                AddressForEmail = ThisOrder.user.email
+
+                if self.user.username == GenericVariable.objects.val('guest.user'):
+                    guest = self.request['guest']
+                    this_guest = GuestDetail(
+                        firstname=guest['firstname'],
+                        lastname=guest['lastname'],
+                        email=guest['email'],
+                        phone=guest['phone'],
+                        order=ThisOrder
+                        )
+                    this_guest.save()
+                    AddressForEmail = guest['email']
+
+                OrderDetail.SaveOrderDetail(self.request,ThisOrder)
+                Order.SendInvoice(ThisOrder, AddressForEmail, self.cart)
 
 class PreCheckoutForm_Delivery(forms.Form):
 
@@ -292,35 +430,39 @@ class PreCheckoutForm_Delivery(forms.Form):
                                widget=forms.TextInput(attrs={'class': attr,
                                                              'placeholder':'Zip Code'}))
 
-    # 750 South Perry Street, Suite 400. Lawrenceville, GA 30046
+    NearestLocation = forms.CharField(widget=forms.HiddenInput(),required=False)
+
     def clean(self):
         cleaned_data = super(PreCheckoutForm_Delivery, self).clean()
         address = cleaned_data.get('address')
         city = cleaned_data.get('city')
         zip_code = cleaned_data.get('zip_code')
 
-        addr_composed = address +", "+city+", GA, "+str(zip_code)
-        
-        key = GenericVariable.objects.val(code='google.API.KEY')
-        
-        origins = PaymentBatch.objects.filter(status='O', open_for_delivery=True)
-        if len(origins) > 0:
-            i = 0
-            for location in origins:
-                valid_address = ValidateAddress(key, location.address_for_truck,
-                                                addr_composed,location.max_miles)
-                if valid_address == True:
-                    i+=1
+        CustomerAddress = "%s, %s, GA, %s" % (address, city, str(zip_code))
+
+        NearestLocation = Order.ValidateAddress(CustomerAddress)
+        Near = 0
+        for Batch in NearestLocation:
+            if Batch['inRange'] == True:
+                if Near == 0:
+                    Near = Decimal(Batch['Distance'][0])
+                    ValidBatch = Batch
+                elif Near < Decimal(Batch['Distance'][0]):
+                    Near = Decimal(Batch['Distance'][0])
+                    ValidBatch = Batch
+
+        if Near == 0:
+            self.add_error('address',"We couldn't find a Location in the range for this Address")
         else:
-            self.add_error('address',"Sorry, we couldn't verify your address. Try it later")
-        
-        if i == 0:
-            self.add_error('address',"You must enter an address in the range")
+            cleaned_data['NearestLocation'] = ValidBatch['Location'].id
+
+        return cleaned_data
 
 class PreCheckoutForm_PickItUp(forms.Form):
+    
     type_of_sale = forms.CharField(widget=forms.HiddenInput())
 
-    location = forms.ModelChoiceField(label="Location",
+    location = forms.ModelChoiceField(label="Where are you going to pick the order up?",
         widget=forms.Select(attrs={'class': attr2}),
         queryset=PaymentBatch.objects.filter(status='O'),
         to_field_name="location",
@@ -335,9 +477,10 @@ class PreCheckoutForm_PickItUp(forms.Form):
     )
 
 class PreCheckoutForm_ParkingLot(forms.Form):
+
     type_of_sale = forms.CharField(widget=forms.HiddenInput())
 
-    location = forms.ModelChoiceField(label="Location",
+    location = forms.ModelChoiceField(label="Wich Parking lot Location are you?",
                                       widget=forms.Select(attrs={'class': attr2}),
                                       queryset=PaymentBatch.objects.filter(status='O'),
                                       to_field_name="location",
@@ -390,27 +533,4 @@ class WebInfoForm(forms.ModelForm):
                 'rows':8}
             )
         }
-
-def ValidateAddress(key,origin,destination,max_miles):
-    import googlemaps
-    from decimal import Decimal
-    import json, pprint
-
-    gmaps = googlemaps.Client(key=key)
-    print destination
-    dest = gmaps.geocode(destination)
-    directions_result = gmaps.directions(
-        origin,
-        dest[0]['formatted_address']
-    )
-    miles = directions_result[0]['legs'][0]['distance']['text'].split(' ')
-    
-    if miles[1] == 'ft':
-        result = True
-    elif  Decimal(miles[0]) < max_miles:
-        result = True
-    else:
-        result = False
-
-    return result
     

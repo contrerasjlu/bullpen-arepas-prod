@@ -42,7 +42,7 @@ def auth(request):
 				login(request, user)
 				return HttpResponseRedirect(reverse('LocationManager:index'))
 		else:
-			msg = loadMsj("invalid.credential")
+			msg = "Invalid Credentials"
 			return render(request, 'LocationManager/login.html', {'msg': msg})
 
 	return render(request, 'LocationManager/login.html')
@@ -131,7 +131,7 @@ class BatchesList(ListView):
 
 class BatchesCreate(CreateView):
 	model = PaymentBatch
-	fields = ['location', 'address_for_truck', 'zip_code_for_truck', 'tax_percent', 'max_miles', 'batch_code', 'open_for_delivery']
+	fields = ['location', 'address_for_truck', 'zip_code_for_truck', 'tax_percent', 'max_miles', 'batch_code', 'notifier', 'open_for_delivery']
 	success_url = reverse_lazy('LocationManager:batches-list')
 	template_name = 'LocationManager/paymentbatch_form.html'
 
@@ -144,7 +144,7 @@ class BatchesCreate(CreateView):
 
 class BatchesUpdate(UpdateView):
 	model = PaymentBatch
-	fields = ['status', 'location', 'address_for_truck', 'zip_code_for_truck', 'tax_percent', 'max_miles', 'batch_code', 'open_for_delivery', 'status']
+	fields = ['status', 'location', 'address_for_truck', 'zip_code_for_truck', 'tax_percent', 'max_miles', 'batch_code', 'notifier', 'open_for_delivery', 'status']
 	success_url = reverse_lazy('LocationManager:batches-list')
 	template_name = 'LocationManager/paymentbatch_form.html'
 
@@ -182,7 +182,16 @@ class orders(ListView):
 		context = super(orders, self).get_context_data(**kwargs)
 		# Add Menu
 		context['menu'] = load_menu()
+		context['SelectedFilter'] = self.request.session.get('SelectedFilter',None)
 		return context
+
+def GetSelectedFilter(request):
+	import json
+	if request.is_ajax():
+		request.session['SelectedFilter'] = request.GET['SelectedFilter']
+		response_data = {}
+		response_data['result'] = '200 OK'
+		return HttpResponse(json.dumps(response_data),content_type="application/json")
 
 class HandleOrders(ListView):
 	template_name = 'LocationManager/orders_filtered.html'
@@ -233,91 +242,52 @@ class HandleOrderDetail(ListView):
 		if context['Order'].user.username == GenericVariable.objects.val('guest.user'):
 			context['guest'] = get_object_or_404(GuestDetail, order=context['Order'])
 
+		
+		def MakeDescription(Separator, Item):
+			ThisSeparatorQuery = Item.filter(arepa_type=Separator)
+			SeparatorList = ()
+			if ThisSeparatorQuery.count() == 0:
+				return ' | %s: No %s' % (Separator.upper(), Separator)
+			for ThisSeparator in ThisSeparatorQuery:
+				SeparatorList += ThisSeparator.product_selected.name,
+			return ' | %s: %s' % (Separator.upper(),(', ').join(SeparatorList))
+
 		cart_for_context = []
 
 		for item in cart:
-			this_extras = OrderDetail.objects.filter(
-				order_number_id=item.order_number_id,
-				item=item.item,
-				main_product=False,
-				arepa_type='With'
-			)
-			if len(this_extras) > 0:
-				EXTRAS = ''
-				for extras in this_extras:
-					EXTRAS = EXTRAS + extras.product_selected.name + ', '
-			else:
-				EXTRAS = 'Nothing'
+			ItemDescription = ''
+			Subtotal = OrderDetail.objects.filter(order_number_id=item.order_number_id, item=item.item).aggregate(total=Sum('product_selected__price'))
+			ThisItem = OrderDetail.objects.filter(item=item.item, order_number_id=item.order_number_id)
 
-			this_vegetables = OrderDetail.objects.filter(
-				order_number_id=item.order_number_id,
-				item=item.item,
-				main_product=False,
-				arepa_type='Vegetables'
-				)
+			# Select Meats
+			if item.product_selected.allow_extras:
+				ItemDescription += '%s ' % MakeDescription('With',ThisItem)
 
-			VEGETABLES = ''
-			if len(this_vegetables) > 0:
-				for vegetable in this_vegetables:
-					VEGETABLES = VEGETABLES + vegetable.product_selected.name + ', '
-			else:
-				VEGETABLES = 'No Vegetables'
+			# Select Additionals
+			if item.product_selected.allow_additionals:
+				ItemDescription += '%s ' % MakeDescription('Additionals', ThisItem)
 
-			this_paid_extras = OrderDetail.objects.filter(
-				order_number_id=item.order_number_id,
-				item=item.item,
-				main_product=False,
-				arepa_type='Paid Extra'
-			)
+			# Select Vegetables
+			if item.product_selected.allow_vegetables:
+				ItemDescription += '%s ' % MakeDescription('Vegetables', ThisItem)
 
-			subtotal = OrderDetail.objects.filter(
-				order_number_id=item.order_number_id,
-				item=item.item,
-				main_product=False,
-				arepa_type='Paid Extra'
-			).aggregate(total=Sum('product_selected__price'))
+			# Select Paid Extras
+			if item.product_selected.allow_paid_extras:
+				ItemDescription += '%s ' % MakeDescription('Extras', ThisItem)
 
-			PAID_EXTRAS = ''
-			if len(this_paid_extras) > 0:
-				for paid in this_paid_extras:
-					PAID_EXTRAS = PAID_EXTRAS + paid.product_selected.name + ', '
+			# Select Sauces
+			if item.product_selected.allow_sauces:
+				ItemDescription += '%s ' % MakeDescription('Sauces', ThisItem)
 
-			this_sauces = OrderDetail.objects.filter(
-				order_number_id=item.order_number_id,
-				item=item.item,
-				main_product=False,
-				arepa_type='Sauces'
-			)
-			if len(this_sauces) > 0:
-				SAUCES = ''
-				for sauce in this_sauces:
-					SAUCES = SAUCES + sauce.product_selected.name + ', '
-			else:
-				SAUCES = 'No Sauce'
+			if item.product_selected.allow_drinks:
+				ItemDescription += '%s ' % MakeDescription('Drink', ThisItem)
 
-			try:
-				this_drinks = OrderDetail.objects.get(
-					order_number_id=item.order_number_id,
-					item=item.item,
-					main_product=False,
-					arepa_type='Drink'
-				)
-			except OrderDetail.DoesNotExist:
-				DRINK = 'No Drink'
-				drink_price = 0
-			else:
-				DRINK = this_drinks.product_selected.name
-				drink_price = Decimal(this_drinks.product_selected.price)
-
-			sub = Decimal(item.product_selected.price) + drink_price
-			if subtotal['total']:
-				sub += Decimal(subtotal['total'])
 			this_item = {
 			'item': item.item,
 			'product':item.product_selected.name,
 			'code': item.product_selected.code,
-			'description': item.arepa_type + ' WITH: ' + EXTRAS + ' VEGETABLES: ' + VEGETABLES + ' EXTRAS: ' + PAID_EXTRAS + ' SAUCES: ' + SAUCES + ' DRINK: ' + DRINK,
-			'subtotal' : sub
+			'description': '%s %s' % (item.arepa_type, ItemDescription),
+			'subtotal' : Subtotal['total']
 			}
 			cart_for_context.append(this_item)
 
@@ -385,6 +355,7 @@ def BatchesReport(request, pk):
 		tax=Sum('tax_amt'),
 		delivery_amt=Sum('delivery_amt'),
 		delivery_order=Count(Case(When(order_type='D', then='order_type'))),
+		parkinglot=Count(Case(When(order_type='PL', then='order_type'))),
 		pickitup=Count(Case(When(order_type='P', then='order_type'))))
 
 	return render(request, 'LocationManager/report.html', context)

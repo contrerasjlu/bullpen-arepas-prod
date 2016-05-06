@@ -1,0 +1,48 @@
+{% extends 'website/wizard/login.html' %}
+{% block content %}
+<div class="container-fluid text-center">
+    <div class="row">
+        <div class="col-lg-offset-3 col-lg-6 col-md-12 col-sm-12 col-xs-12">
+            <h1>Login as a Guest</h1>
+            <small>Complete this form to finish your order as a guest.</small>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form method="post" action="{% url 'website:guest-login' %}" role="form" class="form-horizontal">
+                        {% csrf_token %}
+                        {% for field in form %}
+                        <div id="login-guest" class="form-group text-left {% if field.errors %}has-error has feedback{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="control-label">{{ field.label_tag }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                            <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                            {% for msj in field.errors %}
+                            <span class="label label-danger">{{ msj }}</span>
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        {% if next %}
+                            <input type="hidden" name="next" value="{{ next }}">
+                        {% else %}
+                            <input type="hidden" name="next" value="{% url 'website:PreCheckout' %}">
+                        {% endif %}
+                        <button class="btn btn-primary" type="submit">Login as a Guest</button>
+                        <hr>
+                        <a href="{% url 'website:login-auth' %}?next={{ next }}">
+                            <button type="button" class="btn btn-primary btn-sm" role="button"><i class="fa fa-arrow-circle-left"></i> Back to Login Options</button>
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block footer %}
+<script type="text/javascript">
+    $("#id_firstname").addClass('form-control');
+    $("#id_lastname").addClass('form-control');
+    $("#id_email").addClass('form-control');
+    $("#id_phone").addClass('form-control');
+</script>
+{% endblock %}

@@ -1,0 +1,39 @@
+<div class="group-for-pick">
+    <form class="form-vertical form-label-left input_mask" method="post">
+    {% csrf_token %}
+    {{ form.type_of_sale }}
+        <div class="row form-group">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 form-group has-feedback">
+                <label class="control-label">{{ form.location.label }}</label>
+                {{ form.location }}
+                {% if form.location.errors %}
+                <p>
+                    <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
+                        {% for msj in form.location.errors %}
+                            <span class="label label-danger">{{ msj }}</span>
+                        {% endfor %}
+                    </div>
+                </p>
+                {% endif %}
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 form-group has-feedback">
+                <label class="control-label">{{ form.time.label }}</label>
+                {{ form.time }}
+                {% if form.errors %}
+                <p>
+                    <div class="col-md-3 col-sm-6 col-xs-6 col-lg-3">
+                        {% for msj in form.time.errors %}
+                            <span class="label label-danger">{{ msj }}</span>
+                        {% endfor %}
+                    </div>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 form-group has-feedback text-right">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-arrow-circle-right"></i> Continue to Menu</button>
+            </div>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,1724 @@
+.version.bullpen_arepas__menu /* version checker */
+{
+	color: #00001D;
+	background-color: #D1B60F;
+}
+
+#muse_css_mq
+{
+	background-color: #FFFFFF;
+}
+
+#page
+{
+	z-index: 1;
+	min-height: 1499px;
+	background-image: none;
+	border-width: 0px;
+	border-color: #000000;
+	background-color: transparent;
+	padding-bottom: 1px;
+	width: 100%;
+	max-width: 1366px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#pu822
+{
+	padding-bottom: 60px;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u822
+{
+	height: 60px;
+	position: relative;
+	left: -50%;
+	margin-left: 683px;
+	width: 100%;
+	max-width: 1366px;
+}
+
+#u822-wrapper
+{
+	position: fixed;
+	top: 0px;
+	z-index: 155;
+	left: 50%;
+	margin-left: -683px;
+	width: 100%;
+	max-width: 1366px;
+}
+
+#u1246
+{
+	position: relative;
+	left: -50%;
+	margin-left: 25.000000000000004px;
+	width: 100%;
+	max-width: 50px;
+}
+
+#u1246-wrapper
+{
+	position: fixed;
+	top: 5px;
+	z-index: 156;
+	left: 50%;
+	margin-left: -661px;
+	width: 3.67%;
+	max-width: 50px;
+}
+
+#pu1627-4
+{
+	padding-bottom: 0px;
+	margin-right: -10000px;
+	margin-top: 93px;
+	width: 39.61%;
+	margin-left: 1.47%;
+}
+
+#u1627-4
+{
+	z-index: 14;
+	display: block;
+	vertical-align: top;
+	position: relative;
+	width: 41.41%;
+}
+
+#u1630
+{
+	z-index: 26;
+	height: 2px;
+	background-color: #FFFFFF;
+	position: relative;
+	width: 100%;
+}
+
+#pamphletu1816
+{
+	z-index: 28;
+	width: 0.01px;
+	height: 454px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 192px;
+	margin-left: 50%;
+	left: -663px;
+}
+
+#u1821
+{
+	z-index: 29;
+	width: 91px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 434px;
+	left: 616px;
+}
+
+#u1823
+{
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	border-width: 0px;
+	border-color: transparent;
+	background-color: #FFFFFF;
+	border-radius: 100px;
+}
+
+#u1823:hover
+{
+	background-color: #000000;
+	width: 20px;
+	height: 20px;
+	min-height: 0px;
+	margin: 0px;
+}
+
+#u1822
+{
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	border-width: 0px;
+	border-color: transparent;
+	background-color: #FFFFFF;
+	border-radius: 100px;
+	left: 36px;
+}
+
+#u1822:hover
+{
+	background-color: #000000;
+	width: 20px;
+	height: 20px;
+	min-height: 0px;
+	margin: 0px;
+}
+
+#u1824
+{
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	border-width: 0px;
+	border-color: transparent;
+	background-color: #FFFFFF;
+	border-radius: 100px;
+	left: 71px;
+}
+
+#u1824:hover
+{
+	background-color: #000000;
+	width: 20px;
+	height: 20px;
+	min-height: 0px;
+	margin: 0px;
+}
+
+#u1827popup
+{
+	z-index: 33;
+}
+
+#u1829
+{
+	z-index: 34;
+	width: 1325px;
+	height: 417px;
+	border-width: 0px;
+	border-color: transparent;
+	background-color: transparent;
+	margin-right: -10000px;
+	position: relative;
+}
+
+#u1633
+{
+	z-index: 35;
+	height: 413px;
+	background-color: #000000;
+	opacity: 0.3;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	border-radius: 10px;
+	position: relative;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u1651
+{
+	z-index: 36;
+	height: 311px;
+	border-radius: 40px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 25px;
+	width: 92.29%;
+	left: 3.98%;
+	background: #000000 url("../images/chicken%20salad-ieu1651-fr.png") no-repeat center center;
+	background: rgba(0,0,0,0) url("../images/chicken%20salad.jpg") no-repeat center center;
+	background-color: #000000;
+	background-size: cover;
+}
+
+#u1693-4
+{
+	z-index: 37;
+	min-height: 35px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 356px;
+	width: 92.29%;
+	left: 3.98%;
+}
+
+#u1713
+{
+	z-index: 41;
+	height: 413px;
+	background-color: #000000;
+	opacity: 0.3;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	border-radius: 10px;
+	position: relative;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u1710
+{
+	z-index: 42;
+	height: 311px;
+	border-radius: 40px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 25px;
+	width: 92.29%;
+	left: 3.98%;
+	background: #000000 url("../images/double%201-ieu1710-fr.png") no-repeat center center;
+	background: rgba(0,0,0,0) url("../images/double%201.jpg") no-repeat center center;
+	background-color: #000000;
+	background-size: cover;
+}
+
+#u1716-4
+{
+	z-index: 43;
+	min-height: 35px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 356px;
+	width: 92.29%;
+	left: 3.98%;
+}
+
+#specials
+{
+	position: relative;
+	width: 22px;
+	margin-right: -10000px;
+	margin-top: 396px;
+	left: 653px;
+}
+
+#u1722
+{
+	z-index: 47;
+	height: 413px;
+	background-color: #000000;
+	opacity: 0.3;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	border-radius: 10px;
+	position: relative;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u1719
+{
+	z-index: 48;
+	height: 311px;
+	border-radius: 40px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 25px;
+	width: 92.29%;
+	left: 3.98%;
+	background: #000000 url("../images/double%203-ieu1719-fr.png") no-repeat center center;
+	background: rgba(0,0,0,0) url("../images/double%203.jpg") no-repeat center center;
+	background-color: #000000;
+	background-size: cover;
+}
+
+#u1725-4
+{
+	z-index: 49;
+	min-height: 35px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 356px;
+	width: 92.29%;
+	left: 3.98%;
+}
+
+#u1828
+{
+	z-index: 54;
+	width: 1325px;
+	height: 417px;
+	border-width: 0px;
+	border-color: transparent;
+	background-color: transparent;
+	margin-right: -10000px;
+	position: relative;
+}
+
+#u1861
+{
+	z-index: 55;
+	height: 413px;
+	background-color: #000000;
+	opacity: 0.3;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	border-radius: 10px;
+	position: relative;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u1862
+{
+	z-index: 58;
+	height: 311px;
+	border-radius: 40px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 25px;
+	width: 92.29%;
+	left: 3.98%;
+	background: #000000 url("../images/grand%20slam-ieu1862-fr.png") no-repeat center center;
+	background: rgba(0,0,0,0) url("../images/grand%20slam.jpg") no-repeat center center;
+	background-color: #000000;
+	background-size: cover;
+}
+
+#u1863-4
+{
+	z-index: 61;
+	min-height: 35px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 356px;
+	width: 92.29%;
+	left: 3.98%;
+}
+
+#u1870
+{
+	z-index: 56;
+	height: 413px;
+	background-color: #000000;
+	opacity: 0.3;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	border-radius: 10px;
+	position: relative;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u1873
+{
+	z-index: 59;
+	height: 311px;
+	border-radius: 40px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 25px;
+	width: 92.29%;
+	left: 3.98%;
+	background: #000000 url("../images/hit%20carne-ieu1873-fr.png") no-repeat center center;
+	background: rgba(0,0,0,0) url("../images/hit%20carne.jpg") no-repeat center center;
+	background-color: #000000;
+	background-size: cover;
+}
+
+#u1876-4
+{
+	z-index: 65;
+	min-height: 35px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 356px;
+	width: 92.29%;
+	left: 3.98%;
+}
+
+#u1891
+{
+	z-index: 57;
+	height: 413px;
+	background-color: #000000;
+	opacity: 0.3;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	border-radius: 10px;
+	position: relative;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u1894
+{
+	z-index: 60;
+	height: 311px;
+	border-radius: 40px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 25px;
+	width: 92.29%;
+	left: 3.98%;
+	background: #000000 url("../images/hit%20pernil-ieu1894-fr.png") no-repeat center center;
+	background: rgba(0,0,0,0) url("../images/hit%20pernil.jpg") no-repeat center center;
+	background-color: #000000;
+	background-size: cover;
+}
+
+#u1888-4
+{
+	z-index: 69;
+	min-height: 35px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 356px;
+	width: 92.29%;
+	left: 3.98%;
+}
+
+#u1830
+{
+	z-index: 73;
+	width: 1325px;
+	height: 417px;
+	border-width: 0px;
+	border-color: transparent;
+	background-color: transparent;
+	margin-right: -10000px;
+	position: relative;
+}
+
+#pu1921
+{
+	margin-right: -10000px;
+	margin-top: 1px;
+	width: 23.85%;
+	margin-left: 0.08%;
+}
+
+#u1921
+{
+	z-index: 74;
+	height: 413px;
+	background-color: #000000;
+	opacity: 0.3;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	border-radius: 10px;
+	position: relative;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u1922
+{
+	z-index: 78;
+	height: 311px;
+	border-radius: 20px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 25px;
+	width: 92.41%;
+	left: 3.8%;
+	background: #000000 url("../images/hit%20pollo-ieu1922-fr.png") no-repeat center center;
+	background: rgba(0,0,0,0) url("../images/hit%20pollo.jpg") no-repeat center center;
+	background-color: #000000;
+	background-size: cover;
+}
+
+#u1923-4
+{
+	z-index: 82;
+	min-height: 35px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 356px;
+	width: 92.41%;
+	left: 3.8%;
+}
+
+#pu1930
+{
+	margin-right: -10000px;
+	width: 23.85%;
+	margin-left: 25.44%;
+}
+
+#u1930
+{
+	z-index: 75;
+	height: 413px;
+	background-color: #000000;
+	opacity: 0.3;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	border-radius: 10px;
+	position: relative;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u1933
+{
+	z-index: 79;
+	height: 311px;
+	border-radius: 20px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 25px;
+	width: 92.41%;
+	left: 3.8%;
+	background: #000000 url("../images/home%20run%20pabellon-ieu1933-fr.png") no-repeat center center;
+	background: rgba(0,0,0,0) url("../images/home%20run%20pabellon.jpg") no-repeat center center;
+	background-color: #000000;
+	background-size: cover;
+}
+
+#u1965-4
+{
+	z-index: 86;
+	min-height: 35px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 345px;
+	width: 92.41%;
+	left: 3.8%;
+}
+
+#pu1939
+{
+	margin-right: -10000px;
+	margin-top: 1px;
+	width: 23.85%;
+	margin-left: 50.8%;
+}
+
+#u1939
+{
+	z-index: 76;
+	height: 413px;
+	background-color: #000000;
+	opacity: 0.3;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	border-radius: 10px;
+	position: relative;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u1942
+{
+	z-index: 80;
+	height: 311px;
+	border-radius: 20px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 25px;
+	width: 92.41%;
+	left: 3.8%;
+	background: #000000 url("../images/home%20run-ieu1942-fr.png") no-repeat center center;
+	background: rgba(0,0,0,0) url("../images/home%20run.jpg") no-repeat center center;
+	background-color: #000000;
+	background-size: cover;
+}
+
+#u1968-4
+{
+	z-index: 90;
+	min-height: 35px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 355px;
+	width: 92.41%;
+	left: 3.8%;
+}
+
+#pu1951
+{
+	margin-right: -10000px;
+	width: 23.85%;
+	margin-left: 76.16%;
+}
+
+#u1951
+{
+	z-index: 77;
+	height: 413px;
+	background-color: #000000;
+	opacity: 0.3;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	border-radius: 10px;
+	position: relative;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u1948
+{
+	z-index: 81;
+	height: 311px;
+	border-radius: 20px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 25px;
+	width: 92.41%;
+	left: 3.8%;
+	background: #000000 url("../images/triple-ieu1948-fr.png") no-repeat center center;
+	background: rgba(0,0,0,0) url("../images/triple.jpg") no-repeat center center;
+	background-color: #000000;
+	background-size: cover;
+}
+
+#u1971-4
+{
+	z-index: 94;
+	min-height: 35px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 356px;
+	width: 92.41%;
+	left: 3.8%;
+}
+
+.PamphletWidget .ThumbGroup .Thumb,.PamphletNextButton,.PamphletPrevButton,.PamphletCloseButton /* pamphlet2 */
+{
+	cursor: pointer;
+}
+
+#pu1998-4
+{
+	padding-bottom: 0px;
+	margin-right: -10000px;
+	margin-top: 702px;
+	width: 39.61%;
+	margin-left: 1.47%;
+}
+
+#u1998-4
+{
+	z-index: 18;
+	display: block;
+	vertical-align: top;
+	position: relative;
+	width: 41.41%;
+}
+
+#u2001
+{
+	z-index: 27;
+	height: 2px;
+	background-color: #FFFFFF;
+	position: relative;
+	width: 100%;
+}
+
+#pamphletu2094
+{
+	z-index: 98;
+	width: 0.01px;
+	height: 454px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 806px;
+	margin-left: 50%;
+	left: -663px;
+}
+
+#u2131
+{
+	z-index: 99;
+	width: 56px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 434px;
+	left: 635px;
+}
+
+#u2133
+{
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	border-width: 0px;
+	border-color: transparent;
+	background-color: #FFFFFF;
+	border-radius: 100px;
+}
+
+#u2133:hover
+{
+	background-color: #000000;
+	width: 20px;
+	height: 20px;
+	min-height: 0px;
+	margin: 0px;
+}
+
+#u2134
+{
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	border-width: 0px;
+	border-color: transparent;
+	background-color: #FFFFFF;
+	border-radius: 100px;
+	left: 36px;
+}
+
+#u2134:hover
+{
+	background-color: #000000;
+	width: 20px;
+	height: 20px;
+	min-height: 0px;
+	margin: 0px;
+}
+
+#u1823.PamphletThumbSelected,#u1822.PamphletThumbSelected,#u1824.PamphletThumbSelected,#u2133.PamphletThumbSelected,#u2134.PamphletThumbSelected
+{
+	border-width: 0px;
+	border-color: transparent;
+	background-color: #000000;
+	width: 20px;
+	height: 20px;
+	min-height: 0px;
+	margin: 0px;
+}
+
+#u1827,#u2095
+{
+	position: absolute;
+	width: 1325px;
+	background-color: transparent;
+}
+
+#u2095popup
+{
+	z-index: 102;
+}
+
+#u2119
+{
+	z-index: 103;
+	width: 1325px;
+	height: 421px;
+	border-width: 0px;
+	border-color: transparent;
+	background-color: transparent;
+	margin-right: -10000px;
+	position: relative;
+}
+
+#pu1633,#pu2123
+{
+	margin-right: -10000px;
+	margin-top: 1px;
+	width: 32.31%;
+	margin-left: 0.08%;
+}
+
+#u2123
+{
+	z-index: 104;
+	height: 413px;
+	background-color: #000000;
+	opacity: 0.3;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	border-radius: 10px;
+	position: relative;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u2128
+{
+	z-index: 105;
+	height: 311px;
+	border-radius: 40px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 26px;
+	width: 92.29%;
+	left: 3.98%;
+	background: #000000 url("../images/cachapas%20en%20bullpen%20arepas-ieu2128-fr.png") no-repeat center center;
+	background: rgba(0,0,0,0) url("../images/cachapas%20en%20bullpen%20arepas.jpg") no-repeat center center;
+	background-color: #000000;
+	background-size: cover;
+}
+
+#u2125-4
+{
+	z-index: 106;
+	min-height: 66px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 348px;
+	width: 92.29%;
+	left: 3.98%;
+}
+
+#pu1713,#pu2124
+{
+	margin-right: -10000px;
+	margin-top: 1px;
+	width: 32.31%;
+	margin-left: 33.89%;
+}
+
+#u2124
+{
+	z-index: 110;
+	height: 413px;
+	background-color: #000000;
+	opacity: 0.3;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	border-radius: 10px;
+	position: relative;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u2121
+{
+	z-index: 111;
+	height: 311px;
+	border-radius: 40px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 26px;
+	width: 92.29%;
+	left: 3.98%;
+	background: #000000 url("../images/empanadas-ieu2121-fr.png") no-repeat center center;
+	background: rgba(0,0,0,0) url("../images/empanadas.jpg") no-repeat center center;
+	background-color: #000000;
+	background-size: cover;
+}
+
+#u2127-4
+{
+	z-index: 112;
+	min-height: 66px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 348px;
+	width: 92.29%;
+	left: 3.98%;
+}
+
+#pu1722,#pu2126
+{
+	margin-right: -10000px;
+	margin-top: 1px;
+	width: 32.31%;
+	margin-left: 67.7%;
+}
+
+#u2126
+{
+	z-index: 116;
+	height: 413px;
+	background-color: #000000;
+	opacity: 0.3;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	border-radius: 10px;
+	position: relative;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u2120
+{
+	z-index: 117;
+	height: 311px;
+	border-radius: 40px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 26px;
+	width: 92.29%;
+	left: 3.98%;
+	background: #000000 url("../images/patacon%20in%20bullpenarepas-ieu2120-fr.png") no-repeat center center;
+	background: rgba(0,0,0,0) url("../images/patacon%20in%20bullpenarepas.jpg") no-repeat center center;
+	background-color: #000000;
+	background-size: cover;
+}
+
+#u2122-4
+{
+	z-index: 118;
+	min-height: 66px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 348px;
+	width: 92.29%;
+	left: 3.98%;
+}
+
+#u2096
+{
+	z-index: 122;
+	width: 1325px;
+	height: 421px;
+	border-width: 0px;
+	border-color: transparent;
+	background-color: transparent;
+	margin-right: -10000px;
+	position: relative;
+}
+
+#pu1861,#pu2102
+{
+	margin-right: -10000px;
+	width: 32.31%;
+	margin-left: 0.08%;
+}
+
+#u2102
+{
+	z-index: 123;
+	height: 413px;
+	background-color: #000000;
+	opacity: 0.3;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	border-radius: 10px;
+	position: relative;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u2098
+{
+	z-index: 126;
+	height: 311px;
+	border-radius: 40px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 26px;
+	width: 92.29%;
+	left: 3.98%;
+	background: #000000 url("../images/teque%c3%b1os_01-ieu2098-fr.png") no-repeat center center;
+	background: rgba(0,0,0,0) url("../images/teque%c3%b1os_01.jpg") no-repeat center center;
+	background-color: #000000;
+	background-size: cover;
+}
+
+#u2099-4
+{
+	z-index: 129;
+	min-height: 69px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 344px;
+	width: 92.29%;
+	left: 3.74%;
+}
+
+#pu1870,#pu2105
+{
+	margin-right: -10000px;
+	width: 32.31%;
+	margin-left: 33.89%;
+}
+
+#u2105
+{
+	z-index: 124;
+	height: 413px;
+	background-color: #000000;
+	opacity: 0.3;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	border-radius: 10px;
+	position: relative;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u2097
+{
+	z-index: 127;
+	height: 311px;
+	border-radius: 40px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 26px;
+	width: 92.29%;
+	left: 3.98%;
+	background: #000000 url("../images/corn%20cheese%20ball_bullpenarepas-ieu2097-fr.png") no-repeat center center;
+	background: rgba(0,0,0,0) url("../images/corn%20cheese%20ball_bullpenarepas.jpg") no-repeat center center;
+	background-color: #000000;
+	background-size: cover;
+}
+
+#u2100-4
+{
+	z-index: 133;
+	min-height: 69px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 344px;
+	width: 92.29%;
+	left: 3.98%;
+}
+
+#pu1891,#pu2103
+{
+	margin-right: -10000px;
+	width: 32.31%;
+	margin-left: 67.7%;
+}
+
+#u2103
+{
+	z-index: 125;
+	height: 413px;
+	background-color: #000000;
+	opacity: 0.3;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	border-radius: 10px;
+	position: relative;
+	margin-right: -10000px;
+	width: 100%;
+}
+
+#u2104
+{
+	z-index: 128;
+	height: 311px;
+	border-radius: 40px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 26px;
+	width: 92.29%;
+	left: 3.98%;
+	background: #000000 url("../images/swing%20spread_bullpen%20arepas-ieu2104-fr.png") no-repeat center center;
+	background: rgba(0,0,0,0) url("../images/swing%20spread_bullpen%20arepas.jpg") no-repeat center center;
+	background-color: #000000;
+	background-size: cover;
+}
+
+#u2101-4
+{
+	z-index: 137;
+	min-height: 69px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 344px;
+	width: 92.29%;
+	left: 3.98%;
+}
+
+#u1256-4
+{
+	position: relative;
+	left: -50%;
+	margin-left: 72px;
+	width: 100%;
+	max-width: 144px;
+}
+
+#u1256-4-wrapper
+{
+	position: fixed;
+	top: 5px;
+	z-index: 158;
+	left: 50%;
+	margin-left: -602px;
+	width: 10.55%;
+	max-width: 144px;
+}
+
+#u1385-4
+{
+	min-height: 35px;
+	position: relative;
+	left: -50%;
+	margin-left: 46px;
+	width: 100%;
+	max-width: 92px;
+}
+
+#u1385-4-wrapper
+{
+	position: fixed;
+	top: 14px;
+	z-index: 162;
+	left: 50%;
+	margin-left: 0px;
+	width: 6.74%;
+	max-width: 92px;
+}
+
+#buttonu2283
+{
+	z-index: 150;
+	width: 207px;
+	border-color: #787878;
+	background-color: #000000;
+	padding-bottom: 13px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 692px;
+	left: 710px;
+}
+
+#buttonu2283:hover
+{
+	width: 207px;
+	min-height: 0px;
+	margin: 692px -10000px 0px 0px;
+}
+
+#buttonu2283.ButtonSelected
+{
+	width: 207px;
+	min-height: 0px;
+	margin: 692px -10000px 0px 0px;
+}
+
+#u2284-4
+{
+	z-index: 151;
+	min-height: 35px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 15px;
+	width: 79.72%;
+	left: 9.67%;
+}
+
+#buttonu2283:hover #u2284-4
+{
+	padding-top: 0px;
+	padding-bottom: 0px;
+	min-height: 35px;
+	width: 79.72%;
+	margin: 15px -10000px 0px 0%;
+}
+
+#buttonu2283:hover #u2284-4 p
+{
+	color: #FCEE21;
+	visibility: inherit;
+}
+
+#pu1386-4
+{
+	padding-bottom: 49px;
+	margin-right: -10000px;
+	margin-top: 6px;
+	margin-left: 784px;
+	width: 9.3%;
+}
+
+#u1386-4
+{
+	min-height: 35px;
+	position: relative;
+	left: -50%;
+	margin-left: 60.5px;
+	width: 100%;
+	max-width: 121px;
+}
+
+#u1386-4:hover
+{
+	padding-top: 0px;
+	padding-bottom: 0px;
+	min-height: 35px;
+	width: 100%;
+	max-width: 121px;
+	margin: 0px 0px 0px 61px;
+}
+
+#u1386-4-wrapper
+{
+	position: fixed;
+	top: 14px;
+	z-index: 166;
+	left: 50%;
+	margin-left: 107px;
+	width: 8.86%;
+	max-width: 121px;
+}
+
+#u1390-wrapper
+{
+	position: fixed;
+	top: 6px;
+	z-index: 182;
+	left: 50%;
+	margin-left: 101px;
+	width: 0.15%;
+	max-width: 2px;
+}
+
+#buttonu2277
+{
+	z-index: 145;
+	width: 207px;
+	border-color: #787878;
+	background-color: #000000;
+	padding-bottom: 13px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 99px;
+	left: 860px;
+}
+
+#buttonu2277:hover
+{
+	width: 207px;
+	min-height: 0px;
+	margin: 99px -10000px 0px 0px;
+}
+
+#buttonu2277.ButtonSelected
+{
+	width: 207px;
+	min-height: 0px;
+	margin: 99px -10000px 0px 0px;
+}
+
+#u2280-4
+{
+	z-index: 146;
+	min-height: 35px;
+	background-color: transparent;
+	font-size: 25px;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	line-height: 30px;
+	text-align: center;
+	font-family: source-sans-pro, sans-serif;
+	font-weight: 900;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 15px;
+	width: 79.72%;
+	left: 9.67%;
+}
+
+#buttonu2283.ButtonSelected #u2284-4,#buttonu2277:hover #u2280-4
+{
+	padding-top: 0px;
+	padding-bottom: 0px;
+	min-height: 35px;
+	width: 79.72%;
+	margin: 15px -10000px 0px 0%;
+}
+
+#buttonu2277.ButtonSelected #u2280-4
+{
+	padding-top: 0px;
+	padding-bottom: 0px;
+	min-height: 35px;
+	width: 79.72%;
+	margin: 15px -10000px 0px 0%;
+}
+
+#buttonu2277:hover #u2280-4 p
+{
+	color: #FCEE21;
+	visibility: inherit;
+}
+
+#buttonu2283.ButtonSelected #u2284-4 p,#buttonu2277.ButtonSelected #u2280-4 p
+{
+	color: #FFFFFF;
+	visibility: inherit;
+}
+
+#u1391-wrapper
+{
+	position: fixed;
+	top: 6px;
+	z-index: 183;
+	left: 50%;
+	margin-left: 235px;
+	width: 0.15%;
+	max-width: 2px;
+}
+
+#u2091-4
+{
+	z-index: 141;
+	display: block;
+	vertical-align: top;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 692px;
+	left: 917px;
+	width: 31.34%;
+}
+
+#pu1387-4
+{
+	padding-bottom: 49px;
+	margin-right: -10000px;
+	margin-top: 6px;
+	margin-left: 926px;
+	width: 15.67%;
+}
+
+#u1387-4
+{
+	min-height: 35px;
+	position: relative;
+	left: -50%;
+	margin-left: 46px;
+	width: 100%;
+	max-width: 92px;
+}
+
+#u1387-4-wrapper
+{
+	position: fixed;
+	top: 14px;
+	z-index: 170;
+	left: 50%;
+	margin-left: 243px;
+	width: 6.74%;
+	max-width: 92px;
+}
+
+#u1388-4
+{
+	min-height: 35px;
+	position: relative;
+	left: -50%;
+	margin-left: 46px;
+	width: 100%;
+	max-width: 92px;
+}
+
+#u1385-4:hover,#u1387-4:hover,#u1388-4:hover
+{
+	padding-top: 0px;
+	padding-bottom: 0px;
+	min-height: 35px;
+	width: 100%;
+	max-width: 92px;
+	margin: 0px 0px 0px 46px;
+}
+
+#u1388-4-wrapper
+{
+	position: fixed;
+	top: 14px;
+	z-index: 174;
+	left: 50%;
+	margin-left: 365px;
+	width: 6.74%;
+	max-width: 92px;
+}
+
+#u1392-wrapper
+{
+	position: fixed;
+	top: 6px;
+	z-index: 184;
+	left: 50%;
+	margin-left: 351px;
+	width: 0.15%;
+	max-width: 2px;
+}
+
+#u1675-4
+{
+	z-index: 22;
+	display: block;
+	vertical-align: top;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 99px;
+	left: 1069px;
+	width: 20.21%;
+}
+
+#pu1389-4
+{
+	padding-bottom: 49px;
+	margin-right: -10000px;
+	margin-top: 6px;
+	margin-left: 1151px;
+	width: 13.26%;
+}
+
+#u1389-4
+{
+	min-height: 35px;
+	position: relative;
+	left: -50%;
+	margin-left: 84px;
+	width: 100%;
+	max-width: 168px;
+}
+
+#u1389-4:hover
+{
+	padding-top: 0px;
+	padding-bottom: 0px;
+	min-height: 35px;
+	width: 100%;
+	max-width: 168px;
+	margin: 0px 0px 0px 84px;
+}
+
+#u1389-4-wrapper
+{
+	position: fixed;
+	top: 14px;
+	z-index: 178;
+	left: 50%;
+	margin-left: 481px;
+	width: 12.3%;
+	max-width: 168px;
+}
+
+#u1390,#u1391,#u1392,#u1393
+{
+	height: 49px;
+	position: relative;
+	left: -50%;
+	margin-left: 1px;
+	width: 100%;
+	max-width: 2px;
+}
+
+#u1393-wrapper
+{
+	position: fixed;
+	top: 6px;
+	z-index: 185;
+	left: 50%;
+	margin-left: 468px;
+	width: 0.15%;
+	max-width: 2px;
+}
+
+#u423
+{
+	z-index: 2;
+	height: 114px;
+	position: relative;
+	margin-right: -10000px;
+	width: 97.08%;
+	margin-left: 1.47%;
+	left: 0px;
+}
+
+#u456-4
+{
+	z-index: 3;
+	min-height: 31px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 26px;
+	left: 46px;
+	width: 29.51%;
+}
+
+#u2318
+{
+	z-index: 7;
+	width: 249px;
+	min-height: 24px;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 26px;
+	left: 58.94%;
+}
+
+#u2361
+{
+	z-index: 8;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 21px;
+	width: 3.23%;
+	left: 79.21%;
+}
+
+#u2369
+{
+	z-index: 10;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 21px;
+	width: 3.23%;
+	left: 82.87%;
+}
+
+#u2376
+{
+	z-index: 12;
+	position: relative;
+	margin-right: -10000px;
+	margin-top: 21px;
+	width: 3.23%;
+	left: 86.68%;
+}
+
+.html
+{
+	background: #9A6833 url("../images/texture-wood-0.jpg") no-repeat center center scroll;
+	background-size: cover;
+}
+
+body
+{
+	position: relative;
+	min-width: 320px;
+}
+
+.verticalspacer
+{
+	margin-bottom: -15px;
+	min-height: 139px;
+}
+
+#u1246_img
+{
+	width: 100%;
+}
+
+#u2361_img,#u2369_img,#u2376_img
+{
+	width: 97.73%;
+}
+

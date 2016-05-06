@@ -1,0 +1,230 @@
+body{
+	background-image: url("../img/wood.jpg");
+	overflow-x: hidden;
+}
+
+.divider{
+	height: 20px;
+}
+
+#header{
+	background-image: url("../img/main-back.jpg");
+	background-color: #fff;
+	background-repeat: no-repeat;
+    background-position: center top;
+    background-attachment: fixed;
+    background-size: contain;
+    height: 133px;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+/* Extra small devices (phones, less than 768px) */
+/* No media query since this is the default in Bootstrap */
+@media (min-width: 425px){
+	#header{
+		height: 176px;
+	}
+}
+
+/* Small devices (tablets, 768px and up) */
+@media (min-width: 768px) { 
+	#header{
+		height: 312px;
+	}
+ }
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: 992px) { 
+	#header{
+		height: 414px;
+	}
+ }
+
+/* Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) { 
+	#header{
+		background-color: #a32000;
+		height: 539px;
+	}
+ }
+
+.myNav{
+	margin: 0;
+	padding: 0;
+	background: -webkit-linear-gradient(#000, rgba(255,0,0,0)); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#000, rgba(255,0,0,0)); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#000, rgba(255,0,0,0)); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#000, rgba(255,0,0,0)); /* Standard syntax */
+    height: 50px;
+}
+
+.header-navbar{
+	padding-top: 10px;
+}
+
+#bullpen-menu {
+	min-height: 75px;
+}
+
+.bullpen-menu-list{
+	padding-top: 0px;
+}
+
+.header-navbar .list-inline{
+	color: #fff;
+	font-size: 7px;
+	text-transform: uppercase;
+	font-weight: bolder;
+}
+
+.bullpen-menu{
+	color: #fff;
+	font-size: 13px;
+	text-transform: uppercase;
+	font-weight: bolder;
+}
+
+@media (min-width: 425px){
+	.bullpen-menu{
+		font-size: 13px;
+	}
+	.header-navbar .list-inline{
+		font-size: 10px;
+	}
+	.header-navbar{
+		padding-top: 15px;
+	}
+	.bullpen-menu-list{
+		padding-top: 15px;
+	}
+
+}
+
+
+@media (min-width: 768px) { 
+	.header-navbar .list-inline, .bullpen-menu{
+		font-size: 13px;
+	}
+}
+
+@media (min-width: 992px){
+	.header-navbar .list-inline, .bullpen-menu{
+		font-size: 20px;
+	}	
+}
+
+@media (min-width: 1200px){
+	.header-navbar .list-inline, .bullpen-menu{
+		font-size: 26px;
+	}
+	.myNav{
+		height: 200px;
+	}
+}
+
+.header-navbar .list-inline a, li.bullpen-menu{
+	color: #fff !important;
+}
+
+ .header-navbar .list-inline a:hover, li.bullpen-menu a:hover{
+ 	text-decoration: none;
+ 	color: #FCEE21 !important;
+ }
+
+#footer-reduced{
+	max-height: 384px;
+	overflow: hidden;
+}
+
+footer{
+	background-color: #754C24;
+	padding-right: 50px;
+	padding-left: 50px;
+}
+
+.social{
+	width: 53px;
+}
+
+/**
+.affix {
+	top: 0;
+	width: 100%;
+}
+
+.affix + .container-fluid {
+	padding-top: 70px;
+}
+
+.navbar-inverse{
+	background-color: #000;
+	height: 80px;
+}
+**/
+
+.divider-vertical {
+height: 50px;
+margin: 0 9px;
+border-left: 1px solid #F2F2F2;
+border-right: 1px solid #FFF;
+}
+
+#aboutus-section, #menu-section{
+	margin-top: 100px;
+	margin-bottom: 70px;
+}
+
+#about-us-panel{
+	border: 0px;
+	background-color: rgba(0,0,0,0.4);
+	color: #fff;
+}
+
+.img-truck{
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+.item-panel{
+	padding: 20px;
+	margin-right: 10px;
+	border: 0px;
+	background-color: rgba(0,0,0,0.4);
+	color: #fff;
+	font-size: 20px;
+	font-weight: bolder;
+	text-transform: uppercase;
+	min-height: 290px;
+
+}
+
+.ga{
+	font-size: 20px;
+	font-weight: bolder;
+	text-transform: uppercase;
+}
+
+.product-bullpen{
+	bottom: -45px;
+}
+
+.btn-primary{
+	background-color: #417240;
+	border-color: #417240;
+}
+
+.btn-primary:hover{
+	background-color: #fff;
+	color: #417240;
+	border-color: #417240;
+}
+
+#last-section{
+	margin-bottom: 50px;
+}
+
+.navbar-toggle{
+	margin-top: 25px;
+}
