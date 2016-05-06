@@ -26,21 +26,39 @@
                                 </div>
                                 <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
                                     <div class="tile-stats">
-                                        <div class="count">$ {{ calc_orders.revenue }}</div>
+                                        <div class="count">
+                                            {% if calc_orders.revenue == None %}
+                                            $ 0
+                                            {% else %}
+                                            $ {{ calc_orders.revenue }}
+                                            {% endif %}
+                                        </div>
                                         <h3>Revenue</h3>
                                         <p>Order + Tax + Delivery</p>
                                     </div>
                                 </div>
                                 <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
                                     <div class="tile-stats">
-                                        <div class="count">$ {{ calc_orders.tax }}</div>
+                                        <div class="count">
+                                            {% if calc_orders.tax == None %}
+                                            $ 0
+                                            {% else %}
+                                            $ {{ calc_orders.tax }}
+                                            {% endif %}
+                                        </div>
                                         <h3>Tax</h3>
                                         <p>Total Amount</p>
                                     </div>
                                 </div>
                                 <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
                                     <div class="tile-stats">
-                                        <div class="count">$ {{ calc_orders.delivery_amt }}</div>
+                                        <div class="count">
+                                            {% if calc_orders.delivery_amt == None %}
+                                            $ 0
+                                            {% else %}
+                                            $ {{ calc_orders.delivery_amt }}
+                                            {% endif %}
+                                        </div>
                                         <h3>Delivery Revenue</h3>
                                         <p>Total Amount</p>
                                     </div>
@@ -48,7 +66,7 @@
                                 <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
                                     <div class="tile-stats">
                                         <div class="icon">
-                                            <i class="fa fa-taxi"></i>
+                                            <i class="fa fa-bicycle"></i>
                                         </div>
                                         <div class="count">{{ calc_orders.delivery_order }}</div>
                                         <h3>Delivery Orders</h3>
@@ -58,10 +76,20 @@
                                 <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
                                     <div class="tile-stats">
                                         <div class="icon">
-                                            <i class="fa fa-truck"></i>
+                                            <i class="fa fa-male"></i>
                                         </div>
                                         <div class="count">{{ calc_orders.pickitup }}</div>
                                         <h3>Pick it Up Orders</h3>
+                                        <p>Total</p>
+                                    </div>
+                                </div>
+                                <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                    <div class="tile-stats">
+                                        <div class="icon">
+                                            <i class="fa fa-car"></i>
+                                        </div>
+                                        <div class="count">{{ calc_orders.parkinglot }}</div>
+                                        <h3>Parking Lot Orders</h3>
                                         <p>Total</p>
                                     </div>
                                 </div>

@@ -355,6 +355,7 @@ def BatchesReport(request, pk):
 		tax=Sum('tax_amt'),
 		delivery_amt=Sum('delivery_amt'),
 		delivery_order=Count(Case(When(order_type='D', then='order_type'))),
+		parkinglot=Count(Case(When(order_type='PL', then='order_type'))),
 		pickitup=Count(Case(When(order_type='P', then='order_type'))))
 
 	return render(request, 'LocationManager/report.html', context)
