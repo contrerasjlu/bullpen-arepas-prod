@@ -31,7 +31,9 @@ class AboutUsView(TemplateView):
 
 	def get_context_data(self, **kwargs):
 	    context = super(AboutUsView, self).get_context_data(**kwargs)
-	    context['status'] = PaymentBatch.objects.BullpenIsOpen()
+	    context['text01'] = WebText.objects.get(code='about-us-01')
+	    context['text02'] = WebText.objects.get(code='about-us-02')
+	    context['text03'] = WebText.objects.get(code='about-us-03')
 	    return context
 
 class OurProductsView(TemplateView):
