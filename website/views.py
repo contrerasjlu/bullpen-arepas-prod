@@ -34,6 +34,7 @@ class AboutUsView(TemplateView):
 	    context['text01'] = WebText.objects.get(code='about-us-01')
 	    context['text02'] = WebText.objects.get(code='about-us-02')
 	    context['text03'] = WebText.objects.get(code='about-us-03')
+	    context['WebGallery'] = WebGallery.objects.filter(State=True)
 	    return context
 
 class OurProductsView(TemplateView):

@@ -40,3 +40,11 @@ class WebCarrouselAdmin(admin.ModelAdmin):
     list_display = ('alt','order','active')
 
 admin.site.register(WebCarrousel, WebCarrouselAdmin)
+
+class WebGalleryAdmin(admin.ModelAdmin):
+    '''
+        Admin View for WebGallery
+    '''
+    list_display = ('Event','Alternative','Caption','Order','State')
+
+admin.site.register(WebGallery, WebGalleryAdmin)
