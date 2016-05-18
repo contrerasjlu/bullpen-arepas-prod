@@ -167,3 +167,23 @@ class WebCarrousel(models.Model):
 
 	def __unicode__(self):
 		return self.alt
+
+class WebGallery(models.Model):
+	'''
+	Model for getting the gallery images
+	'''
+	Event = models.CharField(verbose_name='Event', max_length=50, default='Evento')
+	Image = models.ImageField(upload_to='website/gallery/', default=None)
+	Alternative = models.CharField(verbose_name='Alternative Text', max_length=50, default='Alternative')
+	Caption = models.CharField(verbose_name='Description', max_length=50,default='Caption')
+	Order = models.PositiveIntegerField(verbose_name='Order', default=1)
+	State = models.BooleanField(verbose_name='State', default=True)
+
+	class Meta:
+		verbose_name = "Web Gallery"
+		verbose_name_plural = "Web Galleries"
+		ordering = ('Order',)
+
+	def __unicode__(self):
+		return '%s %s' % (self.Event, self.Alternative)
+    
